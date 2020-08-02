@@ -12,6 +12,8 @@ using DFCommonLib.Config;
 using DFCommonLib.Logger;
 using DFCommonLib.Utils;
 
+using AccountServer.Repository;
+
 namespace AccountServer
 {
     class Program
@@ -35,7 +37,7 @@ namespace AccountServer
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
-                //services.AddTransient<IPlayfieldRepository, PlayfieldRepository>();
+                services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IConfigurationHelper, ConfigurationHelper>();
             })
             .ConfigureWebHostDefaults(webBuilder =>

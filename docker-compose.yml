@@ -1,10 +1,10 @@
 version: '3.6'
 services:
 
-  database:
+  accountdb:
     image: mariadb
     networks: 
-      - prod
+      - net_account_backend
     container_name: accountserver_database
     user: root
     restart: always
@@ -16,19 +16,19 @@ services:
     volumes:
       - accountserver-mariadb:/var/lib/mysql
     ports:
-      - "5306:3306"
+      - "5506:3306"
 
   adminer:
     image: adminer
     restart: always
     networks: 
-      - prod
+      - net_account_backend
     ports:
       - 8080:8080
 
   accountserver:
     networks: 
-      - prod
+      - net_account_backend
     build:
       network: host
       context: ./
@@ -36,13 +36,11 @@ services:
     ports:
       - "6000:80"
     depends_on: 
-      - database
-    links:
-      - database:db
-  
+      - accountdb
+
 networks:
-  prod:
-    name: account_frontend
+  net_account_backend:
+    name: account_backend
 
 volumes:
   # docker volume create accountserver-mariadb

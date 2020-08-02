@@ -22,4 +22,4 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "AccountServer.dll"]
 
-EXPOSE 5000:80
+EXPOSE 5100:80

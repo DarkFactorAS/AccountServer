@@ -6,7 +6,7 @@
         "DatabaseConnections": [
           {
             "ConnectionType": "LOCAL",
-            "ConnectionString": "Server=database;Port=3306;Database=accounts;Uid=accuser;Pwd=unity;SslMode=Preferred;"
+            "ConnectionString": "Server=database;Port=3306;Database=account;Uid=accuser;Pwd=unity;SslMode=Preferred;"
           }
         ]
       }
