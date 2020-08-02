@@ -1,0 +1,84 @@
+# ===================================== #
+# Visual Studio / Windows               #
+# ===================================== #
+*.ipch
+*.so
+*.suo
+*.opensdf
+*.user
+*.sdf
+*.lib
+*.log
+*.o
+*.xccheckout
+*.xcuserdatad
+*.xcuserstate
+*.xcsettings
+*.plist
+*.VC.opendb
+*.db
+*.pyc
+Deploy*.sh
+version.h
+version.txt
+versiontmp.txt
+ClientConfig.xml
+ServerConfig.xml
+AndroidManifest.xml
+libs/
+bin/
+obj/
+gen/
+Build/
+Temp/
+Tegra-Android/
+Debug/
+.vs/
+
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Obj/
+UnityGenerated/
+Library/
+UnityBeer_Data/
+Assets/AssetStoreTools*
+Beer_Data/
+Build/
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+*.svd
+*.userprefs
+BotClient/*.csproj
+*.pidb
+*.suo
+BotClient/*.sln
+*.user
+*.unityproj
+*.booproj
+
+# ============= #
+# iOS generated #
+# ============= #
+Client/iOS
+BotClient/iOS
+BotClient/OSX.app
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+Assets/VSCode
+VSCode.meta
+settings.json
