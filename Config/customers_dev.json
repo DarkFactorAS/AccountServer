@@ -1,0 +1,15 @@
+﻿{
+  "CustomerSettings": {
+    "Customers": [
+      {
+        "Id": "Bots",
+        "DatabaseConnections": [
+          {
+            "ConnectionType": "LOCAL",
+            "ConnectionString": "Server=localhost;Port=5306;Database=accounts;Uid=accuser;Pwd=unity;SslMode=Preferred;"
+          }
+        ]
+      }
+    ]
+  }
+}

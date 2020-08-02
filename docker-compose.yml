@@ -1,0 +1,50 @@
+version: '3.6'
+services:
+
+  database:
+    image: mariadb
+    networks: 
+      - prod
+    container_name: accountserver_database
+    user: root
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=secret"
+      - "MYSQL_DATABASE=account"
+      - "MYSQL_USER=accuser"
+      - "MYSQL_PASSWORD=unity"
+    volumes:
+      - accountserver-mariadb:/var/lib/mysql
+    ports:
+      - "5306:3306"
+
+  adminer:
+    image: adminer
+    restart: always
+    networks: 
+      - prod
+    ports:
+      - 8080:8080
+
+  accountserver:
+    networks: 
+      - prod
+    build:
+      network: host
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "6000:80"
+    depends_on: 
+      - database
+    links:
+      - database:db
+  
+networks:
+  prod:
+    name: account_frontend
+
+volumes:
+  # docker volume create accountserver-mariadb
+  accountserver-mariadb:
+    external: true  
