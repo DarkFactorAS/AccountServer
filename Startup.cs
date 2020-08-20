@@ -23,7 +23,7 @@ namespace AccountServer
             Configuration = configuration;
 
             IDFLogger<Startup> logger = new DFLogger<Startup>();
-            logger.Startup();
+            logger.Startup(Program.AppName);
         }
 
         public IConfiguration Configuration { get; }

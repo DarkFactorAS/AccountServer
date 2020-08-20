@@ -30,7 +30,7 @@ namespace AccountServer.Controllers
         }
 
         [HttpPut]
-        [Route("CreateAccount")]
+        [Route("Create")]
         public AccountData CreateAccount( CreateAccountData createAccountData )
         {
             return _repository.CreateAccount(createAccountData);

@@ -13,6 +13,4 @@ namespace AccountServer.Model
         {
         }
     }
-
-
 }

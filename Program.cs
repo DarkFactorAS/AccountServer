@@ -18,7 +18,7 @@ namespace AccountServer
 {
     class Program
     {
-        private static string AppName = "AccountServer";
+        public static string AppName = "AccountServer";
 
         static void Main(string[] args)
         {
