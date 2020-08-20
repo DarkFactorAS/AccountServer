@@ -16,15 +16,15 @@ services:
     volumes:
       - accountserver-mariadb:/var/lib/mysql
     ports:
-      - "5506:3306"
-
-  adminer:
+      - 5505:3306
+  
+  accountadmin:
     image: adminer
     restart: always
     networks: 
       - net_account_backend
     ports:
-      - 8080:8080
+      - 8081:8080
 
   accountserver:
     networks: 
