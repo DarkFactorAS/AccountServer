@@ -29,6 +29,7 @@ namespace AccountServer
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
+
                 new DFServices(services)
                     .SetupLogger()
                     .SetupMySql()
@@ -39,6 +40,7 @@ namespace AccountServer
 
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IConfigurationHelper, ConfigurationHelper>();
+
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
