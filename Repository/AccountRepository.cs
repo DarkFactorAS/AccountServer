@@ -8,6 +8,7 @@ namespace AccountServer.Repository
 {
     public interface IAccountRepository
     {
+        AccountData LoginToken(string token);
         AccountData LoginAccount(LoginData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
     }
@@ -27,23 +28,44 @@ namespace AccountServer.Repository
             _logger = logger;
         }
 
+        public AccountData LoginToken(string token)
+        {
+            // Get specific playfield
+            var sql = @"SELECT u.id, u.nickname, t.token 
+                FROM users u, tokens t 
+                WHERE u.id = t.userid
+                AND t.token = @token";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@token", token);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        AccountData accountData = new AccountData();
+                        accountData.nickname = reader["nickname"].ToString();
+                        accountData.token = reader["token"].ToString(); 
+                        return accountData;
+                    }
+                }
+            }
+            return null;
+        }
+
         public AccountData LoginAccount(LoginData loginData)
         {
-            AccountData accountData = GetAccount(loginData.username);
-            if ( accountData != null )
+            InternalAccountData accountData = GetAccount(loginData.username);
+            if ( accountData != null && accountData.password == loginData.password )
             {
-                if ( accountData.token == loginData.password )
-                {
-                    accountData.token = CreateToken(accountData.id);
-                    return accountData;
-                }
+                string token = CreateToken(accountData.id);
+                return new AccountData( accountData.nickname, token );
             }
             return null;
         }
 
         public AccountData CreateAccount(CreateAccountData createAccountData)
         {
-            AccountData accountData = GetAccount(createAccountData.username);
+            InternalAccountData accountData = GetAccount(createAccountData.username);
             if ( accountData != null )
             {
                 return null;
@@ -62,17 +84,16 @@ namespace AccountServer.Repository
             accountData = GetAccount(createAccountData.username);
             if ( accountData != null )
             {
-                accountData.token = CreateToken(accountData.id);
-                return accountData;
+                string token = CreateToken(accountData.id);
+                return new AccountData( accountData.nickname, token );
             }
 
             return null;
         }
 
-        private AccountData GetAccount(string username)
+        private InternalAccountData GetAccount(string username)
         {
-            // Get specific playfield
-            var sql = @"SELECT id,nickname, password 
+            var sql = @"SELECT id, nickname, username, password
                 FROM users 
                 WHERE username = @username";
             using (var cmd = _connection.CreateCommand(sql))
@@ -82,10 +103,11 @@ namespace AccountServer.Repository
                 {
                     if (reader.Read())
                     {
-                        AccountData accountData = new AccountData();
+                        InternalAccountData accountData = new InternalAccountData();
                         accountData.id = Convert.ToUInt32(reader["id"]);
                         accountData.nickname = reader["nickname"].ToString();
-                        accountData.token = reader["password"].ToString(); 
+                        accountData.username = reader["username"].ToString();
+                        accountData.password = reader["password"].ToString();
                         return accountData;
                     }
                 }
@@ -95,7 +117,7 @@ namespace AccountServer.Repository
 
         private string CreateToken(uint userId)
         {
-            string token = "123";
+            string token = Guid.NewGuid().ToString();
 
             var sql = @"insert into tokens (userid,token,created) 
                 values(@userid,@token, now())";

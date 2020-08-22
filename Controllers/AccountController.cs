@@ -23,6 +23,13 @@ namespace AccountServer.Controllers
         }
 
         [HttpPut]
+        [Route("LoginToken")]
+        public AccountData LoginToken(string token)
+        {
+            return _repository.LoginToken(token);
+        }
+
+        [HttpPut]
         [Route("LoginAccount")]
         public AccountData LoginAccount(LoginData loginData)
         {
