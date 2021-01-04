@@ -23,6 +23,8 @@ services:
     restart: always
     networks: 
       - net_account_backend
+    environment: 
+      ADMINER_DEFAULT_SERVER: accountdb
     ports:
       - 8081:8080
 
