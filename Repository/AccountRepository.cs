@@ -9,8 +9,9 @@ namespace AccountServer.Repository
     public interface IAccountRepository
     {
         AccountData LoginToken(string token);
-        AccountData LoginAccount(LoginData accountData);
-        AccountData CreateAccount(CreateAccountData createAccountData);
+        InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt);
+        InternalAccountData GetAccount(string username);
+        string SaveToken( uint userId, string token );
     }
 
     public class AccountRepository : IAccountRepository
@@ -30,7 +31,6 @@ namespace AccountServer.Repository
 
         public AccountData LoginToken(string token)
         {
-            // Get specific playfield
             var sql = @"SELECT u.id, u.nickname, t.token 
                 FROM users u, tokens t 
                 WHERE u.id = t.userid
@@ -49,49 +49,27 @@ namespace AccountServer.Repository
                     }
                 }
             }
-            return null;
+
+            return AccountData.Error(AccountData.ErrorCode.TokenLoginError);
         }
 
-        public AccountData LoginAccount(LoginData loginData)
+        public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt)
         {
-            InternalAccountData accountData = GetAccount(loginData.username);
-            if ( accountData != null && accountData.password == loginData.password )
-            {
-                string token = CreateToken(accountData.id);
-                return new AccountData( accountData.nickname, token );
-            }
-            return null;
-        }
-
-        public AccountData CreateAccount(CreateAccountData createAccountData)
-        {
-            InternalAccountData accountData = GetAccount(createAccountData.username);
-            if ( accountData != null )
-            {
-                return null;
-            }
-
-            var sql = @"insert into users (id,nickname,username,password,created,updated) 
-                values(0, @nickname, @username, @password, now(), now())";
+            var sql = @"insert into users (id,nickname,username,password,salt,flags,created,updated) 
+                values(0, @nickname, @username, @password, @salt, 0, now(), now())";
             using (var cmd = _connection.CreateCommand(sql))
             {
                 cmd.AddParameter("@nickname", createAccountData.nickname);
                 cmd.AddParameter("@username", createAccountData.username);
                 cmd.AddParameter("@password", createAccountData.password);
+                cmd.AddClobParameter("@salt", salt);
                 cmd.ExecuteNonQuery();
             }
 
-            accountData = GetAccount(createAccountData.username);
-            if ( accountData != null )
-            {
-                string token = CreateToken(accountData.id);
-                return new AccountData( accountData.nickname, token );
-            }
-
-            return null;
+            return GetAccount(createAccountData.username);
         }
 
-        private InternalAccountData GetAccount(string username)
+        public InternalAccountData GetAccount(string username)
         {
             var sql = @"SELECT id, nickname, username, password
                 FROM users 
@@ -115,10 +93,8 @@ namespace AccountServer.Repository
             return null;
         }
 
-        private string CreateToken(uint userId)
+        public string SaveToken(uint userId, string token)
         {
-            string token = Guid.NewGuid().ToString();
-
             var sql = @"insert into tokens (userid,token,created) 
                 values(@userid,@token, now())";
             using (var cmd = _connection.CreateCommand(sql))

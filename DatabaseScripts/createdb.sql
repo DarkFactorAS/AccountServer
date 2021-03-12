@@ -4,6 +4,8 @@ CREATE TABLE `users` (
   `nickname` varchar(100) NOT NULL DEFAULT '',
   `username` varchar(100) NOT NULL DEFAULT '',
   `password` varchar(100) NOT NULL DEFAULT '',
+  `salt` tinyblob,
+  `flags` int(11) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL,
   `updated` datetime NOT NULL,
   PRIMARY KEY (`id`)

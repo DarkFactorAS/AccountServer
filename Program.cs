@@ -39,6 +39,7 @@ namespace AccountServer
                 ;
 
                 services.AddTransient<IAccountRepository, AccountRepository>();
+                services.AddTransient<IAccountProvider, AccountProvider>();
                 services.AddTransient<IConfigurationHelper, ConfigurationHelper>();
 
             })

@@ -15,16 +15,18 @@ namespace AccountServer.Controllers
     {
         ILogger<AccountController> _logger;
         IAccountRepository _repository;
+        IAccountProvider _provider;
 
-        public AccountController(ILogger<AccountController> logger, IAccountRepository repository)
+        public AccountController(ILogger<AccountController> logger, IAccountRepository repository, IAccountProvider provider)
         {
             _logger = logger;
             _repository = repository;
+            _provider = provider;
         }
 
         [HttpPut]
         [Route("LoginToken")]
-        public AccountData LoginToken(string token)
+        public AccountData LoginToken([FromForm] string token)
         {
             return _repository.LoginToken(token);
         }
@@ -33,14 +35,14 @@ namespace AccountServer.Controllers
         [Route("LoginAccount")]
         public AccountData LoginAccount(LoginData loginData)
         {
-            return _repository.LoginAccount(loginData);
+            return _provider.LoginAccount(loginData);
         }
 
         [HttpPut]
         [Route("Create")]
         public AccountData CreateAccount( CreateAccountData createAccountData )
         {
-            return _repository.CreateAccount(createAccountData);
+            return _provider.CreateAccount(createAccountData);
         }
     }
 }
