@@ -71,7 +71,7 @@ namespace AccountServer.Repository
 
         public InternalAccountData GetAccount(string username)
         {
-            var sql = @"SELECT id, nickname, username, password
+            var sql = @"SELECT id, nickname, username, password, salt
                 FROM users 
                 WHERE username = @username";
             using (var cmd = _connection.CreateCommand(sql))
@@ -86,6 +86,12 @@ namespace AccountServer.Repository
                         accountData.nickname = reader["nickname"].ToString();
                         accountData.username = reader["username"].ToString();
                         accountData.password = reader["password"].ToString();
+
+                        // TODO - Change this
+                        accountData.salt = new byte[16];
+                        int index = reader.GetOrdinal("salt");
+                        long numBytes = reader.GetBytes(index, 0, accountData.salt, 0, 16);
+
                         return accountData;
                     }
                 }
