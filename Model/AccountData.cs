@@ -12,6 +12,7 @@ namespace AccountServer.Model
             UserAlreadyExist,
             ErrorInData,
             TokenLoginError,
+            WrongPassword,
         }
 
         public string nickname { get; set; }
@@ -47,6 +48,9 @@ namespace AccountServer.Model
                     break;
                 case ErrorCode.TokenLoginError:
                     data.errorMessage = "TokenLoginError";
+                    break;
+                case ErrorCode.WrongPassword:
+                    data.errorMessage = "WrongPassword";
                     break;
             }
 

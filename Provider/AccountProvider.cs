@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using AccountServer.Model;
+using DFCommonLib.Utils;
 
 namespace AccountServer.Repository
 {
@@ -37,7 +38,8 @@ namespace AccountServer.Repository
             }
 
             var salt = generateSalt();
-            createAccountData.password = generateHash(createAccountData.password, salt);
+            var plainPassword = DFCrypt.DecryptInput(createAccountData.password);
+            createAccountData.password = generateHash(plainPassword, salt);
 
             var internalAccount = _repository.CreateAccount(createAccountData, salt);
 
@@ -59,13 +61,15 @@ namespace AccountServer.Repository
                 return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
             }
 
-            string encryptedPassword = generateHash(loginData.password, accountData.salt);
+            var plainPassword = DFCrypt.DecryptInput(loginData.password);
+
+            string encryptedPassword = generateHash(plainPassword, accountData.salt);
             if ( accountData != null && accountData.password == encryptedPassword )
             {
                 string token = CreateToken(accountData.id);
                 return new AccountData( accountData.nickname, token );
             }
-            return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
+            return AccountData.Error( AccountData.ErrorCode.WrongPassword);
         }
 
         private string generateHash(string password, byte[] salt) 
