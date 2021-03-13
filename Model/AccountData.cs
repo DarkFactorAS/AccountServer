@@ -13,6 +13,11 @@ namespace AccountServer.Model
             ErrorInData,
             TokenLoginError,
             WrongPassword,
+            InvalidUsername,
+            UsernameInvalidCharacters,
+            NicknameInvalidCharacters,
+            PasswordInvalidCharacters,
+            NicknameAlreadyExist
         }
 
         public string nickname { get; set; }
@@ -51,6 +56,21 @@ namespace AccountServer.Model
                     break;
                 case ErrorCode.WrongPassword:
                     data.errorMessage = "WrongPassword";
+                    break;
+                case ErrorCode.InvalidUsername:
+                    data.errorMessage = "InvalidUsername";
+                    break;
+                case ErrorCode.UsernameInvalidCharacters:
+                    data.errorMessage = "UsernameInvalidCharacters";
+                    break;
+                case ErrorCode.NicknameInvalidCharacters:
+                    data.errorMessage = "NicknameInvalidCharacters";
+                    break;
+                case ErrorCode.PasswordInvalidCharacters:
+                    data.errorMessage = "PasswordInvalidCharacters";
+                    break;
+                case ErrorCode.NicknameAlreadyExist:
+                    data.errorMessage = "NicknameAlreadyExist";
                     break;
             }
 

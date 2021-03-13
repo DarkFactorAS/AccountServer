@@ -11,6 +11,7 @@ namespace AccountServer.Repository
         AccountData LoginToken(string token);
         InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt);
         InternalAccountData GetAccount(string username);
+        InternalAccountData GetAccountWithNickname(string nickname);
         string SaveToken( uint userId, string token );
     }
 
@@ -68,6 +69,38 @@ namespace AccountServer.Repository
 
             return GetAccount(createAccountData.username);
         }
+
+        public InternalAccountData GetAccountWithNickname(string nickname)
+        {
+            var sql = @"SELECT id, nickname, username, password, salt
+                FROM users 
+                WHERE nickname = @nickname";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@nickname", nickname);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        InternalAccountData accountData = new InternalAccountData();
+                        accountData.id = Convert.ToUInt32(reader["id"]);
+                        accountData.nickname = reader["nickname"].ToString();
+                        accountData.username = reader["username"].ToString();
+                        accountData.password = reader["password"].ToString();
+
+                        // TODO - Change this
+                        accountData.salt = new byte[16];
+                        int index = reader.GetOrdinal("salt");
+                        long numBytes = reader.GetBytes(index, 0, accountData.salt, 0, 16);
+
+                        return accountData;
+                    }
+                }
+            }
+            return null;
+        }
+
+
 
         public InternalAccountData GetAccount(string username)
         {

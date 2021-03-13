@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using AccountServer.Model;
 using DFCommonLib.Utils;
@@ -24,23 +25,35 @@ namespace AccountServer.Repository
 
         public AccountData CreateAccount(CreateAccountData createAccountData)
         {
-            if ( string.IsNullOrEmpty( createAccountData.nickname ) 
-                || string.IsNullOrEmpty( createAccountData.username )  
-                || string.IsNullOrEmpty( createAccountData.password ) ) 
+            if ( createAccountData == null )
             {
                 return AccountData.Error(AccountData.ErrorCode.ErrorInData);
             }
 
-            InternalAccountData accountData = _repository.GetAccount(createAccountData.username);
-            if ( accountData != null )
+            // Verify nickname
+            var nicknameStatus = VerifyNickname(createAccountData.nickname);
+            if ( nicknameStatus != AccountData.ErrorCode.OK )
             {
-                return AccountData.Error(AccountData.ErrorCode.UserAlreadyExist);
+                return AccountData.Error(nicknameStatus);
+            }
+
+            // Verify username
+            var usernameStatus = VerifyUsername(createAccountData.username);
+            if ( usernameStatus != AccountData.ErrorCode.OK )
+            {
+                return AccountData.Error(usernameStatus);
+            }
+
+            // Verify password
+            var plainPassword = DFCrypt.DecryptInput(createAccountData.password);
+            var passwordStatus = VerifyPassword(plainPassword);
+            if ( passwordStatus != AccountData.ErrorCode.OK )
+            {
+                return AccountData.Error(passwordStatus);
             }
 
             var salt = generateSalt();
-            var plainPassword = DFCrypt.DecryptInput(createAccountData.password);
             createAccountData.password = generateHash(plainPassword, salt);
-
             var internalAccount = _repository.CreateAccount(createAccountData, salt);
 
             // Create logintoken
@@ -70,6 +83,68 @@ namespace AccountServer.Repository
                 return new AccountData( accountData.nickname, token );
             }
             return AccountData.Error( AccountData.ErrorCode.WrongPassword);
+        }
+
+        private AccountData.ErrorCode VerifyNickname( string nickname )
+        {
+            if ( string.IsNullOrEmpty( nickname ) )
+            {
+                return AccountData.ErrorCode.ErrorInData;
+            }
+
+            // Only A-Z and 0-9
+            if ( !Regex.IsMatch(nickname, @"^[a-zA-Z0-9]+$") )
+            {
+                return AccountData.ErrorCode.NicknameInvalidCharacters;
+            }
+
+            // Nickname already exist ?
+            InternalAccountData accountData = _repository.GetAccountWithNickname(nickname);
+            if ( accountData != null )
+            {
+                return AccountData.ErrorCode.NicknameAlreadyExist;
+            }
+
+            return AccountData.ErrorCode.OK;
+        }
+
+        private AccountData.ErrorCode VerifyUsername( string username )
+        {
+            if ( string.IsNullOrEmpty( username ) )
+            {
+                return AccountData.ErrorCode.ErrorInData;
+            }
+
+            // Only A-Z and 0-9
+            if ( !Regex.IsMatch(username, @"^[a-zA-Z0-9]+$") )
+            {
+                return AccountData.ErrorCode.UsernameInvalidCharacters;
+            }
+
+            // Username already exist ?
+            InternalAccountData accountData = _repository.GetAccount(username);
+            if ( accountData != null )
+            {
+                return AccountData.ErrorCode.UserAlreadyExist;
+            }
+
+            return AccountData.ErrorCode.OK;
+        }
+
+        private AccountData.ErrorCode VerifyPassword( string password )
+        {
+            if ( string.IsNullOrEmpty( password ) )
+            {
+                return AccountData.ErrorCode.ErrorInData;
+            }
+
+            // Only A-Z and 0-9
+            if ( !Regex.IsMatch(password, @"^[a-zA-Z0-9]+$") )
+            {
+                return AccountData.ErrorCode.PasswordInvalidCharacters;
+            }
+
+            return AccountData.ErrorCode.OK;
         }
 
         private string generateHash(string password, byte[] salt) 
