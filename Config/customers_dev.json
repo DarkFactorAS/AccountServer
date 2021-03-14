@@ -6,7 +6,7 @@
         "DatabaseConnections": [
           {
             "ConnectionType": "LOCAL",
-            "ConnectionString": "Server=192.168.1.30;Port=5505;Database=account;Uid=accuser;Pwd=unity;SslMode=Preferred;"
+            "ConnectionString": "Server=localhost;Port=5505;Database=account;Uid=accuser;Pwd=unity;SslMode=Preferred;"
           }
         ]
       }
