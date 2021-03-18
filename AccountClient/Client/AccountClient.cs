@@ -11,6 +11,7 @@ namespace AccountClientModule.Client
 {
     public interface IAccountClient
     {
+        void SetEndpoint( string endpoint );
         AccountData LoginAccount(LoginData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
     }
@@ -22,6 +23,11 @@ namespace AccountClientModule.Client
         public AccountClient(IAccountRestClient restClient)
         {
             _restClient = restClient;
+        }
+
+        public void SetEndpoint( string endpoint )
+        {
+            _restClient.SetEndpoint(endpoint);
         }
 
         public AccountData LoginAccount(LoginData loginData)

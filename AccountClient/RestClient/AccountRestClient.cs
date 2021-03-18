@@ -7,6 +7,7 @@ namespace AccountClientModule.RestClient
 {
     public interface IAccountRestClient
     {
+        void SetEndpoint(string endpoint);
         Task<WebAPIData> LoginAccount(LoginData accountData);
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
     }
@@ -15,17 +16,25 @@ namespace AccountClientModule.RestClient
     {
         private const int POST_CREATE = 1;
         private const int POST_LOGIN = 2;
-
-        static string Endpoint = "http://localhost:5100";
+        private string _endpoint;
 
         override protected string GetHostname()
         {
-            return AccountRestClient.Endpoint;
+            if ( _endpoint != null )
+            {
+                return _endpoint;
+            }
+            return "";
         }
 
         override protected string GetModule()
         {
             return "Account";
+        }
+
+        public void SetEndpoint(string endpoint)
+        {
+            _endpoint = endpoint;
         }
 
         public async Task<WebAPIData> LoginAccount(LoginData loginData)

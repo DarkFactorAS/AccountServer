@@ -3,8 +3,8 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 WORKDIR /app
 
 # Add nuget repository
-COPY ./NuGet/DarkFactor.Common.Lib.*.nupkg ./NuGet/
-RUN dotnet nuget add source /app/NuGet --name DarkFactor
+#COPY ./NuGet/DarkFactor.Common.Lib.*.nupkg ./NuGet/
+#RUN dotnet nuget add source /app/NuGet --name DarkFactor
 
 # Flush all nuget repos
 RUN dotnet nuget locals all -c
