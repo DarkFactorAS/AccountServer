@@ -52,6 +52,9 @@ namespace AccountServer.Repository
                 return AccountData.Error(passwordStatus);
             }
 
+            // Zero email if needed
+            createAccountData.email = VerifyEmail(createAccountData.email);
+
             var salt = generateSalt();
             createAccountData.password = generateHash(plainPassword, salt);
             var internalAccount = _repository.CreateAccount(createAccountData, salt);
@@ -145,6 +148,18 @@ namespace AccountServer.Repository
             }
 
             return AccountData.ErrorCode.OK;
+        }
+
+        private string VerifyEmail(string email)
+        {
+            if ( email == null )
+            {
+                return "";
+            }
+
+            // TODO : Verify email string
+
+            return email;
         }
 
         private string generateHash(string password, byte[] salt) 

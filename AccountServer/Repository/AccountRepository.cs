@@ -56,13 +56,14 @@ namespace AccountServer.Repository
 
         public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt)
         {
-            var sql = @"insert into users (id,nickname,username,password,salt,flags,created,updated) 
-                values(0, @nickname, @username, @password, @salt, 0, now(), now())";
+            var sql = @"insert into users (id,nickname,username,password,email,salt,flags,created,updated) 
+                values(0, @nickname, @username, @password, @salt, @email, 0, now(), now())";
             using (var cmd = _connection.CreateCommand(sql))
             {
                 cmd.AddParameter("@nickname", createAccountData.nickname);
                 cmd.AddParameter("@username", createAccountData.username);
                 cmd.AddParameter("@password", createAccountData.password);
+                cmd.AddParameter("@email", createAccountData.email);
                 cmd.AddClobParameter("@salt", salt);
                 cmd.ExecuteNonQuery();
             }

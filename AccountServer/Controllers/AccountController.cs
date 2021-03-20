@@ -39,7 +39,7 @@ namespace AccountServer.Controllers
         }
 
         [HttpPut]
-        [Route("Create")]
+        [Route("CreateAccount")]
         public AccountData CreateAccount( CreateAccountData createAccountData )
         {
             return _provider.CreateAccount(createAccountData);
