@@ -1,6 +1,7 @@
 
 using System.Threading.Tasks;
 using DFCommonLib.HttpApi;
+using DFCommonLib.Logger;
 using AccountClientModule.Model;
 
 namespace AccountClientModule.RestClient
@@ -17,6 +18,10 @@ namespace AccountClientModule.RestClient
         private const int POST_CREATE = 1;
         private const int POST_LOGIN = 2;
         private string _endpoint;
+
+        public AccountRestClient(IDFLogger<DFRestClient> logger ) : base(logger)
+        {
+        }
 
         override protected string GetHostname()
         {
