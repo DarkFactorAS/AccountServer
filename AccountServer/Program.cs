@@ -29,6 +29,7 @@ namespace AccountServer
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
+                services.AddTransient<IConfigurationHelper, ConfigurationHelper>();
 
                 new DFServices(services)
                     .SetupLogger()
@@ -40,8 +41,6 @@ namespace AccountServer
 
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
-                services.AddTransient<IConfigurationHelper, ConfigurationHelper>();
-
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
