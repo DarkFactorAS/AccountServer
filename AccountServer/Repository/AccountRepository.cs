@@ -57,7 +57,7 @@ namespace AccountServer.Repository
         public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt)
         {
             var sql = @"insert into users (id,nickname,username,password,email,salt,flags,created,updated) 
-                values(0, @nickname, @username, @password, @salt, @email, 0, now(), now())";
+                values(0, @nickname, @username, @password, @email, @salt, 0, now(), now())";
             using (var cmd = _connection.CreateCommand(sql))
             {
                 cmd.AddParameter("@nickname", createAccountData.nickname);
