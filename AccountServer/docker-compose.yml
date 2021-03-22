@@ -31,6 +31,7 @@ services:
   accountserver:
     networks: 
       - net_account_backend
+      - net_account_frontend
     build:
       network: host
       context: ./
@@ -43,6 +44,8 @@ services:
 networks:
   net_account_backend:
     name: account_backend
+  net_account_frontend:
+    name: account_frontend
 
 volumes:
   # docker volume create accountserver-mariadb
