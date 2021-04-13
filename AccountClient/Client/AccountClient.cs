@@ -13,6 +13,7 @@ namespace AccountClientModule.Client
     {
         void SetEndpoint( string endpoint );
         AccountData LoginAccount(LoginData accountData);
+        AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
     }
 
@@ -33,6 +34,12 @@ namespace AccountClientModule.Client
         public AccountData LoginAccount(LoginData loginData)
         {
             var result = Task.Run(async() => await _restClient.LoginAccount(loginData)).Result;
+            return ConvertFromRestData( result );
+        }
+
+        public AccountData LoginToken(LoginTokenData loginData)
+        {
+            var result = Task.Run(async() => await _restClient.LoginToken(loginData)).Result;
             return ConvertFromRestData( result );
         }
 

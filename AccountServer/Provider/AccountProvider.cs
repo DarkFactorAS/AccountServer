@@ -11,6 +11,7 @@ namespace AccountServer.Repository
     public interface IAccountProvider
     {
         AccountData LoginAccount(LoginData accountData);
+        AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
     }
 
@@ -86,6 +87,20 @@ namespace AccountServer.Repository
                 return new AccountData( accountData.nickname, token );
             }
             return AccountData.Error( AccountData.ErrorCode.WrongPassword);
+        }
+
+        public AccountData LoginToken(LoginTokenData loginTokenData)
+        {
+            if ( loginTokenData!= null && !string.IsNullOrEmpty(loginTokenData.token) )
+            {
+                var accountData = _repository.GetAccountWithToken(loginTokenData.token);
+                if ( accountData != null )
+                {
+                    string token = CreateToken(accountData.id);
+                    return new AccountData( accountData.nickname, token);
+                }
+            }
+            return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
         }
 
         private AccountData.ErrorCode VerifyNickname( string nickname )

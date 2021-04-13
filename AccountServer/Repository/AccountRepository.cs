@@ -8,9 +8,9 @@ namespace AccountServer.Repository
 {
     public interface IAccountRepository
     {
-        AccountData LoginToken(string token);
         InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt);
         InternalAccountData GetAccount(string username);
+        InternalAccountData GetAccountWithToken(string token);
         InternalAccountData GetAccountWithNickname(string nickname);
         string SaveToken( uint userId, string token );
     }
@@ -28,30 +28,6 @@ namespace AccountServer.Repository
         {
             _connection = connection;
             _logger = logger;
-        }
-
-        public AccountData LoginToken(string token)
-        {
-            var sql = @"SELECT u.id, u.nickname, t.token 
-                FROM users u, tokens t 
-                WHERE u.id = t.userid
-                AND t.token = @token";
-            using (var cmd = _connection.CreateCommand(sql))
-            {
-                cmd.AddParameter("@token", token);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        AccountData accountData = new AccountData();
-                        accountData.nickname = reader["nickname"].ToString();
-                        accountData.token = reader["token"].ToString(); 
-                        return accountData;
-                    }
-                }
-            }
-
-            return AccountData.Error(AccountData.ErrorCode.TokenLoginError);
         }
 
         public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt)
@@ -101,7 +77,36 @@ namespace AccountServer.Repository
             return null;
         }
 
+        public InternalAccountData GetAccountWithToken(string token)
+        {
+            var sql = @"SELECT id, nickname, username, password, salt
+                FROM users, tokens
+                WHERE token = @token
+                AND users.id = tokens.userid";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@token", token);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        InternalAccountData accountData = new InternalAccountData();
+                        accountData.id = Convert.ToUInt32(reader["id"]);
+                        accountData.nickname = reader["nickname"].ToString();
+                        accountData.username = reader["username"].ToString();
+                        accountData.password = reader["password"].ToString();
 
+                        // TODO - Change this
+                        accountData.salt = new byte[16];
+                        int index = reader.GetOrdinal("salt");
+                        long numBytes = reader.GetBytes(index, 0, accountData.salt, 0, 16);
+
+                        return accountData;
+                    }
+                }
+            }
+            return null;
+        }
 
         public InternalAccountData GetAccount(string username)
         {

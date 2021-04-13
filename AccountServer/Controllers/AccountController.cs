@@ -14,21 +14,19 @@ namespace AccountServer.Controllers
     public class AccountController : ControllerBase
     {
         ILogger<AccountController> _logger;
-        IAccountRepository _repository;
         IAccountProvider _provider;
 
-        public AccountController(ILogger<AccountController> logger, IAccountRepository repository, IAccountProvider provider)
+        public AccountController(ILogger<AccountController> logger, IAccountProvider provider)
         {
             _logger = logger;
-            _repository = repository;
             _provider = provider;
         }
 
         [HttpPut]
         [Route("LoginToken")]
-        public AccountData LoginToken([FromForm] string token)
+        public AccountData LoginToken(LoginTokenData tokenData)
         {
-            return _repository.LoginToken(token);
+            return _provider.LoginToken(tokenData);
         }
 
         [HttpPut]

@@ -10,6 +10,7 @@ namespace AccountClientModule.RestClient
     {
         void SetEndpoint(string endpoint);
         Task<WebAPIData> LoginAccount(LoginData accountData);
+        Task<WebAPIData> LoginToken(LoginTokenData accountTokenData);
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
     }
 
@@ -45,6 +46,12 @@ namespace AccountClientModule.RestClient
         public async Task<WebAPIData> LoginAccount(LoginData loginData)
         {
             var response = await PutJsonData(POST_LOGIN,"LoginAccount",loginData);
+            return response;
+        }
+
+        public async Task<WebAPIData> LoginToken(LoginTokenData loginData)
+        {
+            var response = await PutJsonData(POST_LOGIN,"LoginToken",loginData);
             return response;
         }
 
