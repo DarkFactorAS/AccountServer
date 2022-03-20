@@ -33,6 +33,7 @@ Build/
 Temp/
 Tegra-Android/
 Debug/
+NuGet/
 .vs/
 
 # =============== #
