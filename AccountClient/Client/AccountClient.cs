@@ -12,6 +12,7 @@ namespace AccountClientModule.Client
     public interface IAccountClient
     {
         void SetEndpoint( string endpoint );
+        string PingServer();
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
@@ -29,6 +30,12 @@ namespace AccountClientModule.Client
         public void SetEndpoint( string endpoint )
         {
             _restClient.SetEndpoint(endpoint);
+        }
+
+        public string PingServer()
+        {
+            var result = Task.Run(async() => await _restClient.PingServer()).Result;
+            return result.message;
         }
 
         public AccountData LoginAccount(LoginData loginData)

@@ -22,6 +22,13 @@ namespace AccountServer.Controllers
             _provider = provider;
         }
 
+        [HttpGet]
+        [Route("PingServer")]
+        public string PingServer()
+        {
+            return "PONG";
+        }
+
         [HttpPut]
         [Route("LoginToken")]
         public AccountData LoginToken(LoginTokenData tokenData)

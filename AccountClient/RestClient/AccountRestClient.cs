@@ -6,7 +6,7 @@ using AccountClientModule.Model;
 
 namespace AccountClientModule.RestClient
 {
-    public interface IAccountRestClient
+    public interface IAccountRestClient : IDFRestClient
     {
         void SetEndpoint(string endpoint);
         Task<WebAPIData> LoginAccount(LoginData accountData);
