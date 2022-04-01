@@ -11,7 +11,7 @@ RUN dotnet nuget locals all -c
 
 # Copy files
 COPY ./ ./
-COPY ./NuGet_Docker.config ./NuGet.config
+#COPY ./NuGet_Docker.config ./NuGet.config
 
 # Restore and build web
 RUN dotnet restore AccountServer.csproj
