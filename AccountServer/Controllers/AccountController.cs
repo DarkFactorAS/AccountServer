@@ -49,5 +49,12 @@ namespace AccountServer.Controllers
         {
             return _provider.CreateAccount(createAccountData);
         }
+
+        [HttpPut]
+        [Route("ResetPasswordWithEmail")]
+        public AccountData ResetPasswordWithEmail( ResetPasswordEmail emailAddress )
+        {
+            return _provider.ResetPasswordWithEmail(emailAddress);
+        }
     }
 }

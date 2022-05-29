@@ -9,9 +9,10 @@ namespace AccountServer.Repository
     public interface IAccountRepository
     {
         InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt);
-        InternalAccountData GetAccount(string username);
+        InternalAccountData GetAccountWithUsername(string username);
         InternalAccountData GetAccountWithToken(string token);
         InternalAccountData GetAccountWithNickname(string nickname);
+        InternalAccountData GetAccountWithEmail(string emailAdddress);
         string SaveToken( uint userId, string token );
     }
 
@@ -44,78 +45,35 @@ namespace AccountServer.Repository
                 cmd.ExecuteNonQuery();
             }
 
-            return GetAccount(createAccountData.username);
+            return GetAccountWithUsername(createAccountData.username);
         }
 
         public InternalAccountData GetAccountWithNickname(string nickname)
         {
-            var sql = @"SELECT id, nickname, username, password, salt
-                FROM users 
-                WHERE nickname = @nickname";
-            using (var cmd = _connection.CreateCommand(sql))
-            {
-                cmd.AddParameter("@nickname", nickname);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        InternalAccountData accountData = new InternalAccountData();
-                        accountData.id = Convert.ToUInt32(reader["id"]);
-                        accountData.nickname = reader["nickname"].ToString();
-                        accountData.username = reader["username"].ToString();
-                        accountData.password = reader["password"].ToString();
-
-                        // TODO - Change this
-                        accountData.salt = new byte[16];
-                        int index = reader.GetOrdinal("salt");
-                        long numBytes = reader.GetBytes(index, 0, accountData.salt, 0, 16);
-
-                        return accountData;
-                    }
-                }
-            }
-            return null;
+            return GetInternalAccount("nickname", nickname);
         }
 
         public InternalAccountData GetAccountWithToken(string token)
         {
-            var sql = @"SELECT id, nickname, username, password, salt
-                FROM users, tokens
-                WHERE token = @token
-                AND users.id = tokens.userid";
-            using (var cmd = _connection.CreateCommand(sql))
-            {
-                cmd.AddParameter("@token", token);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        InternalAccountData accountData = new InternalAccountData();
-                        accountData.id = Convert.ToUInt32(reader["id"]);
-                        accountData.nickname = reader["nickname"].ToString();
-                        accountData.username = reader["username"].ToString();
-                        accountData.password = reader["password"].ToString();
-
-                        // TODO - Change this
-                        accountData.salt = new byte[16];
-                        int index = reader.GetOrdinal("salt");
-                        long numBytes = reader.GetBytes(index, 0, accountData.salt, 0, 16);
-
-                        return accountData;
-                    }
-                }
-            }
-            return null;
+            return GetInternalAccount("token", token);
         }
 
-        public InternalAccountData GetAccount(string username)
+        public InternalAccountData GetAccountWithUsername(string username)
         {
-            var sql = @"SELECT id, nickname, username, password, salt
-                FROM users 
-                WHERE username = @username";
-            using (var cmd = _connection.CreateCommand(sql))
+            return GetInternalAccount("username", username);
+        }
+
+        public InternalAccountData GetAccountWithEmail(string emailAdddress)
+        {
+            return GetInternalAccount("email", emailAdddress);
+        }
+
+        public InternalAccountData GetInternalAccount(string bindFieldname, string bindVariable)
+        {
+            string formattedSql = string.Format("SELECT id, nickname, username, password, salt, email FROM users WHERE {0} = @bindVariable",bindFieldname);
+            using (var cmd = _connection.CreateCommand(formattedSql))
             {
-                cmd.AddParameter("@username", username);
+                cmd.AddParameter("@bindVariable", bindVariable);
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
@@ -125,6 +83,7 @@ namespace AccountServer.Repository
                         accountData.nickname = reader["nickname"].ToString();
                         accountData.username = reader["username"].ToString();
                         accountData.password = reader["password"].ToString();
+                        accountData.email    = reader["email"].ToString();
 
                         // TODO - Change this
                         accountData.salt = new byte[16];

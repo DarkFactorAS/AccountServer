@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace AccountServer.Model
 {
-    public class LoginTokenData
+    public class ResetPasswordEmail
     {
-        public string token { get; set; }
+        public string email { get; set; }
 
-        public LoginTokenData()
+        public ResetPasswordEmail()
         {
         }
     }

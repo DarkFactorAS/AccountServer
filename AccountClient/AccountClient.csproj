@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>DarkFactor.AccountClient.Lib</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.9</Version>
     <Authors>Thor Richard Hanssen</Authors>
     <Company>DarkFactor</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.0.6</PackageVersion>
+    <PackageVersion>1.0.9</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.1" />

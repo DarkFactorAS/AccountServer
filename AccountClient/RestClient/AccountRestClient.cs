@@ -12,12 +12,15 @@ namespace AccountClientModule.RestClient
         Task<WebAPIData> LoginAccount(LoginData accountData);
         Task<WebAPIData> LoginToken(LoginTokenData accountTokenData);
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
+        Task<WebAPIData> ResetPasswordWithEmail(ResetPasswordEmail emailAddress);
     }
 
     public class AccountRestClient : DFRestClient, IAccountRestClient
     {
         private const int POST_CREATE = 1;
-        private const int POST_LOGIN = 2;
+        private const int POST_LOGIN_WITH_USERNAME = 2;
+        private const int POST_LOGIN_WITH_TOKEN = 3;
+        private const int POST_RESETPASSWORD_WITH_EMAIL = 4;
         private string _endpoint;
 
         public AccountRestClient(IDFLogger<DFRestClient> logger ) : base(logger)
@@ -45,19 +48,25 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> LoginAccount(LoginData loginData)
         {
-            var response = await PutJsonData(POST_LOGIN,"LoginAccount",loginData);
+            var response = await PutJsonData(POST_LOGIN_WITH_USERNAME,"LoginAccount",loginData);
             return response;
         }
 
         public async Task<WebAPIData> LoginToken(LoginTokenData loginData)
         {
-            var response = await PutJsonData(POST_LOGIN,"LoginToken",loginData);
+            var response = await PutJsonData(POST_LOGIN_WITH_TOKEN,"LoginToken",loginData);
             return response;
         }
 
         public async Task<WebAPIData> CreateAccount(CreateAccountData createAccountData)
         {
             var response = await PutJsonData(POST_CREATE,"CreateAccount",createAccountData);
+            return response;
+        }
+
+        public async Task<WebAPIData> ResetPasswordWithEmail(ResetPasswordEmail emailAddress)
+        {
+            var response = await PutJsonData(POST_RESETPASSWORD_WITH_EMAIL,"ResetPasswordWithEmail",emailAddress);
             return response;
         }
     }

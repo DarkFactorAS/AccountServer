@@ -13,6 +13,7 @@ namespace AccountServer.Repository
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
+        AccountData ResetPasswordWithEmail(ResetPasswordEmail emailAddress);
     }
 
     public class AccountProvider : IAccountProvider
@@ -72,7 +73,7 @@ namespace AccountServer.Repository
 
         public AccountData LoginAccount(LoginData loginData)
         {
-            InternalAccountData accountData = _repository.GetAccount(loginData.username);
+            InternalAccountData accountData = _repository.GetAccountWithUsername(loginData.username);
             if ( accountData == null )
             {
                 return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
@@ -101,6 +102,24 @@ namespace AccountServer.Repository
                 }
             }
             return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
+        }
+
+        public AccountData ResetPasswordWithEmail(ResetPasswordEmail emailAddress)
+        {
+            if ( emailAddress != null )
+            {
+                var vEmail = VerifyEmail(emailAddress.email);
+                if ( !string.IsNullOrEmpty(vEmail) )
+                {
+                    var accountData = _repository.GetAccountWithEmail(emailAddress.email);
+                    if ( accountData != null )
+                    {
+                        // TODO: Generate 2FA and assign to user's session
+                        // TODO: Send 2FA+email to email server
+                    }
+                }
+            }
+            return null;
         }
 
         private AccountData.ErrorCode VerifyNickname( string nickname )
@@ -140,7 +159,7 @@ namespace AccountServer.Repository
             }
 
             // Username already exist ?
-            InternalAccountData accountData = _repository.GetAccount(username);
+            InternalAccountData accountData = _repository.GetAccountWithUsername(username);
             if ( accountData != null )
             {
                 return AccountData.ErrorCode.UserAlreadyExist;

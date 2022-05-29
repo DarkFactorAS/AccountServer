@@ -16,6 +16,7 @@ namespace AccountClientModule.Client
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
+        AccountData ResetPasswordWithEmail(ResetPasswordEmail emailAddress);
     }
 
     public class AccountClient : IAccountClient
@@ -53,6 +54,12 @@ namespace AccountClientModule.Client
         public AccountData CreateAccount(CreateAccountData createAccountData)
         {
             var result = Task.Run(async() => await _restClient.CreateAccount(createAccountData)).Result;
+            return ConvertFromRestData( result );
+        }
+
+        public AccountData ResetPasswordWithEmail(ResetPasswordEmail emailAddress)
+        {
+            var result = Task.Run(async() => await _restClient.ResetPasswordWithEmail(emailAddress)).Result;
             return ConvertFromRestData( result );
         }
 
