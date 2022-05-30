@@ -55,7 +55,8 @@ namespace AccountServer.Repository
 
         public InternalAccountData GetAccountWithToken(string token)
         {
-            return GetInternalAccount("token", token);
+            var accountId = GetAccountIdFromToken(token);
+            return GetInternalAccount("id", "" + accountId);
         }
 
         public InternalAccountData GetAccountWithUsername(string username)
@@ -95,6 +96,24 @@ namespace AccountServer.Repository
                 }
             }
             return null;
+        }
+
+        private uint GetAccountIdFromToken(string token)
+        {
+            string formattedSql = @"SELECT userid FROM tokens WHERE token = @bindVariable";
+            using (var cmd = _connection.CreateCommand(formattedSql))
+            {
+                cmd.AddParameter("@bindVariable", token);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        InternalAccountData accountData = new InternalAccountData();
+                        return Convert.ToUInt32(reader["userid"]);
+                    }
+                }
+            }
+            return 0;
         }
 
         public string SaveToken(uint userId, string token)
