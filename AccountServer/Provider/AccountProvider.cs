@@ -13,7 +13,9 @@ namespace AccountServer.Repository
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
-        AccountData ResetPasswordWithEmail(ResetPasswordEmail emailAddress);
+        ReturnData ResetPasswordWithEmail(string emailAddress);
+        ReturnData ResetPasswordWithCode(string emailAddress, string code);
+        ReturnData ResetPasswordWithToken(string token, string password );
     }
 
     public class AccountProvider : IAccountProvider
@@ -104,22 +106,46 @@ namespace AccountServer.Repository
             return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
         }
 
-        public AccountData ResetPasswordWithEmail(ResetPasswordEmail emailAddress)
+        public ReturnData ResetPasswordWithEmail(string emailAddress)
         {
-            if ( emailAddress != null )
+            var vEmail = VerifyEmail(emailAddress);
+            if ( !string.IsNullOrEmpty(vEmail) )
             {
-                var vEmail = VerifyEmail(emailAddress.email);
-                if ( !string.IsNullOrEmpty(vEmail) )
+                var accountData = _repository.GetAccountWithEmail(emailAddress);
+                if ( accountData != null )
                 {
-                    var accountData = _repository.GetAccountWithEmail(emailAddress.email);
-                    if ( accountData != null )
-                    {
-                        // TODO: Generate 2FA and assign to user's session
-                        // TODO: Send 2FA+email to email server
-                    }
+                    var twoFactorCode = GenerateCode();
+                    // TODO: Generate 2FA and assign to user's session
+                    // TODO: Send 2FA+email to email server
+                    return ReturnData.OKMessage("The code was sent to " + emailAddress);
                 }
+                return ReturnData.OKMessage("Unknown user with email" + emailAddress);
             }
-            return null;
+
+            return ReturnData.ErrorMessage( ReturnData.ReturnCode.NotValidEmail );
+        }
+
+        public ReturnData ResetPasswordWithCode(string emailAddress, string code)
+        {
+            return ReturnData.OKMessage();
+        }
+
+        public ReturnData ResetPasswordWithToken(string token, string password)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(password))
+            {
+                return ReturnData.ErrorMessage( ReturnData.ReturnCode.UserDoesNotExist);
+            }
+
+            // Get user from session
+            // _repository.SetNewPassword()
+
+            return ReturnData.OKMessage();
+        }
+
+        private string GenerateCode()
+        {
+            return "1234";
         }
 
         private AccountData.ErrorCode VerifyNickname( string nickname )

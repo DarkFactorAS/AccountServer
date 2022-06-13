@@ -52,9 +52,23 @@ namespace AccountServer.Controllers
 
         [HttpPut]
         [Route("ResetPasswordWithEmail")]
-        public AccountData ResetPasswordWithEmail( ResetPasswordEmail emailAddress )
+        public ReturnData ResetPasswordWithEmail( ResetPasswordDataEmail resetPasswordDataEmail )
         {
-            return _provider.ResetPasswordWithEmail(emailAddress);
+            return _provider.ResetPasswordWithEmail(resetPasswordDataEmail.emailAddress);
+        }
+
+        [HttpPut]
+        [Route("ResetPasswordWithCode")]
+        public ReturnData ResetPasswordWithCode( ResetPasswordDataCode resetPasswordDataCode )
+        {
+            return _provider.ResetPasswordWithCode(resetPasswordDataCode.code, resetPasswordDataCode.emailAddress);
+        }
+
+        [HttpPut]
+        [Route("ResetPasswordWithToken")]
+        public ReturnData ResetPasswordWithToken( ResetPasswordDataToken resetPasswordDataToken )
+        {
+            return _provider.ResetPasswordWithToken(resetPasswordDataToken.token, resetPasswordDataToken.password);
         }
     }
 }

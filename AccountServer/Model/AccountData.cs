@@ -17,7 +17,8 @@ namespace AccountServer.Model
             UsernameInvalidCharacters,
             NicknameInvalidCharacters,
             PasswordInvalidCharacters,
-            NicknameAlreadyExist
+            NicknameAlreadyExist,
+            NotValidEmail,
         }
 
         public string nickname { get; set; }
@@ -71,6 +72,9 @@ namespace AccountServer.Model
                     break;
                 case ErrorCode.NicknameAlreadyExist:
                     data.errorMessage = "NicknameAlreadyExist";
+                    break;
+                case ErrorCode.NotValidEmail:
+                    data.errorMessage = "NotValidEmail";
                     break;
             }
 
