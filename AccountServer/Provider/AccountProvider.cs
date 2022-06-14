@@ -4,9 +4,10 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using AccountServer.Model;
+using AccountServer.Repository;
 using DFCommonLib.Utils;
 
-namespace AccountServer.Repository
+namespace AccountServer.Provider
 {
     public interface IAccountProvider
     {
@@ -21,10 +22,12 @@ namespace AccountServer.Repository
     public class AccountProvider : IAccountProvider
     {
         IAccountRepository _repository;
+        IAccountSessionProvider _session;
 
-        public AccountProvider(IAccountRepository repository)
+        public AccountProvider(IAccountRepository repository, IAccountSessionProvider session)
         {
             _repository = repository;
+            _session = session;
         }
 
         public AccountData CreateAccount(CreateAccountData createAccountData)
@@ -115,7 +118,13 @@ namespace AccountServer.Repository
                 if ( accountData != null )
                 {
                     var twoFactorCode = GenerateCode();
-                    // TODO: Generate 2FA and assign to user's session
+
+                    _session.SetAccountId(accountData.id);
+                    _session.SetAccountCode(twoFactorCode);
+
+                    // TODO: Set this in reset with 2FA
+                    _session.SetAccountToken("1234");
+
                     // TODO: Send 2FA+email to email server
                     return ReturnData.OKMessage("The code was sent to " + emailAddress);
                 }
@@ -125,9 +134,17 @@ namespace AccountServer.Repository
             return ReturnData.ErrorMessage( ReturnData.ReturnCode.NotValidEmail );
         }
 
-        public ReturnData ResetPasswordWithCode(string emailAddress, string code)
+        public ReturnData ResetPasswordWithCode(string code, string emailAddress)
         {
-            return ReturnData.OKMessage();
+            var sessionCode = _session.GetAccountCode();
+            if ( sessionCode != code || sessionCode == null )
+            {
+                return ReturnData.ErrorMessage( ReturnData.ReturnCode.SessionTimedOut);
+            }
+
+            var token = GenerateToken();
+            _session.SetAccountToken(token);
+            return ReturnData.OKMessage(token);
         }
 
         public ReturnData ResetPasswordWithToken(string token, string password)
@@ -137,8 +154,35 @@ namespace AccountServer.Repository
                 return ReturnData.ErrorMessage( ReturnData.ReturnCode.UserDoesNotExist);
             }
 
-            // Get user from session
-            // _repository.SetNewPassword()
+            var accountId = _session.GetAccountId();
+            if ( accountId == 0 )
+            {
+                return ReturnData.ErrorMessage( ReturnData.ReturnCode.SessionTimedOut);
+            }
+
+            var sessionToken = _session.GetAccountToken();
+            if ( sessionToken != token )
+            {
+                return ReturnData.ErrorMessage( ReturnData.ReturnCode.SessionTimedOut);
+            }
+
+            // Verify passwordrules
+            var passwordCode = VerifyPassword(password);
+            if ( passwordCode != AccountData.ErrorCode.OK )
+            {
+                return ReturnData.ErrorMessage( ReturnData.ReturnCode.UserDoesNotExist );
+            }
+
+            InternalAccountData accountData = _repository.GetAccountWithId(accountId);
+            if ( accountData == null )
+            {
+                return ReturnData.ErrorMessage( ReturnData.ReturnCode.SessionTimedOut);
+            }
+
+            var hashedPassword = generateHash(password, accountData.salt);
+
+            // Set new password
+            _repository.SetNewPassword(accountId, hashedPassword);
 
             return ReturnData.OKMessage();
         }
@@ -245,9 +289,14 @@ namespace AccountServer.Repository
             return salt; 
         }
 
+        private string GenerateToken()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
         private string CreateToken(uint userId)
         {
-            string token = Guid.NewGuid().ToString();
+            var token = GenerateToken();
             return _repository.SaveToken( userId, token );
         }
     }

@@ -47,6 +47,7 @@ namespace AccountServer
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +62,7 @@ namespace AccountServer
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseSession();
 
             //app.UseAuthorization();
 

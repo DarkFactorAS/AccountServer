@@ -7,12 +7,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 using DFCommonLib.Config;
 using DFCommonLib.Logger;
 using DFCommonLib.Utils;
 
 using AccountServer.Repository;
+using AccountServer.Provider;
 
 namespace AccountServer
 {
@@ -29,7 +31,7 @@ namespace AccountServer
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddTransient<IConfigurationHelper, ConfigurationHelper>();
+                services.AddTransient<IConfigurationHelper, ConfigurationHelper<Customer> >();
 
                 new DFServices(services)
                     .SetupLogger()
@@ -39,8 +41,10 @@ namespace AccountServer
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
+                services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
+                services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {

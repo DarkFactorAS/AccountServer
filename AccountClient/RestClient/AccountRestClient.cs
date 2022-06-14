@@ -14,7 +14,7 @@ namespace AccountClientModule.RestClient
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
         Task<WebAPIData> ResetPasswordWithEmail(string emailAddress);
         Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress);
-        Task<WebAPIData> ResetPasswordWithToken(string token, string emailAdddress);
+        Task<WebAPIData> ResetPasswordWithToken(string token, string password);
     }
 
     public class AccountRestClient : DFRestClient, IAccountRestClient
@@ -84,7 +84,7 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> ResetPasswordWithToken(string token, string password)
         {
-            var data = "{ \"token:\"" + token + "\", \"password\":\"" + password + "\" }";
+            var data = "{ \"token\":\"" + token + "\", \"password\":\"" + password + "\" }";
             var response = await PutJsonData(POST_RESETPASSWORD_WITH_TOKEN,"ResetPasswordWithToken",data);
             return response;
         }

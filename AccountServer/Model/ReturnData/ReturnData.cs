@@ -19,6 +19,7 @@ namespace AccountServer.Model
             PasswordInvalidCharacters,
             NicknameAlreadyExist,
             NotValidEmail,
+            SessionTimedOut
         }
 
         public ReturnCode code { get; set; }
@@ -40,7 +41,8 @@ namespace AccountServer.Model
         {
             var data = new ReturnData();
             data.code = errorCode;
-
+            data.message = Enum.GetName( typeof( ReturnCode ), errorCode );
+/*
             switch(errorCode)
             {
                 case ReturnCode.UserDoesNotExist:
@@ -76,8 +78,11 @@ namespace AccountServer.Model
                 case ReturnCode.NotValidEmail:
                     data.message = "NotValidEmail";
                     break;
+                case ReturnCode.SessionTimedOut:
+                    data.message = "SessionTimedOut";
+                    break;
             }
-
+*/
             return data;
         }
     }

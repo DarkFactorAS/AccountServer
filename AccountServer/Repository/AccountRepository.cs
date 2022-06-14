@@ -13,7 +13,9 @@ namespace AccountServer.Repository
         InternalAccountData GetAccountWithToken(string token);
         InternalAccountData GetAccountWithNickname(string nickname);
         InternalAccountData GetAccountWithEmail(string emailAdddress);
+        InternalAccountData GetAccountWithId(uint accountId);
         string SaveToken( uint userId, string token );
+        void SetNewPassword( uint userId, string password );
     }
 
     public class AccountRepository : IAccountRepository
@@ -56,6 +58,11 @@ namespace AccountServer.Repository
         public InternalAccountData GetAccountWithToken(string token)
         {
             var accountId = GetAccountIdFromToken(token);
+            return GetAccountWithId(accountId);
+        }
+
+        public InternalAccountData GetAccountWithId(uint accountId)
+        {
             return GetInternalAccount("id", "" + accountId);
         }
 
@@ -129,5 +136,15 @@ namespace AccountServer.Repository
             return token;
         }
 
+        public void SetNewPassword( uint accountId, string password )
+        {
+            var sql = @"update users set password = @password, updated = now() where id = @accountId";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@password", password);
+                cmd.AddParameter("@accountId", accountId);
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }
