@@ -245,11 +245,19 @@ namespace AccountServer.Provider
                 return AccountData.ErrorCode.ErrorInData;
             }
 
-            // Only A-Z and 0-9
-            if ( !Regex.IsMatch(password, @"^[a-zA-Z0-9]+$") )
+            if ( password.Length < 8 )
             {
                 return AccountData.ErrorCode.PasswordInvalidCharacters;
             }
+
+            if ( password.Length > 20 )
+            {
+                return AccountData.ErrorCode.PasswordInvalidCharacters;
+            }
+
+            // Special characters?
+            // Small and large numbers
+            // Characters and numbers?
 
             return AccountData.ErrorCode.OK;
         }
