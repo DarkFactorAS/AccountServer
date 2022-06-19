@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using AccountServer.Model;
 using AccountServer.Repository;
 using DFCommonLib.Utils;
+using DFCommonLib.Logger;
 
 namespace AccountServer.Provider
 {
@@ -23,11 +24,13 @@ namespace AccountServer.Provider
     {
         IAccountRepository _repository;
         IAccountSessionProvider _session;
+        IDFLogger<AccountProvider> _logger;
 
-        public AccountProvider(IAccountRepository repository, IAccountSessionProvider session)
+        public AccountProvider(IAccountRepository repository, IAccountSessionProvider session, IDFLogger<AccountProvider> logger )
         {
             _repository = repository;
             _session = session;
+            _logger = logger;
         }
 
         public AccountData CreateAccount(CreateAccountData createAccountData)
@@ -122,11 +125,9 @@ namespace AccountServer.Provider
                     _session.SetAccountId(accountData.id);
                     _session.SetAccountCode(twoFactorCode);
 
-                    // TODO: Set this in reset with 2FA
-                    _session.SetAccountToken("1234");
-
                     // TODO: Send 2FA+email to email server
-                    return ReturnData.OKMessage("The code was sent to " + emailAddress);
+                    _logger.LogInfo("Generated code " + twoFactorCode + " for user : " + emailAddress);
+                    return ReturnData.OKMessage();
                 }
                 return ReturnData.OKMessage("Unknown user with email" + emailAddress);
             }
@@ -189,7 +190,9 @@ namespace AccountServer.Provider
 
         private string GenerateCode()
         {
-            return "1234";
+            Random rnd = new Random();
+            int randomNumber  = rnd.Next(111111, 999999);
+            return "" + randomNumber;
         }
 
         private AccountData.ErrorCode VerifyNickname( string nickname )
