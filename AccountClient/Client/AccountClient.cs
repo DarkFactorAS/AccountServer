@@ -16,9 +16,9 @@ namespace AccountClientModule.Client
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
-        WebAPIData ResetPasswordWithEmail(string emailAddress);
-        WebAPIData ResetPasswordWithCode(string code, string emailAdddress );
-        WebAPIData ResetPasswordWithToken(string token, string password );
+        ReturnData ResetPasswordWithEmail(string emailAddress);
+        ReturnData ResetPasswordWithCode(string code, string emailAdddress );
+        ReturnData ResetPasswordWithToken(string token, string password );
     }
 
     public class AccountClient : IAccountClient
@@ -59,22 +59,22 @@ namespace AccountClientModule.Client
             return ConvertFromRestData( result );
         }
 
-        public WebAPIData ResetPasswordWithEmail(string emailAddress)
+        public ReturnData ResetPasswordWithEmail(string emailAddress)
         {
             var result = Task.Run(async() => await _restClient.ResetPasswordWithEmail(emailAddress)).Result;
-            return result;
+            return ConvertFromReturnData( result );
         }
 
-        public WebAPIData ResetPasswordWithCode(string code, string emailAddress)
+        public ReturnData ResetPasswordWithCode(string code, string emailAddress)
         {
             var result = Task.Run(async() => await _restClient.ResetPasswordWithCode(code, emailAddress)).Result;
-            return result;
+            return ConvertFromReturnData( result );
         }
 
-        public WebAPIData ResetPasswordWithToken(string token, string password)
+        public ReturnData ResetPasswordWithToken(string token, string password)
         {
             var result = Task.Run(async() => await _restClient.ResetPasswordWithToken(token,password)).Result;
-            return result;
+            return ConvertFromReturnData( result );
         }
 
         private AccountData ConvertFromRestData(WebAPIData apiData)
@@ -93,6 +93,21 @@ namespace AccountClientModule.Client
             }
         }
 
+        private ReturnData ConvertFromReturnData(WebAPIData apiData)
+        {
+            if ( apiData.errorCode == 0 )
+            {
+                var returnData = JsonConvert.DeserializeObject<ReturnData>(apiData.message);
+                return returnData;
+            }
+            else
+            {
+                var returnData = new ReturnData();
+                returnData.code = apiData.errorCode;
+                returnData.message = apiData.message;
+                return returnData;
+            }
+        }
 
         public static void SetupService( IServiceCollection services )
         {

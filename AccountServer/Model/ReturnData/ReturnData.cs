@@ -29,7 +29,7 @@ namespace AccountServer.Model
         {
         }
 
-        public static ReturnData OKMessage( string message = "" )
+        public static ReturnData OKMessage( string message = "OK" )
         {
             var data = new ReturnData();
             data.code = ReturnCode.OK;
