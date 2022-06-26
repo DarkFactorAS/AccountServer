@@ -24,12 +24,17 @@ namespace AccountServer.Provider
     {
         IAccountRepository _repository;
         IAccountSessionProvider _session;
+        IMailClient _mailClient;
         IDFLogger<AccountProvider> _logger;
 
-        public AccountProvider(IAccountRepository repository, IAccountSessionProvider session, IDFLogger<AccountProvider> logger )
+        public AccountProvider( IAccountRepository repository, 
+                                IAccountSessionProvider session, 
+                                IMailClient mailClient,
+                                IDFLogger<AccountProvider> logger )
         {
             _repository = repository;
             _session = session;
+            _mailClient = mailClient;
             _logger = logger;
         }
 
@@ -117,7 +122,7 @@ namespace AccountServer.Provider
             var vEmail = VerifyEmail(emailAddress);
             if ( !string.IsNullOrEmpty(vEmail) )
             {
-                var accountData = _repository.GetAccountWithEmail(emailAddress);
+                AccountData accountData = _repository.GetAccountWithEmail(emailAddress);
                 if ( accountData != null )
                 {
                     var twoFactorCode = GenerateCode();
@@ -125,8 +130,21 @@ namespace AccountServer.Provider
                     _session.SetAccountId(accountData.id);
                     _session.SetAccountCode(twoFactorCode);
 
-                    // TODO: Send 2FA+email to email server
-                    _logger.LogInfo("Generated code " + twoFactorCode + " for user : " + emailAddress);
+                    var message = "Generated code " + twoFactorCode + " for user : " + emailAddress;
+
+                    _logger.LogInfo(message);
+
+                    EmailMessage messasge = new EmailMessage()
+                    {
+                        Subject = "2FA Code",
+                        Content = message;
+                    }
+
+                    message.AddSender("DarkFactor","2FA@Darkfactor.Net");
+                    message.AddReceiver(accountData.nickname, accountData.email);
+
+                    _mailClient.SendEmail(message)
+
                     return ReturnData.OKMessage();
                 }
                 return ReturnData.OKMessage("Unknown user with email" + emailAddress);
