@@ -7,6 +7,8 @@ using AccountServer.Model;
 using AccountServer.Repository;
 using DFCommonLib.Utils;
 using DFCommonLib.Logger;
+using MailClientModule.Client;
+using MailClientModule.Model;
 
 namespace AccountServer.Provider
 {
@@ -122,7 +124,7 @@ namespace AccountServer.Provider
             var vEmail = VerifyEmail(emailAddress);
             if ( !string.IsNullOrEmpty(vEmail) )
             {
-                AccountData accountData = _repository.GetAccountWithEmail(emailAddress);
+                InternalAccountData accountData = _repository.GetAccountWithEmail(emailAddress);
                 if ( accountData != null )
                 {
                     var twoFactorCode = GenerateCode();
@@ -130,20 +132,20 @@ namespace AccountServer.Provider
                     _session.SetAccountId(accountData.id);
                     _session.SetAccountCode(twoFactorCode);
 
-                    var message = "Generated code " + twoFactorCode + " for user : " + emailAddress;
+                    var content = "Generated code " + twoFactorCode + " for user : " + emailAddress;
 
-                    _logger.LogInfo(message);
+                    _logger.LogInfo(content);
 
-                    EmailMessage messasge = new EmailMessage()
+                    EmailMessage message = new EmailMessage()
                     {
                         Subject = "2FA Code",
-                        Content = message;
-                    }
+                        Content = content
+                    };
 
                     message.AddSender("DarkFactor","2FA@Darkfactor.Net");
                     message.AddReceiver(accountData.nickname, accountData.email);
 
-                    _mailClient.SendEmail(message)
+                    _mailClient.SendEmail(message);
 
                     return ReturnData.OKMessage();
                 }

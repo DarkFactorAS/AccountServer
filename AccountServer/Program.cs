@@ -15,6 +15,7 @@ using DFCommonLib.Utils;
 
 using AccountServer.Repository;
 using AccountServer.Provider;
+using MailClientModule.Client;
 
 namespace AccountServer
 {
@@ -45,6 +46,7 @@ namespace AccountServer
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                MailClient.SetupService(services);
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
