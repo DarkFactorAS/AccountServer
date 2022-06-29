@@ -3,6 +3,7 @@
     "Customers": [
       {
         "Id": "Account",
+        "MailServer" : "http://host.docker.internal:5700",
         "DatabaseConnections": [
           {
             "ConnectionType": "LOCAL",

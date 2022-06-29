@@ -3,6 +3,7 @@
     "Customers": [
       {
         "Id": "Bots",
+        "MailServer" : "http://localhost:5700",
         "DatabaseConnections": [
           {
             "ConnectionType": "LOCAL",

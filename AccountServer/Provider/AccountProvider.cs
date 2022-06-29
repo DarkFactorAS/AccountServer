@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using AccountServer.Model;
-using AccountServer.Repository;
 using DFCommonLib.Utils;
 using DFCommonLib.Logger;
-using MailClientModule.Client;
-using MailClientModule.Model;
+using DFCommonLib.Config;
+
+using DarkFactor.MailClient;
+
+using AccountServer.Model;
+using AccountServer.Repository;
 
 namespace AccountServer.Provider
 {
@@ -32,12 +34,19 @@ namespace AccountServer.Provider
         public AccountProvider( IAccountRepository repository, 
                                 IAccountSessionProvider session, 
                                 IMailClient mailClient,
+                                IConfigurationHelper configuration,
                                 IDFLogger<AccountProvider> logger )
         {
             _repository = repository;
             _session = session;
             _mailClient = mailClient;
             _logger = logger;
+
+            var customer = configuration.GetFirstCustomer() as AccountCustomer;
+            if ( customer != null )
+            {
+                _mailClient.SetEndpoint(customer.MailServer);
+            }
         }
 
         public AccountData CreateAccount(CreateAccountData createAccountData)

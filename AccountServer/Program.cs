@@ -9,13 +9,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
+using AccountServer.Repository;
+using AccountServer.Provider;
+using AccountServer.Model;
+
 using DFCommonLib.Config;
 using DFCommonLib.Logger;
 using DFCommonLib.Utils;
 
-using AccountServer.Repository;
-using AccountServer.Provider;
-using MailClientModule.Client;
+using DarkFactor.MailClient;
 
 namespace AccountServer
 {
@@ -32,7 +34,7 @@ namespace AccountServer
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddTransient<IConfigurationHelper, ConfigurationHelper<Customer> >();
+                services.AddTransient<IConfigurationHelper, ConfigurationHelper<AccountCustomer> >();
 
                 new DFServices(services)
                     .SetupLogger()
