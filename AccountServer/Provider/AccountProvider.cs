@@ -30,6 +30,7 @@ namespace AccountServer.Provider
         IAccountSessionProvider _session;
         IMailClient _mailClient;
         IDFLogger<AccountProvider> _logger;
+        AccountCustomer _accountCustomer;
 
         public AccountProvider( IAccountRepository repository, 
                                 IAccountSessionProvider session, 
@@ -42,10 +43,10 @@ namespace AccountServer.Provider
             _mailClient = mailClient;
             _logger = logger;
 
-            var customer = configuration.GetFirstCustomer() as AccountCustomer;
-            if ( customer != null )
+            _accountCustomer = configuration.GetFirstCustomer() as AccountCustomer;
+            if ( _accountCustomer != null )
             {
-                _mailClient.SetEndpoint(customer.MailServer);
+                _mailClient.SetEndpoint(_accountCustomer.mailServer.ServerAddress);
             }
         }
 
@@ -137,21 +138,22 @@ namespace AccountServer.Provider
                 if ( accountData != null )
                 {
                     var twoFactorCode = GenerateCode();
+                    var mailServerConfig = _accountCustomer.mailServer;
 
                     _session.SetAccountId(accountData.id);
                     _session.SetAccountCode(twoFactorCode);
 
-                    var content = "Generated code " + twoFactorCode + " for user : " + emailAddress;
+                    var content = String.Format(mailServerConfig.EmailBody, twoFactorCode, emailAddress);
 
                     _logger.LogInfo(content);
 
                     EmailMessage message = new EmailMessage()
                     {
-                        Subject = "2FA Code",
+                        Subject = mailServerConfig.EmailSubject,
                         Content = content
                     };
 
-                    message.AddSender("DarkFactor","2FA@Darkfactor.Net");
+                    message.AddSender(mailServerConfig.SenderName,mailServerConfig.SenderEmail);
                     message.AddReceiver(accountData.nickname, accountData.email);
 
                     _mailClient.SendEmail(message);

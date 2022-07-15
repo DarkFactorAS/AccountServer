@@ -3,7 +3,14 @@
     "Customers": [
       {
         "Id": "Account",
-        "MailServer" : "http://host.docker.internal:5700",
+        "MailServer" : 
+        {
+          "ServerAddress" : "http://host.docker.internal:5700",
+          "SenderName" : "DarkFactor",
+          "SenderEmail" : "2FA@Darkfactor.Net",
+          "EmailSubject" : "2FA Code",
+          "EmailBody" : "Generated code {0} for user : {1}"
+        },
         "DatabaseConnections": [
           {
             "ConnectionType": "LOCAL",
