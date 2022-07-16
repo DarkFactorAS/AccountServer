@@ -5,9 +5,9 @@
         "Id": "Bots",
         "MailServer" : 
         {
-          "ServerAddress" : "http://localhost:5700",
+          "ServerAddress" : "https://localhost:5700",
           "SenderName" : "DarkFactor",
-          "SenderEmail" : "2FA@Darkfactor.Net",
+          "SenderEmail" : "df@altiboxmail.no",
           "EmailSubject" : "2FA Code",
           "EmailBody" : "Generated code {0} for user : {1}"
         },
