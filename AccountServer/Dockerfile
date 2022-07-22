@@ -17,6 +17,10 @@ COPY ./ ./
 RUN dotnet restore AccountServer.csproj
 RUN dotnet publish AccountServer.csproj -c Release -o out
 
+# Create self signed sertificate
+RUN dotnet dev-certs https -ep /app/out/certificate.pfx -p smurfepoliz
+RUN dotnet dev-certs https --trust
+
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
