@@ -143,7 +143,7 @@ namespace AccountServer.Provider
                     _session.SetAccountId(accountData.id);
                     _session.SetAccountCode(twoFactorCode);
 
-                    var content = String.Format(mailServerConfig.EmailBody, twoFactorCode, emailAddress);
+                    var content = String.Format(mailServerConfig.EmailBody, twoFactorCode, accountData.username);
 
                     _logger.LogInfo(content);
 
