@@ -19,7 +19,8 @@ namespace AccountServer.Model
             PasswordInvalidCharacters,
             NicknameAlreadyExist,
             NotValidEmail,
-            SessionTimedOut
+            SessionTimedOut,
+            FailWithMailServer
         }
 
         public ReturnCode code { get; set; }

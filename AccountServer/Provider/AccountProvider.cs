@@ -156,9 +156,13 @@ namespace AccountServer.Provider
                     message.AddSender(mailServerConfig.SenderName,mailServerConfig.SenderEmail);
                     message.AddReceiver(accountData.nickname, accountData.email);
 
-                    _mailClient.SendEmail(message);
-
-                    return ReturnData.OKMessage();
+                    var webAPIData = _mailClient.SendEmail(message);
+                    if ( webAPIData.errorCode == WebAPIData.CODE_OK )
+                    {
+                        return ReturnData.OKMessage();
+                    }
+                    var msg = String.Format("{0}:{1}", webAPIData.code, webAPIData.message);
+                    return new ReturnData(ReturnData.FailWithMailServer, msg);
                 }
                 return ReturnData.OKMessage("Unknown user with email" + emailAddress);
             }
