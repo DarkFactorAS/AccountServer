@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using DFCommonLib.Utils;
 using DFCommonLib.Logger;
 using DFCommonLib.Config;
+using DFCommonLib.HttpApi;
 
 using DarkFactor.MailClient;
 
@@ -156,13 +157,13 @@ namespace AccountServer.Provider
                     message.AddSender(mailServerConfig.SenderName,mailServerConfig.SenderEmail);
                     message.AddReceiver(accountData.nickname, accountData.email);
 
-                    var webAPIData = _mailClient.SendEmail(message);
+                    var webAPIData = _mailClient.SendEmail(message).Result;
                     if ( webAPIData.errorCode == WebAPIData.CODE_OK )
                     {
                         return ReturnData.OKMessage();
                     }
-                    var msg = String.Format("{0}:{1}", webAPIData.code, webAPIData.message);
-                    return new ReturnData(ReturnData.FailWithMailServer, msg);
+                    var msg = String.Format("{0}:{1}", webAPIData.errorCode, webAPIData.message);
+                    return new ReturnData(ReturnData.ReturnCode.FailWithMailServer, msg);
                 }
                 return ReturnData.OKMessage("Unknown user with email" + emailAddress);
             }

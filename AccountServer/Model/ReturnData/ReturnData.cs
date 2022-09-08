@@ -30,12 +30,21 @@ namespace AccountServer.Model
         {
         }
 
+        public ReturnData(ReturnCode code, string message)
+        {
+            this.code = code;
+            this.message = message;
+        }
+
+
         public static ReturnData OKMessage( string message = "OK" )
         {
-            var data = new ReturnData();
-            data.code = ReturnCode.OK;
-            data.message = message;
-            return data;
+            return new ReturnData(ReturnCode.OK, message);
+        }
+
+        public static ReturnData ErrorMessage( ReturnCode errorCode, string message )
+        {
+            return new ReturnData(errorCode, message);
         }
 
         public static ReturnData ErrorMessage( ReturnCode errorCode )
@@ -43,47 +52,6 @@ namespace AccountServer.Model
             var data = new ReturnData();
             data.code = errorCode;
             data.message = Enum.GetName( typeof( ReturnCode ), errorCode );
-/*
-            switch(errorCode)
-            {
-                case ReturnCode.UserDoesNotExist:
-                    data.message = "UserDoesNotExist";
-                    break;
-                case ReturnCode.UserAlreadyExist:
-                    data.message = "UserAlreadyExist";
-                    break;
-                case ReturnCode.ErrorInData:
-                    data.message = "ErrorInData";
-                    break;
-                case ReturnCode.TokenLoginError:
-                    data.message = "TokenLoginError";
-                    break;
-                case ReturnCode.WrongPassword:
-                    data.message = "WrongPassword";
-                    break;
-                case ReturnCode.InvalidUsername:
-                    data.message = "InvalidUsername";
-                    break;
-                case ReturnCode.UsernameInvalidCharacters:
-                    data.message = "UsernameInvalidCharacters";
-                    break;
-                case ReturnCode.NicknameInvalidCharacters:
-                    data.message = "NicknameInvalidCharacters";
-                    break;
-                case ReturnCode.PasswordInvalidCharacters:
-                    data.message = "PasswordInvalidCharacters";
-                    break;
-                case ReturnCode.NicknameAlreadyExist:
-                    data.message = "NicknameAlreadyExist";
-                    break;
-                case ReturnCode.NotValidEmail:
-                    data.message = "NotValidEmail";
-                    break;
-                case ReturnCode.SessionTimedOut:
-                    data.message = "SessionTimedOut";
-                    break;
-            }
-*/
             return data;
         }
     }
