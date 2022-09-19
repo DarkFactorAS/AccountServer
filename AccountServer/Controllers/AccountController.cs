@@ -26,7 +26,7 @@ namespace AccountServer.Controllers
         [Route("PingServer")]
         public string PingServer()
         {
-            return "PONG";
+            return _provider.PingServer();
         }
 
         [HttpPut]

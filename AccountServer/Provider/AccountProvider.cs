@@ -17,6 +17,7 @@ namespace AccountServer.Provider
 {
     public interface IAccountProvider
     {
+        string PingServer();
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
@@ -49,6 +50,12 @@ namespace AccountServer.Provider
             {
                 _mailClient.SetEndpoint(_accountCustomer.mailServer.ServerAddress);
             }
+        }
+
+        public string PingServer()
+        {
+            _logger.LogInfo("PING-PONG");
+            return "PONG";
         }
 
         public AccountData CreateAccount(CreateAccountData createAccountData)

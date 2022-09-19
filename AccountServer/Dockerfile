@@ -1,4 +1,4 @@
-# Use .Net Core 3.1 image
+# Use .Net Core 5 image
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /app
 
