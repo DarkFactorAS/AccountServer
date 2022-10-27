@@ -44,37 +44,37 @@ namespace AccountServer.Model
             switch(errorCode)
             {
                 case ErrorCode.UserDoesNotExist:
-                    data.errorMessage = "UserDoesNotExist";
+                    data.errorMessage = "User does not exist";
                     break;
                 case ErrorCode.UserAlreadyExist:
-                    data.errorMessage = "UserAlreadyExist";
+                    data.errorMessage = "User already exist";
                     break;
                 case ErrorCode.ErrorInData:
-                    data.errorMessage = "ErrorInData";
+                    data.errorMessage = "Error in data";
                     break;
                 case ErrorCode.TokenLoginError:
-                    data.errorMessage = "TokenLoginError";
+                    data.errorMessage = "Token Loginerror";
                     break;
                 case ErrorCode.WrongPassword:
-                    data.errorMessage = "WrongPassword";
+                    data.errorMessage = "Wrong username/password";
                     break;
                 case ErrorCode.InvalidUsername:
-                    data.errorMessage = "InvalidUsername";
+                    data.errorMessage = "Invalid Username";
                     break;
                 case ErrorCode.UsernameInvalidCharacters:
-                    data.errorMessage = "UsernameInvalidCharacters";
-                    break;
+                    data.errorMessage = "Username has invalid characters";
+                    break;                                                                      
                 case ErrorCode.NicknameInvalidCharacters:
-                    data.errorMessage = "NicknameInvalidCharacters";
+                    data.errorMessage = "Nickname has invalid characters";
                     break;
                 case ErrorCode.PasswordInvalidCharacters:
-                    data.errorMessage = "PasswordInvalidCharacters";
+                    data.errorMessage = "Password has invalid characters";
                     break;
                 case ErrorCode.NicknameAlreadyExist:
-                    data.errorMessage = "NicknameAlreadyExist";
+                    data.errorMessage = "Nickname already exist";
                     break;
                 case ErrorCode.NotValidEmail:
-                    data.errorMessage = "NotValidEmail";
+                    data.errorMessage = "Not valid email";
                     break;
             }
 
