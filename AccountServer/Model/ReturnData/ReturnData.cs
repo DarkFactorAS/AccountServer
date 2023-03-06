@@ -58,19 +58,19 @@ namespace AccountServer.Model
         {
             switch(code)
             {
-                case UserDoesNotExist: return "User does not exist";
-                case UserAlreadyExist: return "User already exist";
-                case ErrorInData: return "Error in the data";
-                case TokenLoginError: return "Token login error";
-                case WrongPassword: return "Wrong password";
-                case InvalidUsername: return "Wrong password";
-                case UsernameInvalidCharacters: return "Username contaisn valid characters";
-                case NicknameInvalidCharacters: return "Nickname contains valid characters";
-                case PasswordInvalidCharacters: return "Password contains invalid characters. User A-Z, 0-9";
-                case NicknameAlreadyExist: return "Nickname already exist";
-                case NotValidEmail: return "Not a valid email";
-                case SessionTimedOut: return "Code verification timed out. Please try again";
-                case FailWithMailServer: return "Could not send code";
+                case ReturnCode.UserDoesNotExist: return "User does not exist";
+                case ReturnCode.UserAlreadyExist: return "User already exist";
+                case ReturnCode.ErrorInData: return "Error in the data";
+                case ReturnCode.TokenLoginError: return "Token login error";
+                case ReturnCode.WrongPassword: return "Wrong password";
+                case ReturnCode.InvalidUsername: return "Wrong password";
+                case ReturnCode.UsernameInvalidCharacters: return "Username contaisn valid characters";
+                case ReturnCode.NicknameInvalidCharacters: return "Nickname contains valid characters";
+                case ReturnCode.PasswordInvalidCharacters: return "Password contains invalid characters. User A-Z, 0-9";
+                case ReturnCode.NicknameAlreadyExist: return "Nickname already exist";
+                case ReturnCode.NotValidEmail: return "Not a valid email";
+                case ReturnCode.SessionTimedOut: return "Code verification timed out. Please try again";
+                case ReturnCode.FailWithMailServer: return "Could not send code";
 
                 default:
                     return Enum.GetName( typeof( ReturnCode ), code );
