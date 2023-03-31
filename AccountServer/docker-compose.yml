@@ -2,7 +2,7 @@ version: '3.6'
 services:
 
   accountdb:
-    image: mariadb
+    image: mariadb:10.9
     networks: 
       - net_account_backend
     container_name: accountserver_database
