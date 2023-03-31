@@ -35,6 +35,8 @@ namespace AccountServer
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
+                DFServices.Create(services);
+
                 services.AddTransient<IConfigurationHelper, ConfigurationHelper<AccountCustomer> >();
 
                 new DFServices(services)
@@ -45,6 +47,7 @@ namespace AccountServer
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
+                services.AddTransient<IStartupDatabasePatcher, StartupDatabasePatcher>();
                 services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
