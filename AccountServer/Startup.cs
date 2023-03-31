@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using DFCommonLib.Utils;
 using DFCommonLib.Logger;
+using AccountServer.Repository;
 
 namespace AccountServer
 {
@@ -21,6 +22,10 @@ namespace AccountServer
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            // Run database script
+            IStartupDatabasePatcher startupRepository = DFServices.GetService<IStartupDatabasePatcher>();
+            startupRepository.RunPatcher();
 
             IDFLogger<Startup> logger = new DFLogger<Startup>();
             logger.Startup(Program.AppName, Program.AppVersion);

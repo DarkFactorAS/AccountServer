@@ -1,5 +1,5 @@
 # Use .Net Core 5 image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
 
 # Add nuget repository
@@ -24,7 +24,7 @@ RUN dotnet dev-certs https -ep /app/out/certificate.pfx -p smurfepoliz
 RUN dotnet dev-certs https --trust
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "AccountServer.dll"]
