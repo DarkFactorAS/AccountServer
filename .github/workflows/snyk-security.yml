@@ -20,7 +20,6 @@ name: Snyk Security
 
 on:
   workflow_dispatch:
-    branches: ["master" ]
   push:
     branches: ["master" ]
   pull_request:
@@ -38,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Snyk CLI to check for security issues
         # Snyk can be used to break the build when it detects security issues.
         # In this case we want to upload the SAST issues to GitHub Code Scanning
@@ -53,10 +53,25 @@ jobs:
           # This is where you will need to introduce the Snyk API token created with your Snyk account
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+      # Setup C# .Net
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 7.0.x
+
+      # Restore
+      - name: Restore dependencies
+        run: dotnet restore ${{ vars.SOLUTION }}
+
+      # Build solution
+      - name: Build
+        run: dotnet build ${{ variable.SOLUTION }} --no-restore
+
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --sarif > snyk-code.sarif # || true
+        run: snyk code test --file=${{ variable.SOLUTION }} --sarif > snyk-code.sarif # || true
+        # --file=./src/web-game/Globomantics.sln --severity-threshold=medium
 
         # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
       - name: Snyk Open Source monitor
@@ -68,11 +83,12 @@ jobs:
         run: snyk iac test --report # || true
 
         # Build the docker image for testing
-      - name: Build a Docker image
-        run: docker build -t your/image-to-test .
+      #- name: Build a Docker image
+      #  run: docker build -t your/image-to-test .
+
         # Runs Snyk Container (Container and SCA) analysis and uploads result to Snyk.
-      - name: Snyk Container monitor
-        run: snyk container monitor your/image-to-test --file=Dockerfile
+      #- name: Snyk Container monitor
+      #  run: snyk container monitor your/image-to-test --file=Dockerfile
 
         # Push the Snyk Code results into GitHub Code Scanning tab
       - name: Upload result to GitHub Code Scanning
