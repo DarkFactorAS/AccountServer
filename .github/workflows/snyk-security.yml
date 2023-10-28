@@ -20,8 +20,10 @@ name: Snyk Security
 
 on:
   workflow_dispatch:
+
   push:
-    branches: ["master" ]
+    branches: ["master"]
+    
   pull_request:
     branches: ["master"]
 
