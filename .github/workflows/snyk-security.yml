@@ -23,7 +23,7 @@ on:
 
   push:
     branches: ["master"]
-    
+
   pull_request:
     branches: ["master"]
 
@@ -67,12 +67,12 @@ jobs:
 
       # Build solution
       - name: Build
-        run: dotnet build ${{ variable.SOLUTION }} --no-restore
+        run: dotnet build ${{ vars.SOLUTION }} --no-restore
 
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --file=${{ variable.SOLUTION }} --sarif > snyk-code.sarif # || true
+        run: snyk code test --file=${{ vars.SOLUTION }} --sarif > snyk-code.sarif # || true
         # --file=./src/web-game/Globomantics.sln --severity-threshold=medium
 
         # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
