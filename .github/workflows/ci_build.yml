@@ -21,10 +21,10 @@ jobs:
         dotnet-version: 7.0.x
     - name: AccountClient - Restore dependencies
       run: 
-        dotnet restore AccountServer/AccountClient.csproj
+        dotnet restore AccountClient/AccountClient.csproj
     - name: AccountClient - Build
       run: 
-        dotnet build AccountServer/AccountClient.csproj --no-restore --configuration Release
+        dotnet build AccountClient/AccountClient.csproj --no-restore --configuration Release
     - name: AccountServer - Restore dependencies
       run: 
         dotnet restore AccountServer/AccountServer.csproj
