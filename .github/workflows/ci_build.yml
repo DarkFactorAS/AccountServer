@@ -19,15 +19,19 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
+
+    # Build Account Client
+    - name: Add GitHub nuget repository
+      run: dotnet nuget update source --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/DarkFactorAS/index.json" --configfile "AccountClient/NuGet.config"
     - name: AccountClient - Restore dependencies
-      run: 
-        dotnet restore AccountClient/AccountClient.csproj
+      run: dotnet restore AccountClient/AccountClient.csproj
     - name: AccountClient - Build
-      run: 
-        dotnet build AccountClient/AccountClient.csproj --no-restore --configuration Release
+      run: dotnet build AccountClient/AccountClient.csproj --no-restore --configuration Release
+
+    # Build Account Server
+    - name: Add GitHub nuget repository
+      run: dotnet nuget update source --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/DarkFactorAS/index.json" --configfile "AccountServer/NuGet.config"
     - name: AccountServer - Restore dependencies
-      run: 
-        dotnet restore AccountServer/AccountServer.csproj
+      run: dotnet restore AccountServer/AccountServer.csproj
     - name: AccountServer - Build
-      run: 
-        dotnet build AccountServer/AccountServer.csproj --no-restore --configuration Release
+      run: dotnet build AccountServer/AccountServer.csproj --no-restore --configuration Release
