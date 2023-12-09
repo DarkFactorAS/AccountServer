@@ -1,11 +1,9 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: Account Client Deploy
+name: Account Client - Deploy
 
 on:
-  push:
-
   workflow_dispatch:
 
 jobs:
@@ -22,7 +20,7 @@ jobs:
 
     # Build Account Client
     - name: Add GitHub nuget repository
-      run: dotnet nuget update source github --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountClient/NuGet.config"
+      run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountClient/NuGet.config"
     - name: AccountClient - Restore dependencies
       run: dotnet restore AccountClient/AccountClient.csproj
     - name: AccountClient - Build
@@ -31,8 +29,6 @@ jobs:
     # Deploy Account Client
     - name: Pack Nuget
       run: dotnet pack --configuration Debug
-    - name: Add GitHub nuget repository
-      run: dotnet nuget update source github --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountClient/NuGet.config"
     - name: Deploy
       run: 
         dotnet nuget push "AccountClient/bin/Debug/*.nupkg"  --api-key ${{ secrets.NUGET_TOKEN }} --source "github" --skip-duplicate
