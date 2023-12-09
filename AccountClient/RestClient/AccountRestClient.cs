@@ -24,7 +24,6 @@ namespace AccountClientModule.RestClient
         private const int POST_RESETPASSWORD_WITH_EMAIL = 4;
         private const int POST_RESETPASSWORD_WITH_CODE = 5;
         private const int POST_RESETPASSWORD_WITH_TOKEN = 6;
-        private string _endpoint;
 
         public AccountRestClient(IDFLogger<DFRestClient> logger ) : base(logger)
         {
