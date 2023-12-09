@@ -24,7 +24,7 @@ jobs:
 
     # Build Account Client
     - name: Add GitHub nuget repository
-      run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text"
+      run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text
     - name: AccountClient - Restore dependencies
       run: dotnet restore AccountClient.csproj
     - name: AccountClient - Build
