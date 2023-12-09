@@ -8,7 +8,6 @@ namespace AccountClientModule.RestClient
 {
     public interface IAccountRestClient : IDFRestClient
     {
-        void SetEndpoint(string endpoint);
         Task<WebAPIData> LoginAccount(LoginData accountData);
         Task<WebAPIData> LoginToken(LoginTokenData accountTokenData);
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
@@ -43,11 +42,6 @@ namespace AccountClientModule.RestClient
         override protected string GetModule()
         {
             return "Account";
-        }
-
-        public void SetEndpoint(string endpoint)
-        {
-            _endpoint = endpoint;
         }
 
         public async Task<WebAPIData> LoginAccount(LoginData loginData)
