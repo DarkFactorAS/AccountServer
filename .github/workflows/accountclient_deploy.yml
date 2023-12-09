@@ -31,5 +31,5 @@ jobs:
       run: dotnet pack AccountClient/AccountClient.csproj --configuration Debug
     - name: Deploy
       run: 
-        dotnet nuget push "AccountClient/bin/Debug/*.nupkg"  --api-key ${{ secrets.NUGET_TOKEN }} --source "github" --skip-duplicate
+        dotnet nuget push "AccountClient/bin/Debug/*.nupkg"  --api-key ${{ secrets.NUGET_TOKEN }} --source "DarkFactorAS" --skip-duplicate
   
