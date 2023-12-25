@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AccountCommon.SharedModel;
 using AccountServer.Model;
 using DFCommonLib.DataAccess;
 using DFCommonLib.Logger;

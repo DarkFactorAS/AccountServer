@@ -1,5 +1,7 @@
+using System;
+using System.Collections.Generic;
 
-namespace AccountClientModule.Model
+namespace AccountCommon.SharedModel
 {
     public class LoginData
     {
@@ -10,4 +12,6 @@ namespace AccountClientModule.Model
         {
         }
     }
+
+
 }

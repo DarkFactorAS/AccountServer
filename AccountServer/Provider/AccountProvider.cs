@@ -10,6 +10,7 @@ using DFCommonLib.HttpApi;
 
 using DarkFactor.MailClient;
 
+using AccountCommon.SharedModel;
 using AccountServer.Model;
 using AccountServer.Repository;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AccountServer.Model
+namespace AccountCommon.SharedModel
 {
     public class AccountData
     {
@@ -21,10 +21,10 @@ namespace AccountServer.Model
             NotValidEmail,
         }
 
-        public string nickname { get; set; }
-        public string token { get; set; }
+        public string? nickname { get; set; }
+        public string? token { get; set; }
         public ErrorCode errorCode { get; set; }
-        public string errorMessage { get; set; }
+        public string? errorMessage { get; set; }
 
         public AccountData()
         {

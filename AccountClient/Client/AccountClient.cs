@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DFCommonLib.HttpApi;
 using Newtonsoft.Json;
 
-using AccountClientModule.Model;
+using AccountCommon.SharedModel;
 using AccountClientModule.RestClient;
 
 namespace AccountClientModule.Client
@@ -103,7 +103,7 @@ namespace AccountClientModule.Client
             else
             {
                 var returnData = new ReturnData();
-                returnData.code = apiData.errorCode;
+                returnData.code = (ReturnData.ReturnCode) apiData.errorCode;
                 returnData.message = apiData.message;
                 return returnData;
             }

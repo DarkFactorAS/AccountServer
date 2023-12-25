@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AccountServer.Model
+namespace AccountCommon.SharedModel
 {
     public class ReturnData
     {
@@ -24,7 +24,7 @@ namespace AccountServer.Model
         }
 
         public ReturnCode code { get; set; }
-        public string message { get; set; }
+        public string? message { get; set; }
 
         public ReturnData()
         {
@@ -54,7 +54,7 @@ namespace AccountServer.Model
             return data;
         }
 
-        public static String GetMessageFromId( ReturnCode code )
+        public static string? GetMessageFromId( ReturnCode code )
         {
             switch(code)
             {

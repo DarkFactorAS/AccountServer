@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AccountServer.Model
+namespace AccountCommon.SharedModel
 {
     public class ResetPasswordDataCode
     {

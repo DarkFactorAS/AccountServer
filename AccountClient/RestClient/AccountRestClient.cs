@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using DFCommonLib.HttpApi;
 using DFCommonLib.Logger;
-using AccountClientModule.Model;
+using AccountCommon.SharedModel;
 
 namespace AccountClientModule.RestClient
 {
