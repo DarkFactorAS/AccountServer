@@ -32,7 +32,7 @@ jobs:
 
     # Deploy Account Client
     - name: Pack Nuget
-      run: dotnet pack AccountClient.csproj --configuration Debug
+      run: dotnet pack AccountClient.csproj --configuration Debug -p:NuspecFile=./AccountClient.nuspec
     - name: Deploy
       run: 
         dotnet nuget push "bin/Debug/*.nupkg"  --api-key ${{ secrets.NUGET_TOKEN }} --source "DarkFactorAS" --skip-duplicate
