@@ -2,22 +2,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
 
-# Add nuget repository
-#COPY ./NuGet/DarkFactor.Common.Lib.*.nupkg ./NuGet/
-#RUN dotnet nuget add source /app/NuGet --name DarkFactor
-
-# Flush all nuget repos
-RUN dotnet nuget locals all -c
-
 # Copy files
-COPY ./ ./
+COPY ./AccountCommon ./AccountCommon
+COPY ./AccountServer ./AccountServer
 
 # Copy nuget file
-COPY ./NuGet_Docker.config ./NuGet.config
+COPY ./AccountServer/NuGet_Docker.config ./AccountServer/NuGet.config
 
 # Restore and build web
-RUN dotnet restore AccountServer.csproj
-RUN dotnet publish AccountServer.csproj -c Release -o out
+RUN dotnet restore AccountServer/AccountServer.csproj
+RUN dotnet publish AccountServer/AccountServer.csproj -c Release -o out
 
 # Create self signed sertificate
 RUN dotnet dev-certs https -ep /app/out/certificate.pfx -p smurfepoliz
