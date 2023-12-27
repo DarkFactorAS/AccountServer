@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 using AccountCommon.SharedModel;
 using AccountClientModule.RestClient;
+using AccountClientModule.Provider;
 
 namespace AccountClientModule.Client
 {
@@ -17,17 +18,19 @@ namespace AccountClientModule.Client
         AccountData LoginToken(LoginTokenData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
-        ReturnData ResetPasswordWithCode(string code, string emailAdddress );
-        ReturnData ResetPasswordWithToken(string token, string password );
+        ReturnData ResetPasswordWithCode(string code);
+        ReturnData ResetPasswordWithToken(string password );
     }
 
     public class AccountClient : IAccountClient
     {
         IAccountRestClient _restClient;
+        IAccountSessionProvider _sessionProvider;
 
-        public AccountClient(IAccountRestClient restClient)
+        public AccountClient(IAccountRestClient restClient, IAccountSessionProvider sessionProvider)
         {
             _restClient = restClient;
+            _sessionProvider = sessionProvider;
         }
 
         public void SetEndpoint( string endpoint )
@@ -61,18 +64,38 @@ namespace AccountClientModule.Client
 
         public ReturnData ResetPasswordWithEmail(string emailAddress)
         {
+            _sessionProvider.RemoveSession();
+
             var result = Task.Run(async() => await _restClient.ResetPasswordWithEmail(emailAddress)).Result;
-            return ConvertFromReturnData( result );
+            var returnData = ConvertFromReturnData( result );
+
+            if (returnData.code == ReturnData.ReturnCode.OK)
+            {
+                _sessionProvider.SetEmail(emailAddress);
+            }
+
+            return returnData;
         }
 
-        public ReturnData ResetPasswordWithCode(string code, string emailAddress)
+        public ReturnData ResetPasswordWithCode(string code)
         {
+            string emailAddress = _sessionProvider.GetEmail();
+            _sessionProvider.RemoveSession();
+
             var result = Task.Run(async() => await _restClient.ResetPasswordWithCode(code, emailAddress)).Result;
-            return ConvertFromReturnData( result );
+            var returnData = ConvertFromReturnData( result );
+            if ( returnData.code == ReturnData.ReturnCode.OK )
+            {
+                _sessionProvider.SetToken(returnData.message);
+            }
+            return returnData;
         }
 
-        public ReturnData ResetPasswordWithToken(string token, string password)
+        public ReturnData ResetPasswordWithToken(string password)
         {
+            var token = _sessionProvider.GetToken();
+            _sessionProvider.RemoveSession();
+
             var result = Task.Run(async() => await _restClient.ResetPasswordWithToken(token,password)).Result;
             return ConvertFromReturnData( result );
         }
@@ -113,6 +136,7 @@ namespace AccountClientModule.Client
         {
             services.AddTransient<IAccountRestClient, AccountRestClient>();
             services.AddTransient<IAccountClient, AccountClient>();
+            services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
         }
     }
 }
