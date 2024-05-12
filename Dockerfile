@@ -2,12 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
 
+# Get the NuGet arguments and set as environment to use in NuGet
+ARG username
+ARG token
+ENV NUGET_USERNAME $username
+ENV NUGET_TOKEN $token
+
 # Copy files
 COPY ./AccountCommon ./AccountCommon
 COPY ./AccountServer ./AccountServer
 
 # Copy nuget file
-COPY ./AccountServer/NuGet_Docker.config ./AccountServer/NuGet.config
+#COPY ./AccountServer/NuGet_Docker.config ./AccountServer/NuGet.config
 
 # Restore and build web
 RUN dotnet restore AccountServer/AccountServer.csproj

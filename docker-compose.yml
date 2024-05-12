@@ -36,6 +36,9 @@ services:
       network: host
       context: ./
       dockerfile: ./Dockerfile
+      args:
+        username: ${NUGET_USERNAME}
+        token: ${NUGET_TOKEN}
     ports:
       - "5100:80"
 #    environment:
