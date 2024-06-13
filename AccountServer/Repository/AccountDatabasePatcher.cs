@@ -3,28 +3,17 @@ using DFCommonLib.Logger;
 
 namespace AccountServer.Repository
 {
-    public interface IStartupDatabasePatcher
-    {
-        bool RunPatcher();
-    }
-
-    public class StartupDatabasePatcher : IStartupDatabasePatcher
+    public class AccountDatabasePatcher : StartupDatabasePatcher
     {
         private static string PATCHER = "AccountServer";
 
-        private IDBPatcher _dbPatcher;
-
-        public StartupDatabasePatcher(IDBPatcher dbPatcher)
+        public AccountDatabasePatcher(IDBPatcher dbPatcher) : base(dbPatcher)
         {
-            _dbPatcher = dbPatcher;
         }
 
-        public bool RunPatcher()
+        public override bool RunPatcher()
         {
-            _dbPatcher.Init();
-
-            // Logtable
-            _dbPatcher.Patch(PATCHER,1, "CREATE TABLE `logtable` ( `id` int(11) NOT NULL AUTO_INCREMENT, `created` datetime NOT NULL, `loglevel` int(11) NOT NULL, `groupname` varchar(100) NOT NULL DEFAULT '', `message` varchar(1024) NOT NULL DEFAULT '', PRIMARY KEY (`id`))");
+            base.RunPatcher();
 
             // User Accounts
             _dbPatcher.Patch(PATCHER,2, "CREATE TABLE `users` ("

@@ -14,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using DFCommonLib.Utils;
 using DFCommonLib.Logger;
 using AccountServer.Repository;
+using DFCommonLib.DataAccess;
 
 namespace AccountServer
 {
@@ -25,6 +26,7 @@ namespace AccountServer
 
             // Run database script
             IStartupDatabasePatcher startupRepository = DFServices.GetService<IStartupDatabasePatcher>();
+            startupRepository.WaitForConnection();
             startupRepository.RunPatcher();
 
             IDFLogger<Startup> logger = new DFLogger<Startup>();

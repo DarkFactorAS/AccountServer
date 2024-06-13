@@ -18,6 +18,7 @@ using DFCommonLib.Logger;
 using DFCommonLib.Utils;
 
 using DarkFactor.MailClient;
+using DFCommonLib.DataAccess;
 
 namespace AccountServer
 {
@@ -47,7 +48,7 @@ namespace AccountServer
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
-                services.AddTransient<IStartupDatabasePatcher, StartupDatabasePatcher>();
+                services.AddTransient<IStartupDatabasePatcher, AccountDatabasePatcher>();
                 services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
