@@ -39,6 +39,7 @@ services:
       args:
         username: ${NUGET_USERNAME}
         token: ${NUGET_TOKEN}
+    restart: always
     ports:
       - "5100:80"
 #    environment:
