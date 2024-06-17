@@ -25,7 +25,7 @@ namespace AccountServer
     class Program
     {
         public static string AppName = "AccountServer";
-        public static string AppVersion = "1.0.0";
+        public static string AppVersion = "1.0.1";
 
         static void Main(string[] args)
         {
