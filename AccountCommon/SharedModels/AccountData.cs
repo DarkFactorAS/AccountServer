@@ -21,6 +21,7 @@ namespace AccountCommon.SharedModel
             NotValidEmail,
         }
 
+        public uint id { get; set; }
         public string? nickname { get; set; }
         public string? token { get; set; }
         public ErrorCode errorCode { get; set; }
@@ -30,8 +31,9 @@ namespace AccountCommon.SharedModel
         {
         }
 
-        public AccountData(string nickname, string token)
+        public AccountData(uint id, string nickname, string token)
         {
+            this.id = id;
             this.nickname = nickname;
             this.token = token;
         }
