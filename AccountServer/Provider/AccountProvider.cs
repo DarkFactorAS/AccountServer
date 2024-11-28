@@ -99,7 +99,7 @@ namespace AccountServer.Provider
             if ( internalAccount != null )
             {
                 string token = CreateToken(internalAccount.id );
-                return new AccountData( internalAccount.id, internalAccount.nickname, token );
+                return new AccountData( internalAccount.id, internalAccount.nickname, token, 0 );
             }
 
             return AccountData.Error(AccountData.ErrorCode.ErrorInData);
@@ -119,7 +119,7 @@ namespace AccountServer.Provider
             if ( accountData != null && accountData.password == encryptedPassword )
             {
                 string token = CreateToken(accountData.id);
-                return new AccountData( accountData.id, accountData.nickname, token );
+                return new AccountData( accountData.id, accountData.nickname, token, accountData.flags );
             }
             return AccountData.Error( AccountData.ErrorCode.WrongPassword);
         }
@@ -132,7 +132,7 @@ namespace AccountServer.Provider
                 if ( accountData != null )
                 {
                     string token = CreateToken(accountData.id);
-                    return new AccountData( accountData.id, accountData.nickname, token);
+                    return new AccountData( accountData.id, accountData.nickname, token, accountData.flags);
                 }
             }
             return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);

@@ -79,7 +79,7 @@ namespace AccountServer.Repository
 
         public InternalAccountData GetInternalAccount(string bindFieldname, string bindVariable)
         {
-            string formattedSql = string.Format("SELECT id, nickname, username, password, salt, email FROM users WHERE {0} = @bindVariable",bindFieldname);
+            string formattedSql = string.Format("SELECT id, nickname, username, password, salt, email, flags FROM users WHERE {0} = @bindVariable",bindFieldname);
             using (var cmd = _connection.CreateCommand(formattedSql))
             {
                 cmd.AddParameter("@bindVariable", bindVariable);
@@ -93,6 +93,7 @@ namespace AccountServer.Repository
                         accountData.username = reader["username"].ToString();
                         accountData.password = reader["password"].ToString();
                         accountData.email    = reader["email"].ToString();
+                        accountData.flags    = Convert.ToUInt32(reader["flags"]);
 
                         // TODO - Change this
                         accountData.salt = new byte[16];

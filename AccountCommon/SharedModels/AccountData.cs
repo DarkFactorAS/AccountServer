@@ -24,6 +24,8 @@ namespace AccountCommon.SharedModel
         public uint id { get; set; }
         public string? nickname { get; set; }
         public string? token { get; set; }
+        public uint? flags{ get; set; }
+
         public ErrorCode errorCode { get; set; }
         public string? errorMessage { get; set; }
 
@@ -31,11 +33,12 @@ namespace AccountCommon.SharedModel
         {
         }
 
-        public AccountData(uint id, string nickname, string token)
+        public AccountData(uint id, string nickname, string token, uint flags)
         {
             this.id = id;
             this.nickname = nickname;
             this.token = token;
+            this.flags = flags;
         }
 
         public static AccountData Error( ErrorCode errorCode )

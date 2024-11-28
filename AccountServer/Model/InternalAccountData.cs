@@ -11,6 +11,7 @@ namespace AccountServer.Model
         public string password { get; set; }
         public string email { get; set; }
         public byte[] salt { get; set; }
+        public uint flags { get; set; }
 
         public InternalAccountData()
         {
