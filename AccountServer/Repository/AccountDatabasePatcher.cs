@@ -39,6 +39,9 @@ namespace AccountServer.Repository
             + ")"
             );
 
+            // Set AUTO_INCREMENT
+            _dbPatcher.Patch(PATCHER,4, "ALTER TABLE users AUTO_INCREMENT=10001;");
+
             return _dbPatcher.Successful();
         }
     }
