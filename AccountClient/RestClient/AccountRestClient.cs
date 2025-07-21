@@ -10,6 +10,7 @@ namespace AccountClientModule.RestClient
     {
         Task<WebAPIData> LoginAccount(LoginData accountData);
         Task<WebAPIData> LoginToken(LoginTokenData accountTokenData);
+        Task<WebAPIData> LoginGameCenter(LoginData accountData);
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
         Task<WebAPIData> ResetPasswordWithEmail(string emailAddress);
         Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress);
@@ -24,6 +25,7 @@ namespace AccountClientModule.RestClient
         private const int POST_RESETPASSWORD_WITH_EMAIL = 4;
         private const int POST_RESETPASSWORD_WITH_CODE = 5;
         private const int POST_RESETPASSWORD_WITH_TOKEN = 6;
+        private const int POST_LOGIN_WITH_GAMECENTER = 7;
 
         public AccountRestClient(IDFLogger<DFRestClient> logger ) : base(logger)
         {
@@ -55,9 +57,15 @@ namespace AccountClientModule.RestClient
             return response;
         }
 
+        public async Task<WebAPIData> LoginGameCenter(LoginData loginData)
+        {
+            var response = await PutJsonData(POST_LOGIN_WITH_GAMECENTER,"LoginGameCenter",loginData);
+            return response;
+        }
+
         public async Task<WebAPIData> CreateAccount(CreateAccountData createAccountData)
         {
-            var response = await PutJsonData(POST_CREATE,"CreateAccount",createAccountData);
+            var response = await PutJsonData(POST_CREATE, "CreateAccount", createAccountData);
             return response;
         }
 

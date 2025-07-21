@@ -21,6 +21,7 @@ namespace AccountServer.Provider
         string PingServer();
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
+        AccountData LoginGameCenter(LoginData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string emailAddress, string code);
@@ -99,7 +100,7 @@ namespace AccountServer.Provider
             if ( internalAccount != null )
             {
                 string token = CreateToken(internalAccount.id );
-                return new AccountData( internalAccount.id, internalAccount.nickname, token, 0 );
+                return new AccountData( internalAccount.id, internalAccount.nickname, token, internalAccount.flags );
             }
 
             return AccountData.Error(AccountData.ErrorCode.ErrorInData);
@@ -138,13 +139,51 @@ namespace AccountServer.Provider
             return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
         }
 
+        public AccountData LoginGameCenter(LoginData loginData)
+        {
+            if (loginData == null || string.IsNullOrEmpty(loginData.username))
+            {
+                return AccountData.Error(AccountData.ErrorCode.ErrorInData);
+            }
+
+            // If the user already exists, we can log them in
+            InternalAccountData accountData = _repository.GetAccountWithUsername(loginData.username);
+            if (accountData != null)
+            {
+                string token = CreateToken(accountData.id);
+                return new AccountData(accountData.id, accountData.nickname, token, accountData.flags);
+            }
+
+            // If the user does not exist, we create a new account
+            var createAccountData = new CreateAccountData
+            {
+                nickname = loginData.username,
+                username = loginData.username + "@gamecenter.com", // Placeholder username, should be securely handled
+                password = DFCrypt.DecryptInput(loginData.password),
+                email = ""
+            };
+
+            var salt = generateSalt();
+            createAccountData.password = generateHash(createAccountData.password, salt);
+            var internalAccount = _repository.CreateAccount(createAccountData, salt);
+
+            // Create logintoken
+            if ( internalAccount != null )
+            {
+                string token = CreateToken(internalAccount.id );
+                return new AccountData( internalAccount.id, internalAccount.nickname, token, internalAccount.flags );
+            }
+
+            return AccountData.Error(AccountData.ErrorCode.ErrorInData);
+        }
+
         public ReturnData ResetPasswordWithEmail(string emailAddress)
         {
             var vEmail = VerifyEmail(emailAddress);
-            if ( !string.IsNullOrEmpty(vEmail) )
+            if (!string.IsNullOrEmpty(vEmail))
             {
                 InternalAccountData accountData = _repository.GetAccountWithEmail(emailAddress);
-                if ( accountData != null )
+                if (accountData != null)
                 {
                     var twoFactorCode = GenerateCode();
                     var mailServerConfig = _accountCustomer.mailServer;
@@ -162,11 +201,11 @@ namespace AccountServer.Provider
                         Content = content
                     };
 
-                    message.AddSender(mailServerConfig.SenderName,mailServerConfig.SenderEmail);
+                    message.AddSender(mailServerConfig.SenderName, mailServerConfig.SenderEmail);
                     message.AddReceiver(accountData.nickname, accountData.email);
 
                     var webAPIData = _mailClient.SendEmail(message).Result;
-                    if ( webAPIData.errorCode == WebAPIData.CODE_OK )
+                    if (webAPIData.errorCode == WebAPIData.CODE_OK)
                     {
                         return ReturnData.OKMessage();
                     }
@@ -176,7 +215,7 @@ namespace AccountServer.Provider
                 return ReturnData.OKMessage("Unknown user with email" + emailAddress);
             }
 
-            return ReturnData.ErrorMessage( ReturnData.ReturnCode.NotValidEmail );
+            return ReturnData.ErrorMessage(ReturnData.ReturnCode.NotValidEmail);
         }
 
         public ReturnData ResetPasswordWithCode(string code, string emailAddress)

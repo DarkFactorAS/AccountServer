@@ -16,6 +16,7 @@ namespace AccountClientModule.Client
         string PingServer();
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
+        AccountData LoginGameCenter(LoginData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string code);
@@ -49,10 +50,16 @@ namespace AccountClientModule.Client
             var result = Task.Run(async() => await _restClient.LoginAccount(loginData)).Result;
             return ConvertFromRestData( result );
         }
-
+    
         public AccountData LoginToken(LoginTokenData loginData)
         {
             var result = Task.Run(async() => await _restClient.LoginToken(loginData)).Result;
+            return ConvertFromRestData( result );
+        }
+
+        public AccountData LoginGameCenter(LoginData loginData)
+        {
+            var result = Task.Run(async() => await _restClient.LoginGameCenter(loginData)).Result;
             return ConvertFromRestData( result );
         }
 
