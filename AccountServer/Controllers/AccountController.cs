@@ -31,6 +31,13 @@ namespace AccountServer.Controllers
         }
 
         [HttpPut]
+        [Route("LoginAccount")]
+        public AccountData LoginAccount(LoginData loginData)
+        {
+            return _provider.LoginAccount(loginData);
+        }
+
+        [HttpPut]
         [Route("LoginToken")]
         public AccountData LoginToken(LoginTokenData tokenData)
         {
@@ -38,10 +45,10 @@ namespace AccountServer.Controllers
         }
 
         [HttpPut]
-        [Route("LoginAccount")]
-        public AccountData LoginAccount(LoginData loginData)
+        [Route("LoginGameCenter")]
+        public AccountData LoginGameCenter(LoginData loginData)
         {
-            return _provider.LoginAccount(loginData);
+            return _provider.LoginGameCenter(loginData);
         }
 
         [HttpPut]
