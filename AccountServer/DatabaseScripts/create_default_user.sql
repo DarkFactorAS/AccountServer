@@ -24,7 +24,6 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `users` (`id`, `nickname`, `username`, `password`, `email`, `salt`, `flags`, `created`, `updated`) VALUES
-(1,	'DefaultUser',	'dummyuser',	'QVLclCY+cLCbcXTv5kdorbWmN/6iMCTBnDSgp8tHl1o=',	'defaultuser@gmail.com',	'÷¡?˙ëÃJnz<Ë¬ñ°˝',	0,	'2023-04-11 14:22:23',	'2023-04-11 14:22:23'),
-;
+(1,	'DefaultUser',	'dummyuser',	'I3AVLRCsVbg2hpQGiZrp7mJFjTjHe60hlm0+J4dbHpo=',	'defaultuser@gmail.com',	'÷¡?˙ëÃJnz<Ë¬ñ°˝',	0,	'2023-04-11 14:22:23',	'2023-04-11 14:22:23');
 
 -- 2024-05-12 14:23:46
