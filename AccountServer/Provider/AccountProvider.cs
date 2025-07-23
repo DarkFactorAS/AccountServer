@@ -204,13 +204,15 @@ namespace AccountServer.Provider
                     message.AddSender(mailServerConfig.SenderName, mailServerConfig.SenderEmail);
                     message.AddReceiver(accountData.nickname, accountData.email);
 
-                    var webAPIData = _mailClient.SendEmail(message).Result;
-                    if (webAPIData.errorCode == WebAPIData.CODE_OK)
-                    {
-                        return ReturnData.OKMessage();
-                    }
-                    var msg = String.Format("{0}:{1}", webAPIData.errorCode, webAPIData.message);
-                    return new ReturnData(ReturnData.ReturnCode.FailWithMailServer, msg);
+                    // THOR: Disabled mail server until we get the mail sending to work
+                    //       This means I can only change password by finding code in the logs
+                    //var webAPIData = _mailClient.SendEmail(message).Result;
+                    //if ( webAPIData.errorCode == WebAPIData.CODE_OK )
+                    //{
+                        return ReturnData.OKMessage("Blabla");
+                    //}
+                    //var msg = String.Format("{0}:{1}", webAPIData.errorCode, webAPIData.message);
+                    //return new ReturnData(ReturnData.ReturnCode.FailWithMailServer, msg);
                 }
                 return ReturnData.OKMessage("Unknown user with email" + emailAddress);
             }
@@ -273,9 +275,12 @@ namespace AccountServer.Provider
 
         private string GenerateCode()
         {
-            Random rnd = new Random();
-            int randomNumber  = rnd.Next(111111, 999999);
-            return "" + randomNumber;
+           //Random rnd = new Random();
+            //int randomNumber  = rnd.Next(111111, 999999);
+            ///return "" + randomNumber;
+
+            // THOR: Disabled 2FA on mail. Just hardcode code for now
+            return "1234";
         }
 
         private AccountData.ErrorCode VerifyNickname( string nickname )
