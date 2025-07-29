@@ -12,6 +12,10 @@ namespace AccountCommon.SharedModel
 
         public CreateAccountData()
         {
+            username = string.Empty;
+            password = string.Empty;
+            nickname = string.Empty;
+            email = string.Empty;
         }
     }
 }

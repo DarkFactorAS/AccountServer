@@ -10,6 +10,8 @@ namespace AccountCommon.SharedModel
 
         public LoginData()
         {
+            username = string.Empty;
+            password = string.Empty;
         }
     }
 

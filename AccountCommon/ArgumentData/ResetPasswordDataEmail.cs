@@ -8,6 +8,7 @@ namespace AccountCommon.SharedModel
         public string emailAddress { get; set; }
         public ResetPasswordDataEmail()
         {
+            emailAddress = string.Empty;
         }
     }
 }

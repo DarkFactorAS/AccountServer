@@ -9,6 +9,8 @@ namespace AccountCommon.SharedModel
         public string password { get; set; }
         public ResetPasswordDataToken()
         {
+            token = string.Empty;
+            password = string.Empty;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace AccountCommon.SharedModel
 
         public LoginTokenData()
         {
+            token = string.Empty;
         }
     }
 }
