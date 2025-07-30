@@ -1,0 +1,29 @@
+name: Docker - CI Container
+
+on:
+  push:
+    paths:
+      - 'AccountServer/**'
+      - 'AccountCommon/**'
+      - 'Dockerfile'
+      - '.github/workflows/accountserver_ci.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    # 15 minute timeout
+    timeout-minutes: 15
+
+    # Use a self-hosted runner
+    runs-on: self-hosted
+
+    # Check out code from the repository
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4      
+
+    # Build the Docker image
+    - name: Build Docker image
+      run: docker build . --file Dockerfile --tag accountserverimage:CI-$(date +%s) --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}

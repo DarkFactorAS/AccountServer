@@ -5,6 +5,11 @@ name: Account - CI Build
 
 on:
   push:
+    paths:
+      - 'AccountClient/**'
+      - 'AccountCommon/**'
+      - '.github/workflows/accountclient_ci.yml'
+      - '.github/workflows/accountclient_deploy.yml'
 
   pull_request:
 
@@ -27,11 +32,3 @@ jobs:
       run: dotnet restore AccountClient/AccountClient.csproj
     - name: AccountClient - Build
       run: dotnet build AccountClient/AccountClient.csproj --no-restore --configuration Release
-
-    # Build Account Server
-    - name: Add GitHub nuget repository
-      run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountServer/NuGet.config"
-    - name: AccountServer - Restore dependencies
-      run: dotnet restore AccountServer/AccountServer.csproj
-    - name: AccountServer - Build
-      run: dotnet build AccountServer/AccountServer.csproj --no-restore --configuration Release
