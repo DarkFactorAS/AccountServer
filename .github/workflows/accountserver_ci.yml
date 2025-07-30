@@ -1,4 +1,4 @@
-name: Docker - CI Container
+name: Account Server - CI Docker Container
 
 on:
   push:
@@ -9,6 +9,9 @@ on:
       - '.github/workflows/accountserver_ci.yml'
   pull_request:
   workflow_dispatch:
+
+env:
+  IMAGE_NAME: accountserverimage
 
 jobs:
 
@@ -26,4 +29,4 @@ jobs:
 
     # Build the Docker image
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag accountserverimage:CI-$(date +%s) --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:CI-$(date +%s) --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}

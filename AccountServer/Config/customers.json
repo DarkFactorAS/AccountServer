@@ -14,7 +14,7 @@
         "DatabaseConnections": [
           {
             "ConnectionType": "LOCAL",
-            "ConnectionString": "Server=accountdb;Port=3306;Database=account;Uid=accuser;Pwd=unity;SslMode=Preferred;"
+            "ConnectionString": "Server=host.docker.internal;Port=5505;Database=account;Uid=accuser;Pwd=unity;SslMode=Preferred;"
           }
         ]
       }

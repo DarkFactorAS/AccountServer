@@ -1,0 +1,53 @@
+name: Account Server - Deploy Docker Container
+
+on:
+#  push:
+#    branches: [ "Bots" ]
+  workflow_dispatch:
+   
+env:
+  TIMESTAMP: ${{ github.sha }}
+  CONTAINER_NAME: accountserver
+  IMAGE_NAME: accountserverimage
+  EXTERNAL_PORT: 5100
+  INTERNAL_PORT: 8080
+
+jobs:
+
+  build:
+    # 15 minute timeout
+    timeout-minutes: 15
+
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4      
+
+    - name: Create prod file
+      uses: bluwy/substitute-string-action@v3
+      with:
+        _input-file: AccountServer/Config/customers.json
+        host.docker.internal: ${{ vars.SERVER_HOST }}
+        _output-file: AccountServer/Config/customers.json
+
+    # Remove all unused images, containers, volumes, networks, and build cache
+    - name: Prune old Docker builds
+      run:
+        docker image prune -a -f
+
+    - name: Build Docker image
+      run: docker build . --file AccountServer/Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}  --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+
+    - name: Stop old Docker container
+      run:
+        docker stop ${{ env.CONTAINER_NAME }} || true
+
+    - name: Delete old Docker container
+      run:
+        docker rm ${{ env.CONTAINER_NAME }} || true
+
+    - name: Run Docker container
+      run:
+        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+
