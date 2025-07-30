@@ -29,8 +29,6 @@ namespace AccountServer
 
         static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-
             var builder = CreateHostBuilder(args).Build();
 
             try
