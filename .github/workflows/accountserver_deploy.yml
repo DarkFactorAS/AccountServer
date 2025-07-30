@@ -37,7 +37,7 @@ jobs:
         docker image prune -a -f
 
     - name: Build Docker image
-      run: docker build . --file AccountServer/Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}  --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}  --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
 
     - name: Stop old Docker container
       run:
