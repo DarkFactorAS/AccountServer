@@ -25,11 +25,42 @@ namespace AccountServer
     class Program
     {
         public static string AppName = "AccountServer";
-        public static string AppVersion = "1.0.4";
+        public static string AppVersion = "1.0.5";
 
         static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
+
+            var builder = CreateHostBuilder(args).Build();
+
+            try
+            {
+                IConfigurationHelper configuration = DFServices.GetService<IConfigurationHelper>();
+                var customer = configuration.GetFirstCustomer() as AccountCustomer;
+                var msg = string.Format("Connecting to DB : {0}", customer.DatabaseConnections.FirstOrDefault()?.ConnectionString);
+                DFLogger.LogOutput(DFLogLevel.INFO, "AccountServer", msg);
+
+                // Run database script
+                IStartupDatabasePatcher startupRepository = DFServices.GetService<IStartupDatabasePatcher>();
+                startupRepository.WaitForConnection();
+                if (startupRepository.RunPatcher() )
+                {
+                    DFLogger.LogOutput(DFLogLevel.INFO, "Startup", "Database patcher ran successfully" );
+                }
+                else
+                {
+                    DFLogger.LogOutput(DFLogLevel.ERROR, "Startup", "Database patcher failed" );
+                    Environment.Exit(1);
+                    return;                    
+                }
+
+                builder.Run();
+            }
+            catch( Exception ex )
+            {
+                DFLogger.LogOutput(DFLogLevel.WARNING, "Startup", ex.ToString() );
+            }
+
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
