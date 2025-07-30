@@ -24,11 +24,6 @@ namespace AccountServer
         {
             Configuration = configuration;
 
-            // Run database script
-            IStartupDatabasePatcher startupRepository = DFServices.GetService<IStartupDatabasePatcher>();
-            startupRepository.WaitForConnection();
-            startupRepository.RunPatcher();
-
             IDFLogger<Startup> logger = new DFLogger<Startup>();
             logger.Startup(Program.AppName, Program.AppVersion);
         }
@@ -39,6 +34,7 @@ namespace AccountServer
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddControllers();
+            DFServices.Create(services);
 
             services.AddMvc();
 
