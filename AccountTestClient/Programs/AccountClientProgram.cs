@@ -16,12 +16,15 @@ namespace TestAccountClient
             _accountClient = accountClient;
 
             // Set the API endpoint and key from the configuration
-            var customer = configuration.GetFirstCustomer() as TestAccountConfig;
-            if (customer != null)
+            var config = configuration.Settings as TestAccountConfig;
+            if (config != null)
             {
-                _accountClient.SetEndpoint(customer.AccountServer);
+                _accountClient.SetEndpoint(config.AccountServer);
                 // Assuming there's a method to set API key in the client
-                // _accountClient.SetApiKey(customer.ApiKey);
+                // _accountClient.SetApiKey(config.ApiKey);
+
+                var msg = string.Format("Connecting to API : {0}", config.AccountServer);
+                DFLogger.LogOutput(DFLogLevel.INFO, "AccountTestClient", msg);
             }
         }
 

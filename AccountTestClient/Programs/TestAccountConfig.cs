@@ -4,8 +4,8 @@ using DFCommonLib.Config;
 
 namespace AccountTestClient
 {
-    public class TestAccountConfig : Customer
+    public class TestAccountConfig : AppSettings
     {
-        public string AccountServer { get; set; }
+        public string? AccountServer { get; set; }
     }
 }

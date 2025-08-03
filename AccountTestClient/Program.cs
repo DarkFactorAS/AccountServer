@@ -29,13 +29,10 @@ namespace TestAccountClient
             try
             {
                 IConfigurationHelper configuration = DFServices.GetService<IConfigurationHelper>();
-                var customer = configuration.GetFirstCustomer() as TestAccountConfig;
-                var msg = string.Format("Connecting to API : {0}", customer?.AccountServer);
-                DFLogger.LogOutput(DFLogLevel.INFO, "AccountTestClient", msg);
+                IAccountClient accountClient = DFServices.GetService<IAccountClient>();
 
-                var program = new AccountClientProgram(DFServices.GetService<IAccountClient>(), configuration);
+                var program = new AccountClientProgram(accountClient, configuration);
                 program.Run();
-
                 builder.Run();
             }
             catch (Exception ex)

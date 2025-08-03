@@ -5,7 +5,7 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": "AccountServer - Launch",
+            "name": "Server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -30,7 +30,7 @@
             //"console": "externalTerminal",
         },
         {
-            "name": "Account Test Client - Launch",
+            "name": "Test Client",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_testclient",
