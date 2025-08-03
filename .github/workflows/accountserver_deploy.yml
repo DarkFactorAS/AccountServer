@@ -55,8 +55,5 @@ jobs:
 
     - name: Run Docker container
       run:
-        docker run -d \
-        -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \
-        --name ${{ env.CONTAINER_NAME }} \
-        ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
 
