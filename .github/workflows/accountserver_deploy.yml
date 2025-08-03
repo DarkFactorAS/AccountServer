@@ -12,6 +12,7 @@ env:
   EXTERNAL_PORT: 5100
   INTERNAL_PORT: 8080
   CONFIG_FILE: AccountServer/Config/appsettings.Production.json
+  ASPNETCORE_ENVIRONMENT: Production
 
 jobs:
 
@@ -57,6 +58,5 @@ jobs:
         docker run -d \
         -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \
         --name ${{ env.CONTAINER_NAME }} \
-        -e ASPNETCORE_ENVIRONMENT=Production \
         ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
 
