@@ -11,6 +11,7 @@ env:
   IMAGE_NAME: accountserverimage
   EXTERNAL_PORT: 5100
   INTERNAL_PORT: 8080
+  CONFIG_FILE: AccountServer/Config/appsettings.Production.json
 
 jobs:
 
@@ -27,9 +28,13 @@ jobs:
     - name: Create prod file
       uses: bluwy/substitute-string-action@v3
       with:
-        _input-file: AccountServer/Config/customers.json
-        host.docker.internal: ${{ vars.SERVER_HOST }}
-        _output-file: AccountServer/Config/customers.json
+        _input-file: ${{ env.CONFIG_FILE }}
+        [DATABASE.SERVER]: ${{ vars.DATABASE_SERVER }}
+        [DATABASE.PORT]: ${{ vars.DATABASE_PORT }}
+        [DATABASE.USERNAME]: ${{ vars.DATABASE_USERNAME }}
+        [DATABASE.PASSWORD]: ${{ secrets.DATABASE_PASSWORD }}
+        [DATABASE.NAME]: ${{ vars.DATABASE_NAME }}
+        _output-file: ${{ env.CONFIG_FILE }}
 
     # Remove all unused images, containers, volumes, networks, and build cache
     - name: Prune old Docker builds
@@ -49,5 +54,9 @@ jobs:
 
     - name: Run Docker container
       run:
-        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+        docker run -d \
+        -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \
+        --name ${{ env.CONTAINER_NAME }} \
+        -e ASPNETCORE_ENVIRONMENT=Production \
+        ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
 

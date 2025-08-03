@@ -35,7 +35,7 @@ namespace AccountServer
             {
                 IConfigurationHelper configurationHelper = DFServices.GetService<IConfigurationHelper>();
                 var config = configurationHelper.Settings as AccountConfig;
-                var msg = string.Format("Connecting to DB : {0}", config.DatabaseConnection.Server);
+                var msg = string.Format("Connecting to DB : {0}:{1}", config.DatabaseConnection.Server, config.DatabaseConnection.Port);
                 DFLogger.LogOutput(DFLogLevel.INFO, "AccountServer", msg);
 
                 // Run database script
