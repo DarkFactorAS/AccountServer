@@ -34,12 +34,12 @@ namespace AccountServer.Provider
         IAccountSessionProvider _session;
         IMailClient _mailClient;
         IDFLogger<AccountProvider> _logger;
-        AccountCustomer _accountCustomer;
+        AccountConfig _accountConfig;
 
         public AccountProvider( IAccountRepository repository, 
                                 IAccountSessionProvider session, 
                                 IMailClient mailClient,
-                                IConfigurationHelper configuration,
+                                IConfigurationHelper configurationHelper,
                                 IDFLogger<AccountProvider> logger )
         {
             _repository = repository;
@@ -47,10 +47,10 @@ namespace AccountServer.Provider
             _mailClient = mailClient;
             _logger = logger;
 
-            _accountCustomer = configuration.GetFirstCustomer() as AccountCustomer;
-            if ( _accountCustomer != null )
+            _accountConfig = configurationHelper.Settings as AccountConfig;
+            if ( _accountConfig != null && _accountConfig.mailServer != null )
             {
-                _mailClient.SetEndpoint(_accountCustomer.mailServer.ServerAddress);
+                _mailClient.SetEndpoint(_accountConfig.mailServer.ServerAddress);
             }
         }
 
@@ -186,7 +186,7 @@ namespace AccountServer.Provider
                 if (accountData != null)
                 {
                     var twoFactorCode = GenerateCode();
-                    var mailServerConfig = _accountCustomer.mailServer;
+                    var mailServerConfig = _accountConfig.mailServer;
 
                     _session.SetAccountId(accountData.id);
                     _session.SetAccountCode(twoFactorCode);

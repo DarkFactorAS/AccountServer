@@ -42,11 +42,8 @@ services:
     restart: always
     ports:
       - "5100:8080"
-#    environment:
-      #- ASPNETCORE_ENVIRONMENT=Development
-#      - ASPNETCORE_URLS=https://+:443;http://+:80
-#      - ASPNETCORE_Kestrel__Certificates__Default__Password=smurfepoliz
-#      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certificate.pfx
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
     depends_on: 
       - accountdb
 

@@ -13,7 +13,7 @@ namespace AccountServer.Model
         public string EmailBody {get;set;}
     }
 
-    public class AccountCustomer : Customer
+    public class AccountConfig : AppSettings
     {
         public MailServer mailServer{ get; set;}
     }

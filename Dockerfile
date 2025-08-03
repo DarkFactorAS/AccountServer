@@ -12,16 +12,14 @@ ENV NUGET_TOKEN=$token
 COPY ./AccountCommon ./AccountCommon
 COPY ./AccountServer ./AccountServer
 
-# Copy nuget file
-#COPY ./AccountServer/NuGet_Docker.config ./AccountServer/NuGet.config
-
 # Restore and build web
 RUN dotnet restore AccountServer/AccountServer.csproj
-RUN dotnet publish AccountServer/AccountServer.csproj -c Release -o out
+RUN dotnet publish AccountServer/AccountServer.csproj -c Release -o out 
+#--build-arg ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
 
 # Create self signed sertificate
-RUN dotnet dev-certs https -ep /app/out/certificate.pfx -p smurfepoliz
-RUN dotnet dev-certs https --trust
+#RUN dotnet dev-certs https -ep /app/out/certificate.pfx -p smurfepoliz
+#RUN dotnet dev-certs https --trust
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

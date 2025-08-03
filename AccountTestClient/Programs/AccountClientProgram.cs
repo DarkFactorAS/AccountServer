@@ -11,12 +11,12 @@ namespace TestAccountClient
     {
         IAccountClient _accountClient;
 
-        public AccountClientProgram(IAccountClient accountClient, IConfigurationHelper configuration)
+        public AccountClientProgram(IAccountClient accountClient, IConfigurationHelper configurationHelper)
         {
             _accountClient = accountClient;
 
             // Set the API endpoint and key from the configuration
-            var config = configuration.Settings as TestAccountConfig;
+            var config = configurationHelper.Settings as TestAccountConfig;
             if (config != null)
             {
                 _accountClient.SetEndpoint(config.AccountServer);

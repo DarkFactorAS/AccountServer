@@ -25,7 +25,7 @@ namespace AccountServer
     class Program
     {
         public static string AppName = "AccountServer";
-        public static string AppVersion = "1.0.5";
+        public static string AppVersion = "1.1.0";
 
         static void Main(string[] args)
         {
@@ -33,9 +33,9 @@ namespace AccountServer
 
             try
             {
-                IConfigurationHelper configuration = DFServices.GetService<IConfigurationHelper>();
-                var customer = configuration.GetFirstCustomer() as AccountCustomer;
-                var msg = string.Format("Connecting to DB : {0}", customer.DatabaseConnections.FirstOrDefault()?.ConnectionString);
+                IConfigurationHelper configurationHelper = DFServices.GetService<IConfigurationHelper>();
+                var config = configurationHelper.Settings as AccountConfig;
+                var msg = string.Format("Connecting to DB : {0}", config.DatabaseConnection.Server);
                 DFLogger.LogOutput(DFLogLevel.INFO, "AccountServer", msg);
 
                 // Run database script
@@ -58,14 +58,13 @@ namespace AccountServer
             {
                 DFLogger.LogOutput(DFLogLevel.WARNING, "Startup", ex.ToString());
             }
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddTransient<IConfigurationHelper, ConfigurationHelper<AccountCustomer>>();
+                services.AddTransient<IConfigurationHelper, ConfigurationHelper<AccountConfig>>();
 
                 new DFServices(services)
                     .SetupLogger()
