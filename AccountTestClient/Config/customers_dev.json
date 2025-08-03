@@ -1,0 +1,10 @@
+{
+  "CustomerSettings": {
+    "Customers": [
+      {
+        "Id": "Bots",
+        "AccountServer" : "http://localhost:5100"
+      }
+    ]
+  }
+}
