@@ -15,6 +15,7 @@ namespace AccountServer.Repository
         InternalAccountData GetAccountWithNickname(string nickname);
         InternalAccountData GetAccountWithEmail(string emailAdddress);
         InternalAccountData GetAccountWithId(uint accountId);
+        void UpdateLastLogin(uint accountId);
         void PurgeOldTokens(uint userId);
         string SaveToken( uint userId, string token );
         void SetNewPassword( uint userId, string password );
@@ -37,8 +38,8 @@ namespace AccountServer.Repository
 
         public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt)
         {
-            var sql = @"insert into users (id,nickname,username,password,email,salt,flags,created,updated) 
-                values(0, @nickname, @username, @password, @email, @salt, 0, now(), now())";
+            var sql = @"insert into users (id,nickname,username,password,email,salt,flags,created,updated, lastlogin, numlogins) 
+                values(0, @nickname, @username, @password, @email, @salt, 0, now(), now(), now(), 1)";
             using (var cmd = _connection.CreateCommand(sql))
             {
                 cmd.AddParameter("@nickname", createAccountData.nickname);
@@ -80,7 +81,7 @@ namespace AccountServer.Repository
 
         public InternalAccountData GetInternalAccount(string bindFieldname, string bindVariable)
         {
-            string formattedSql = string.Format("SELECT id, nickname, username, password, salt, email, flags FROM users WHERE {0} = @bindVariable",bindFieldname);
+            string formattedSql = string.Format("SELECT id, nickname, username, password, salt, email, flags FROM users WHERE {0} = @bindVariable", bindFieldname);
             using (var cmd = _connection.CreateCommand(formattedSql))
             {
                 cmd.AddParameter("@bindVariable", bindVariable);
@@ -93,8 +94,8 @@ namespace AccountServer.Repository
                         accountData.nickname = reader["nickname"].ToString();
                         accountData.username = reader["username"].ToString();
                         accountData.password = reader["password"].ToString();
-                        accountData.email    = reader["email"].ToString();
-                        accountData.flags    = Convert.ToUInt32(reader["flags"]);
+                        accountData.email = reader["email"].ToString();
+                        accountData.flags = Convert.ToUInt32(reader["flags"]);
 
                         // TODO - Change this
                         accountData.salt = new byte[16];
@@ -157,6 +158,16 @@ namespace AccountServer.Repository
             using (var cmd = _connection.CreateCommand(sql))
             {
                 cmd.AddParameter("@password", password);
+                cmd.AddParameter("@accountId", accountId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        
+        public void UpdateLastLogin(uint accountId)
+        {
+            var sql = @"update users set lastlogin = now(), numlogins = numlogins + 1 where id = @accountId";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
                 cmd.AddParameter("@accountId", accountId);
                 cmd.ExecuteNonQuery();
             }

@@ -119,8 +119,9 @@ namespace AccountServer.Provider
             string encryptedPassword = generateHash(plainPassword, accountData.salt);
             if ( accountData != null && accountData.password == encryptedPassword )
             {
+                _repository.UpdateLastLogin(accountData.id);
                 string token = CreateToken(accountData.id);
-                return new AccountData( accountData.id, accountData.nickname, token, accountData.flags );
+                return new AccountData(accountData.id, accountData.nickname, token, accountData.flags);
             }
             return AccountData.Error( AccountData.ErrorCode.WrongPassword);
         }
@@ -132,6 +133,7 @@ namespace AccountServer.Provider
                 var accountData = _repository.GetAccountWithToken(loginTokenData.token);
                 if ( accountData != null )
                 {
+                    _repository.UpdateLastLogin(accountData.id);
                     string token = CreateToken(accountData.id);
                     return new AccountData( accountData.id, accountData.nickname, token, accountData.flags);
                 }
@@ -150,6 +152,7 @@ namespace AccountServer.Provider
             InternalAccountData accountData = _repository.GetAccountWithUsername(loginData.username);
             if (accountData != null)
             {
+                _repository.UpdateLastLogin(accountData.id);
                 string token = CreateToken(accountData.id);
                 return new AccountData(accountData.id, accountData.nickname, token, accountData.flags);
             }
