@@ -36,11 +36,11 @@ namespace AccountServer.Provider
         IDFLogger<AccountProvider> _logger;
         AccountConfig _accountConfig;
 
-        public AccountProvider( IAccountRepository repository, 
-                                IAccountSessionProvider session, 
+        public AccountProvider(IAccountRepository repository,
+                                IAccountSessionProvider session,
                                 IMailClient mailClient,
                                 IConfigurationHelper configurationHelper,
-                                IDFLogger<AccountProvider> logger )
+                                IDFLogger<AccountProvider> logger)
         {
             _repository = repository;
             _session = session;
@@ -48,7 +48,7 @@ namespace AccountServer.Provider
             _logger = logger;
 
             _accountConfig = configurationHelper.Settings as AccountConfig;
-            if ( _accountConfig != null && _accountConfig.mailServer != null )
+            if (_accountConfig != null && _accountConfig.mailServer != null)
             {
                 _mailClient.SetEndpoint(_accountConfig.mailServer.ServerAddress);
             }
@@ -398,7 +398,7 @@ namespace AccountServer.Provider
 
         private string CreateToken(uint userId)
         {
-            _repository.PurgeOldTokens(userId);
+            _repository.PurgeOldTokens(userId, _accountConfig.TokenHistoryExpirationDays);
             var token = GenerateToken();
             return _repository.SaveToken( userId, token );
         }
