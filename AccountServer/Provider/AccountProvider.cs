@@ -94,7 +94,7 @@ namespace AccountServer.Provider
 
             var salt = generateSalt();
             createAccountData.password = generateHash(plainPassword, salt);
-            var internalAccount = _repository.CreateAccount(createAccountData, salt);
+            var internalAccount = _repository.CreateAccount(createAccountData, salt, AccountLoginType.DarkFactor);
 
             // Create logintoken
             if ( internalAccount != null )
@@ -168,7 +168,7 @@ namespace AccountServer.Provider
 
             var salt = generateSalt();
             createAccountData.password = generateHash(createAccountData.password, salt);
-            var internalAccount = _repository.CreateAccount(createAccountData, salt);
+            var internalAccount = _repository.CreateAccount(createAccountData, salt, AccountLoginType.GameCenter);
 
             // Create logintoken
             if ( internalAccount != null )

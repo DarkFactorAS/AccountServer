@@ -9,7 +9,7 @@ namespace AccountServer.Repository
 {
     public interface IAccountRepository
     {
-        InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt);
+        InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt, AccountLoginType logintype);
         InternalAccountData GetAccountWithUsername(string username);
         InternalAccountData GetAccountWithToken(string token);
         InternalAccountData GetAccountWithNickname(string nickname);
@@ -36,16 +36,17 @@ namespace AccountServer.Repository
             _logger = logger;
         }
 
-        public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt)
+        public InternalAccountData CreateAccount(CreateAccountData createAccountData, byte[] salt, AccountLoginType logintype)
         {
-            var sql = @"insert into users (id,nickname,username,password,email,salt,flags,created,updated, lastlogin, numlogins) 
-                values(0, @nickname, @username, @password, @email, @salt, 0, now(), now(), now(), 1)";
+            var sql = @"insert into users (id,nickname,username,password,email,salt,flags,logintype,created,updated, lastlogin, numlogins) 
+                values(0, @nickname, @username, @password, @email, @salt, 0, @logintype, now(), now(), now(), 1)";
             using (var cmd = _connection.CreateCommand(sql))
             {
                 cmd.AddParameter("@nickname", createAccountData.nickname);
                 cmd.AddParameter("@username", createAccountData.username);
                 cmd.AddParameter("@password", createAccountData.password);
                 cmd.AddParameter("@email", createAccountData.email);
+                cmd.AddParameter("@logintype", (int)logintype);
                 cmd.AddClobParameter("@salt", salt);
                 cmd.ExecuteNonQuery();
             }
