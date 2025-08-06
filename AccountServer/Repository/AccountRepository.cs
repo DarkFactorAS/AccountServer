@@ -15,6 +15,7 @@ namespace AccountServer.Repository
         InternalAccountData GetAccountWithNickname(string nickname);
         InternalAccountData GetAccountWithEmail(string emailAdddress);
         InternalAccountData GetAccountWithId(uint accountId);
+        void PurgeOldTokens(uint userId);
         string SaveToken( uint userId, string token );
         void SetNewPassword( uint userId, string password );
     }
@@ -138,7 +139,19 @@ namespace AccountServer.Repository
             return token;
         }
 
-        public void SetNewPassword( uint accountId, string password )
+        // Purge tokens older than 60 days for the given userId
+        // This is called when a new token is created to ensure we don't have too many tokens stored.
+        public void PurgeOldTokens(uint userId)
+        {
+            var sql = @"delete from tokens where userid = @userid and created < now() - interval 60 day";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@userid", userId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void SetNewPassword(uint accountId, string password)
         {
             var sql = @"update users set password = @password, updated = now() where id = @accountId";
             using (var cmd = _connection.CreateCommand(sql))

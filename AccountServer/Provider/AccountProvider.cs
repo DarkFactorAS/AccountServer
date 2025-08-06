@@ -395,6 +395,7 @@ namespace AccountServer.Provider
 
         private string CreateToken(uint userId)
         {
+            _repository.PurgeOldTokens(userId);
             var token = GenerateToken();
             return _repository.SaveToken( userId, token );
         }
