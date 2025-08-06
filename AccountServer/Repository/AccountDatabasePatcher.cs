@@ -42,6 +42,12 @@ namespace AccountServer.Repository
             // Set AUTO_INCREMENT
             _dbPatcher.Patch(PATCHER,4, "ALTER TABLE users AUTO_INCREMENT=10001;");
 
+            // Update users table to add lastlogin and numlogins
+            _dbPatcher.Patch(PATCHER,5, "ALTER TABLE users ADD COLUMN `lastlogin` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+            _dbPatcher.Patch(PATCHER,6, "ALTER TABLE users ADD COLUMN `numlogins` int(11) NOT NULL DEFAULT 0;");
+
+            // Add logintype to users table
+            _dbPatcher.Patch(PATCHER,7, "ALTER TABLE users ADD COLUMN `logintype` int(11) NOT NULL DEFAULT 0 AFTER flags;");
             return _dbPatcher.Successful();
         }
     }

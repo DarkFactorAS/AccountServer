@@ -36,11 +36,11 @@ namespace AccountServer.Provider
         IDFLogger<AccountProvider> _logger;
         AccountConfig _accountConfig;
 
-        public AccountProvider( IAccountRepository repository, 
-                                IAccountSessionProvider session, 
+        public AccountProvider(IAccountRepository repository,
+                                IAccountSessionProvider session,
                                 IMailClient mailClient,
                                 IConfigurationHelper configurationHelper,
-                                IDFLogger<AccountProvider> logger )
+                                IDFLogger<AccountProvider> logger)
         {
             _repository = repository;
             _session = session;
@@ -48,7 +48,7 @@ namespace AccountServer.Provider
             _logger = logger;
 
             _accountConfig = configurationHelper.Settings as AccountConfig;
-            if ( _accountConfig != null && _accountConfig.mailServer != null )
+            if (_accountConfig != null && _accountConfig.mailServer != null)
             {
                 _mailClient.SetEndpoint(_accountConfig.mailServer.ServerAddress);
             }
@@ -94,7 +94,7 @@ namespace AccountServer.Provider
 
             var salt = generateSalt();
             createAccountData.password = generateHash(plainPassword, salt);
-            var internalAccount = _repository.CreateAccount(createAccountData, salt);
+            var internalAccount = _repository.CreateAccount(createAccountData, salt, AccountLoginType.DarkFactor);
 
             // Create logintoken
             if ( internalAccount != null )
@@ -119,8 +119,9 @@ namespace AccountServer.Provider
             string encryptedPassword = generateHash(plainPassword, accountData.salt);
             if ( accountData != null && accountData.password == encryptedPassword )
             {
+                _repository.UpdateLastLogin(accountData.id);
                 string token = CreateToken(accountData.id);
-                return new AccountData( accountData.id, accountData.nickname, token, accountData.flags );
+                return new AccountData(accountData.id, accountData.nickname, token, accountData.flags);
             }
             return AccountData.Error( AccountData.ErrorCode.WrongPassword);
         }
@@ -132,6 +133,7 @@ namespace AccountServer.Provider
                 var accountData = _repository.GetAccountWithToken(loginTokenData.token);
                 if ( accountData != null )
                 {
+                    _repository.UpdateLastLogin(accountData.id);
                     string token = CreateToken(accountData.id);
                     return new AccountData( accountData.id, accountData.nickname, token, accountData.flags);
                 }
@@ -150,6 +152,7 @@ namespace AccountServer.Provider
             InternalAccountData accountData = _repository.GetAccountWithUsername(loginData.username);
             if (accountData != null)
             {
+                _repository.UpdateLastLogin(accountData.id);
                 string token = CreateToken(accountData.id);
                 return new AccountData(accountData.id, accountData.nickname, token, accountData.flags);
             }
@@ -165,7 +168,7 @@ namespace AccountServer.Provider
 
             var salt = generateSalt();
             createAccountData.password = generateHash(createAccountData.password, salt);
-            var internalAccount = _repository.CreateAccount(createAccountData, salt);
+            var internalAccount = _repository.CreateAccount(createAccountData, salt, AccountLoginType.GameCenter);
 
             // Create logintoken
             if ( internalAccount != null )
@@ -395,6 +398,7 @@ namespace AccountServer.Provider
 
         private string CreateToken(uint userId)
         {
+            _repository.PurgeOldTokens(userId, _accountConfig.TokenHistoryExpirationDays);
             var token = GenerateToken();
             return _repository.SaveToken( userId, token );
         }
