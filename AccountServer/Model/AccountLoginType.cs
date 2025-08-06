@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DFCommonLib.Config;
-
 namespace AccountServer.Model
 {
     public enum AccountLoginType
