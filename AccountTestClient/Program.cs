@@ -33,6 +33,11 @@ namespace TestAccountClient
 
                 var program = new AccountClientProgram(accountClient, configuration);
                 program.Run();
+
+                IOAuth2Client _restClient = DFServices.GetService<IOAuth2Client>();
+                var p2 = new OAuth2ClientProgram(_restClient, configuration);
+                p2.Run();   
+
                 builder.Run();
             }
             catch (Exception ex)
