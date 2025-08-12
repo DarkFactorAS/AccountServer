@@ -23,7 +23,7 @@ namespace AccountClientModule.RestClient
         private const int POST_AUTH = 1;
         private const int POST_CODE = 2;
 
-        public OAuth2RestClient(IDFLogger<DFRestClient> logger) : base(logger)
+        public OAuth2RestClient() : base()
         {
         }
 
@@ -34,30 +34,12 @@ namespace AccountClientModule.RestClient
 
         public async Task<OAuth2AuthResponse> LoginOAuth2Client(OAuth2ClientData oauth2ClientData)
         {
-            var response = await PutJsonData(POST_AUTH, "Auth", oauth2ClientData);
-            var result = ConvertFromRestData<OAuth2AuthResponse>(response);
-            return result;
+            return await PutData<OAuth2AuthResponse>(POST_AUTH, "Auth", oauth2ClientData);
         }
 
         public async Task<OAuth2CodeResponse> LoginOAuth2WithCode(OAuth2CodeData codeData)
         {
-            var response = await PutJsonData(POST_CODE, "Code", codeData);
-            var result = ConvertFromRestData<OAuth2CodeResponse>(response);
-            return result;
+            return await PutData<OAuth2CodeResponse>(POST_CODE, "Code", codeData);
         }
-
-        private T ConvertFromRestData<T>(WebAPIData apiData) where T : WebAPIData, new()
-        {
-            if (apiData.errorCode == 0)
-            {
-                var data = JsonConvert.DeserializeObject<T>(apiData.message);
-                return data;
-            }
-            var cls = new T();
-            cls.errorCode = apiData.errorCode;
-            cls.message = apiData.message;
-            return cls;
-        }
-
     }
 }

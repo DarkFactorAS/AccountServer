@@ -7,12 +7,11 @@ using Microsoft.Extensions.Logging;
 using AccountCommon.SharedModel;
 using AccountServer.Model;
 using AccountServer.Provider;
+using DFCommonLib.HttpApi;
 
 namespace AccountServer.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController : DFRestServerController
     {
         ILogger<AccountController> _logger;
         IAccountProvider _provider;
@@ -21,13 +20,6 @@ namespace AccountServer.Controllers
         {
             _logger = logger;
             _provider = provider;
-        }
-
-        [HttpGet]
-        [Route("PingServer")]
-        public string PingServer()
-        {
-            return _provider.PingServer();
         }
 
         [HttpPut]

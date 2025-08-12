@@ -21,6 +21,7 @@ namespace TestAccountClient
         public OAuth2ClientProgram(IOAuth2Client oAuth2Client, IConfigurationHelper configurationHelper)
         {
             _oAuth2Client = oAuth2Client;
+            _accountServerConfig = new AccountServer();
 
             // Set the API endpoint and key from the configuration
             var config = configurationHelper.Settings as TestAccountConfig;

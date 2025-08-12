@@ -4,25 +4,17 @@
 using AccountServer.Provider;
 using AccountCommon.SharedModel;
 using Microsoft.AspNetCore.Mvc;
+using DFCommonLib.HttpApi;
 
 namespace AccountServer.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class ServerOAuth2Controller : ControllerBase
+    public class ServerOAuth2Controller : DFRestServerController
     {
         IServerOAuth2Provider _provider;
 
         public ServerOAuth2Controller(IServerOAuth2Provider provider)
         {
             _provider = provider;
-        }
-
-        [HttpGet]
-        [Route("PingServer")]
-        public string PingServer()
-        {
-            return _provider.PingServer();
         }
 
         [HttpPut]

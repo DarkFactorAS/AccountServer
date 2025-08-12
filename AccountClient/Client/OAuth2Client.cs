@@ -35,8 +35,7 @@ namespace AccountClientModule.Client
 
         public string PingServer()
         {
-            var result = Task.Run(async() => await _restClient.PingServer()).Result;
-            return result.message;
+            return _restClient.PingServer();
         }
 
         public async Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope)
