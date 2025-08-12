@@ -5,9 +5,9 @@ namespace AccountCommon.SharedModel
 {
     public class OAuth2CodeResponse : WebAPIData
     {
-        public string AccessToken { get; set; }
-        public string State { get; set; }
-        public string TokenType { get; set; }
+        public string? AccessToken { get; set; }
+        public string? State { get; set; }
+        public string? TokenType { get; set; }
         public int ExpiresIn { get; set; }
     }
 }

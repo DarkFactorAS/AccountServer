@@ -4,8 +4,8 @@ namespace AccountCommon.SharedModel
 {
     public class OAuth2CodeData
     {
-        public string Code { get; set; }
-        public string State { get; set; }
+        public string? Code { get; set; }
+        public string? State { get; set; }
 
         public OAuth2CodeData()
         {
