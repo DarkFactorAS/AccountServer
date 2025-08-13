@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: Account - CI Build
+name: Account Client - CI Build
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
 
     # Build Account Client
     - name: Add GitHub nuget repository
-      run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountClient/NuGet.config"
+      run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountClient/NuGet.config"
     - name: AccountClient - Restore dependencies
       run: dotnet restore AccountClient/AccountClient.csproj
     - name: AccountClient - Build
