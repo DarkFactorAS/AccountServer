@@ -23,11 +23,6 @@ env:
   # Dynamic environment variables
   PROJECT_NAME: AccountServer
 
-# Fetches the code from the project repository
-defaults:
-  run:
-    working-directory: AccountServer
-
 on:
   workflow_dispatch:
 
