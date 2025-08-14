@@ -88,7 +88,7 @@ jobs:
       # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
       # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --file=${{ env.PROJECT_NAME }} --sarif > snyk-code.sarif # || true
+        run: snyk code test --file=AccountServer.sln --sarif > snyk-code.sarif # || true
         # --file=./src/web-game/Globomantics.sln --severity-threshold=medium
 
       # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
