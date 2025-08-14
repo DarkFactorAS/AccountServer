@@ -12,9 +12,10 @@ namespace AccountClientModule.Client
 {
     public interface IOAuth2Client
     {
-        void SetEndpoint( string endpoint );
+        void SetEndpoint(string endpoint);
         string PingServer();
-        public Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope);
+        Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope);
+        Task<WebAPIData> VerifyToken(string token);
     }
 
     public class OAuth2Client : IOAuth2Client
@@ -90,6 +91,11 @@ namespace AccountClientModule.Client
             }
 
             return codeResult;
+        }
+
+        public async Task<WebAPIData> VerifyToken(string token)
+        {
+            return await _restClient.VerifyToken(token);
         }
 
         public static void SetupService(IServiceCollection services)

@@ -8,61 +8,88 @@ namespace AccountServer.Provider
     public interface IServerOAuth2SessionProvider : IDFUserSession
     {
         void SetClientId(string clientId);
-        void SetClientSecret(string clientSecret);
         void SetCode(string code);
         void SetState(string state);
+        void SetToken(string token);
+        void SetExpiresWhen(uint expiresWhen);
         string GetClientId();
-        string GetClientSecret();
         string GetCode();
         string GetState();
+        string GetToken();
+        uint GetExpiresWhen();
     }
 
     public class ServerOAuth2SessionProvider : DFUserSession, IServerOAuth2SessionProvider
     {
-        // TODO: Implement session management for OAuth2
+        public static readonly string SessionClientIdKey = "SessionClientIdKey";
+        public static readonly string SessionStateKey = "SessionStateIdKey";       
+        public static readonly string SessionCodeKey = "SessionCodeKey";
+        public static readonly string SessionTokenKey = "SessionTokenKey";
+        public static readonly string SessionExpiresWhenKey = "SessionExpiresWhenKey";
 
         public ServerOAuth2SessionProvider(IHttpContextAccessor httpContext) : base("ServerOAuth2", httpContext)
         {
         }
 
-        public void SetClientId(string clientId)
+        override public void RemoveSession()
         {
-            SetConfigString("ClientId", clientId);
+            RemoveConfig(SessionClientIdKey);
+            RemoveConfig(SessionStateKey);
+            RemoveConfig(SessionCodeKey);
+            RemoveConfig(SessionTokenKey);
+            RemoveConfig(SessionExpiresWhenKey);
         }
 
-        public void SetClientSecret(string clientSecret)
+
+        public void SetClientId(string clientId)
         {
-            SetConfigString("ClientSecret", clientSecret);
+            SetConfigString(SessionClientIdKey, clientId);
         }
 
         public string GetClientId()
         {
-            return GetConfigString("ClientId");
-        }
-
-        public string GetClientSecret()
-        {
-            return GetConfigString("ClientSecret");
+            return GetConfigString(SessionClientIdKey);
         }
 
         public void SetCode(string code)
         {
-            SetConfigString("Code", code);
+            SetConfigString(SessionCodeKey, code);
         }
 
         public string GetCode()
         {
-            return GetConfigString("Code");
+            return GetConfigString(SessionCodeKey);
         }
 
         public void SetState(string state)
         {
-            SetConfigString("State", state);
+            SetConfigString(SessionStateKey, state);
         }
 
         public string GetState()
         {
-            return GetConfigString("State");
+            return GetConfigString(SessionStateKey);
+        }
+
+        public string GetToken()
+        {
+            return GetConfigString(SessionTokenKey);
+        }
+
+        public void SetToken(string token)
+        {
+            SetConfigString(SessionTokenKey, token);
+        }
+
+        public uint GetExpiresWhen()
+        {
+            var expiresWhen = GetConfigInt(SessionExpiresWhenKey);
+            return (uint)(expiresWhen ?? 0);
+        }
+
+        public void SetExpiresWhen(uint expiresWhen)
+        {
+            SetConfigInt(SessionExpiresWhenKey, (int)expiresWhen);
         }
     }
 }

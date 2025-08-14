@@ -30,5 +30,12 @@ namespace AccountServer.Controllers
         {
             return _provider.Code(codeData);
         }
+
+        [HttpPut]
+        [Route("verifytoken")]
+        public string VerifyToken(OAuth2VerifyTokenData tokenData)
+        {
+            return _provider.VerifyToken(tokenData);
+        }
     }
 }

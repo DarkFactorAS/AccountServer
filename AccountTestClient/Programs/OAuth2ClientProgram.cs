@@ -79,15 +79,25 @@ namespace TestAccountClient
             OAuth2CodeResponse codeResponse = _oAuth2Client.LoginOAuth2Client(_accountServerConfig.ClientId, _accountServerConfig.ClientSecret, "read").Result;
 
             DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Login response: {codeResponse.errorCode} : {codeResponse.message}");
+            string accessToken = string.Empty;
             if (codeResponse is OAuth2CodeResponse)
             {
                 DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Login Code response: {codeResponse.AccessToken} : {codeResponse.TokenType}");
+                accessToken = codeResponse.AccessToken ?? string.Empty;
             }
 
-            // Additional operations can be added here, such as login or account creation
-            // var loginData = new LoginData { ... };
-            // var accountData = _accountClient.LoginAccount(loginData);
-            // DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Logged in account: {JsonConvert.SerializeObject(accountData)}");
+            _oAuth2Client.VerifyToken(accessToken).ContinueWith(task =>
+            {
+                if (task.IsCompletedSuccessfully)
+                {
+                    var verifyResult = task.Result;
+                    DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Verify Token result: {verifyResult.errorCode} : {verifyResult.message}");
+                }
+                else
+                {
+                    DFLogger.LogOutput(DFLogLevel.ERROR, programName, $"Verify Token failed: {task.Exception?.Message}");
+                }
+            });
         }
     }
 }

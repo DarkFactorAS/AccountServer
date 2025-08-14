@@ -16,6 +16,7 @@ namespace AccountServer.Model
     public class AccountConfig : AppSettings
     {
         public MailServer mailServer { get; set; }
-        public uint TokenHistoryExpirationDays { get; set; } = 60;
+        public uint OAuth2TokenExpiresInSeconds { get; set; } = 86400;
+        public uint LoginTokenHistoryExpirationDays { get; set; } = 180;
     }
 }

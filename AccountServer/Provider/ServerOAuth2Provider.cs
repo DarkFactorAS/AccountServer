@@ -19,6 +19,7 @@ namespace AccountServer.Provider
         string PingServer();
         OAuth2AuthResponse Auth(OAuth2ClientData clientData);
         OAuth2CodeResponse Code(OAuth2CodeData codeData);
+        string VerifyToken(OAuth2VerifyTokenData tokenData);
     }
 
     public class ServerOAuth2Provider : IServerOAuth2Provider
@@ -30,12 +31,22 @@ namespace AccountServer.Provider
         const int INVALID_CLIENT_ID = 1001;
         const int INVALID_CREDENTIALS = 1002;
 
-        public ServerOAuth2Provider(IServerOAuth2SessionProvider sessionProvider,
+        private uint tokenExpiresInSeconds = 86400; // 24 hours
+
+        public ServerOAuth2Provider(
+            IServerOAuth2SessionProvider sessionProvider,
+            IConfigurationHelper configurationHelper,
             IDFLogger<ServerOAuth2Provider> logger)
         {
             _logger = logger;
             _oauth2Clients = new OAuth2Clients();
             _sessionProvider = sessionProvider;
+
+            var accountConfig = configurationHelper.Settings as AccountConfig;
+            if (accountConfig != null && accountConfig.OAuth2TokenExpiresInSeconds > 0)
+            {
+                tokenExpiresInSeconds = accountConfig.OAuth2TokenExpiresInSeconds;
+            }
         }
 
         public string PingServer()
@@ -64,6 +75,7 @@ namespace AccountServer.Provider
 
             string code = Guid.NewGuid().ToString();
 
+            _sessionProvider.RemoveSession();
             _sessionProvider.SetClientId(client.ClientId);
             _sessionProvider.SetCode(code);
             _sessionProvider.SetState(clientData.State);
@@ -112,10 +124,48 @@ namespace AccountServer.Provider
                 AccessToken = accessToken,
                 State = sessionState,
                 TokenType = "Bearer",
-                ExpiresIn = 86400
+                ExpiresIn = tokenExpiresInSeconds
             };
 
+            uint expiresWhen = (uint)DateTime.UtcNow.AddSeconds(tokenExpiresInSeconds).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+
+            _sessionProvider.RemoveSession();
+            _sessionProvider.SetState(sessionState);
+            _sessionProvider.SetToken(accessToken);
+            _sessionProvider.SetExpiresWhen(expiresWhen);
+
             return responseCode;
+        }
+
+        public string VerifyToken(OAuth2VerifyTokenData tokenData)
+        {
+            if (tokenData == null || string.IsNullOrEmpty(tokenData.Token))
+            {
+                return "Invalid token data";
+            }
+
+            var token = tokenData.Token;
+
+            // Here you would typically verify the token against a database or cache.
+            // For this example, we will just log and return a success message.
+            _logger.LogInfo($"Verifying token: {token}");
+
+            var sessionToken = _sessionProvider.GetToken();
+            if (sessionToken != token)
+            {
+                _sessionProvider.RemoveSession();
+                return "Token is invalid";
+            }
+
+            uint timeNow = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+            uint expiresWhen = _sessionProvider.GetExpiresWhen();
+            if (expiresWhen < timeNow)
+            {
+                _sessionProvider.RemoveSession();
+                return "Token has expired";
+            }
+
+            return "Token is valid";
         }
 
         private OAuth2AuthResponse ReturnAuthError(int errorCode)
