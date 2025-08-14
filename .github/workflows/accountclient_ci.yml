@@ -21,7 +21,7 @@ env:
   # Static environment variables
   CONFIGURATION: Release
   NUGET_SOURCE: DarkFactorAS
-  BUILD_TIMEOUT: 15
+#  BUILD_TIMEOUT: 15
 
 defaults:
   run:
@@ -31,7 +31,7 @@ jobs:
   build:
 
     # Timeout for the job
-    timeout-minutes: ${{ env.BUILD_TIMEOUT }}
+    timeout-minutes: 15
 
     runs-on: ubuntu-latest
 
