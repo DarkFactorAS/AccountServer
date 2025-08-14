@@ -12,7 +12,6 @@ env:
   PROJECT_NAME: AccountClient
 
   # Static environment variables
-  BUILD_TIMEOUT: 15
   CONFIGURATION: Release
   NUGET_SOURCE: DarkFactorAS
   
@@ -24,7 +23,7 @@ jobs:
   build:
 
     # Timeout for the job
-    timeout-minutes: ${{ env.BUILD_TIMEOUT }}
+    timeout-minutes: 15
 
     runs-on: ubuntu-latest
 

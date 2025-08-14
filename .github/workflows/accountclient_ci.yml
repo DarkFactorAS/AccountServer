@@ -21,7 +21,6 @@ env:
   # Static environment variables
   CONFIGURATION: Release
   NUGET_SOURCE: DarkFactorAS
-#  BUILD_TIMEOUT: 15
 
 defaults:
   run:
