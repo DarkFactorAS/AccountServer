@@ -39,9 +39,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4    
 
-    # Build Account Client
-    - name: Add GitHub nuget repository
-      run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "NuGet.config"
+    # Build Account Server
+    - name: ${{ env.PROJECT_NAME }} - Add GitHub nuget repository
+      run: dotnet nuget add source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text
+      # --configfile "NuGet.config"
 
     - name: ${{ env.PROJECT_NAME }} - Restore dependencies
       run: dotnet restore ${{ env.PROJECT_NAME }}.csproj
