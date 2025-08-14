@@ -6,8 +6,8 @@
 name: Account Server - CI Docker Container
 env:
   PROJECT_NAME: AccountServer
+  DOCKER_PATH: .
   DOCKER_NAME: accountserver-ci
-  CONFIGURATION: Release
 
 defaults:
   run:
@@ -34,6 +34,7 @@ jobs:
     # Static variables used in the workflow
     env:
       TIMESTAMP: ${{ github.sha }}
+      CONFIGURATION: Release
 
     # Use a self-hosted runner
     runs-on: self-hosted
@@ -50,4 +51,4 @@ jobs:
 
     # Build the Docker image
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_NAME }}-image-ci:${{ env.TIMESTAMP }} --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build . --file ${{ env.DOCKER_PATH }}/Dockerfile --tag ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }} --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}

@@ -6,10 +6,9 @@
 name: Account Server - Deploy Docker Container
 env:
   PROJECT_NAME: AccountServer
+  DOCKER_PATH: .
   DOCKER_NAME: accountserver
   EXTERNAL_PORT: 5100
-  CONFIGURATION: Release
-  ASPNETCORE_ENVIRONMENT: Production
 
 defaults:
   run:
@@ -32,6 +31,8 @@ jobs:
     env:
       TIMESTAMP: ${{ github.sha }}
       INTERNAL_PORT: 8080
+      CONFIGURATION: Release
+      ASPNETCORE_ENVIRONMENT: Production
 
     # To be able to deploy on the local server
     runs-on: self-hosted
@@ -43,17 +44,17 @@ jobs:
     - name: Create prod file
       uses: bluwy/substitute-string-action@v3
       with:
-        _input-file: Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
+        _input-file: ${{ env.PROJECT_NAME }}/Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
         DATABASE.SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE.PORT: ${{ vars.DATABASE_PORT }}
         DATABASE.USERNAME: ${{ secrets.DATABASE_USERNAME }}
         DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         DATABASE.NAME: ${{ vars.DATABASE_NAME }}
-        _output-file: Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
+        _output-file: ${{ env.PROJECT_NAME }}/Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
 
     # Build the image
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build ${{ env.DOCKER_PATH }} --file Dockerfile --tag ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
 
     - name: Stop old Docker container
       run:
