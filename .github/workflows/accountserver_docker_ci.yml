@@ -1,0 +1,54 @@
+#
+# Build CI file for Docker container
+# Change the variables in this section to match your project
+#
+
+name: Account Server - CI Docker Container
+env:
+  PROJECT_NAME: AccountServer
+  DOCKER_PATH: .
+  DOCKER_NAME: accountserver-ci
+
+defaults:
+  run:
+    working-directory: .
+
+#
+# Everything below this is template code
+#
+
+on:
+  push:
+    paths:
+      - '.github/workflows/accountserver_docker_ci.yml'
+  pull_request:
+    branches: ["master"]    
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    # 15 minute timeout
+    timeout-minutes: 15
+
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+      CONFIGURATION: Release
+
+    # Use a self-hosted runner
+    runs-on: self-hosted
+
+    # Build steps
+    steps:
+
+    # Check out code from the repository
+    - name: Checkout repository
+      uses: actions/checkout@v4      
+
+    - name: Remove old Docker images with no containers
+      run: docker image prune --force
+
+    # Build the Docker image
+    - name: Build Docker image
+      run: docker build . --file ${{ env.DOCKER_PATH }}/Dockerfile --tag ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }} --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
