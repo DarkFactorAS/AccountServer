@@ -6,6 +6,7 @@
 name: Account Server - CI Docker Container
 env:
   PROJECT_NAME: AccountServer
+  DOCKER_NAME: accountserver-ci
   CONFIGURATION: Release
 
 defaults:
@@ -30,6 +31,10 @@ jobs:
     # 15 minute timeout
     timeout-minutes: 15
 
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+
     # Use a self-hosted runner
     runs-on: self-hosted
 
@@ -40,6 +45,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4      
 
+    - name: Remove old Docker images with no containers
+      run: docker image prune --force
+
     # Build the Docker image
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.PROJECT_NAME }}-image-ci:$(date +%s) --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_NAME }}-image-ci:${{ env.TIMESTAMP }} --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}

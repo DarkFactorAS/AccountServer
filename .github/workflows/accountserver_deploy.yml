@@ -1,25 +1,39 @@
-name: Account Server - Deploy Docker Container
+#
+# Build Deploy file for Docker container
+# Change the variables in this section to match your project
+#
 
-on:
-#  push:
-#    branches: [ "Bots" ]
-  workflow_dispatch:
-   
+name: Account Server - Deploy Docker Container
 env:
-  TIMESTAMP: ${{ github.sha }}
-  CONTAINER_NAME: accountserver
-  IMAGE_NAME: accountserverimage
+  PROJECT_NAME: AccountServer
+  DOCKER_NAME: accountserver
   EXTERNAL_PORT: 5100
-  INTERNAL_PORT: 8080
-  CONFIG_FILE: AccountServer/Config/appsettings.Production.json
+  CONFIGURATION: Release
   ASPNETCORE_ENVIRONMENT: Production
 
-jobs:
+defaults:
+  run:
+    working-directory: .
 
+#
+# Everything below this is template code
+#
+
+on:
+  workflow_dispatch:
+
+jobs:
   build:
-    # 15 minute timeout
+
+    # Timeout for the job
     timeout-minutes: 15
 
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+      INTERNAL_PORT: 8080
+
+    # To be able to deploy on the local server
     runs-on: self-hosted
 
     steps:
@@ -29,31 +43,27 @@ jobs:
     - name: Create prod file
       uses: bluwy/substitute-string-action@v3
       with:
-        _input-file: ${{ env.CONFIG_FILE }}
+        _input-file: Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
         DATABASE.SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE.PORT: ${{ vars.DATABASE_PORT }}
-        DATABASE.USERNAME: ${{ vars.DATABASE_USERNAME }}
+        DATABASE.USERNAME: ${{ secrets.DATABASE_USERNAME }}
         DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         DATABASE.NAME: ${{ vars.DATABASE_NAME }}
-        _output-file: ${{ env.CONFIG_FILE }}
+        _output-file: Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
 
-    # Remove all unused images, containers, volumes, networks, and build cache
-    - name: Prune old Docker builds
-      run:
-        docker image prune -a -f
-
+    # Build the image
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}  --build-arg username=${{ vars.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
 
     - name: Stop old Docker container
       run:
-        docker stop ${{ env.CONTAINER_NAME }} || true
+        docker stop ${{ env.DOCKER_NAME }} || true
 
     - name: Delete old Docker container
       run:
-        docker rm ${{ env.CONTAINER_NAME }} || true
+        docker rm ${{ env.DOCKER_NAME }} || true
 
     - name: Run Docker container
       run:
-        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.DOCKER_NAME }} ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }}
 
