@@ -19,11 +19,15 @@ env:
   PROJECT_NAME: AccountClient
 
   # Static environment variables
-  ASPNETCORE_ENVIRONMENT: Production
+  CONFIGURATION: Release
+  NUGET_SOURCE: DarkFactorAS
   BUILD_TIMEOUT: 15
 
 jobs:
   build:
+
+    # Timeout for the job
+    timeout-minutes: ${{ env.BUILD_TIMEOUT }}
 
     runs-on: ubuntu-latest
 
@@ -36,10 +40,10 @@ jobs:
 
     # Build Account Client
     - name: Add GitHub nuget repository
-      run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "${{ env.PROJECT_NAME }}/NuGet.config"
+      run: dotnet nuget update source ${{ env.NUGET_SOURCE }} --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "${{ env.PROJECT_NAME }}/NuGet.config"
 
     - name: AccountClient - Restore dependencies
       run: dotnet restore ${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj
 
     - name: AccountClient - Build
-      run: dotnet build ${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj --no-restore --configuration ${{ env.ASPNETCORE_ENVIRONMENT }}
+      run: dotnet build ${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj --no-restore --configuration ${{ env.CONFIGURATION }}
