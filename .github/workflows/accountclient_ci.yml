@@ -1,30 +1,26 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+#
+# Build CI file
+# Change the variables in this section to match your project
+#
 
 name: Account Client - CI Build
-
-on:
-  push:
-    paths:
-      - 'AccountClient/**'
-      - 'AccountCommon/**'
-      - '.github/workflows/accountclient_ci.yml'
-      - '.github/workflows/accountclient_deploy.yml'
-
-  pull_request:
-
-# Environment variables used in the workflow
 env:
-  # Dynamic environment variables
   PROJECT_NAME: AccountClient
-
-  # Static environment variables
   CONFIGURATION: Release
-  NUGET_SOURCE: DarkFactorAS
 
 defaults:
   run:
     working-directory: ./AccountClient
+
+#
+# Everything below this is template code
+#
+
+on:
+  push:
+  workflow_dispatch:
+  pull_request:
+    branches: ["master"]
 
 jobs:
   build:
@@ -43,10 +39,10 @@ jobs:
 
     # Build Account Client
     - name: Add GitHub nuget repository
-      run: dotnet nuget update source ${{ env.NUGET_SOURCE }} --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "NuGet.config"
+      run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "NuGet.config"
 
-    - name: AccountClient - Restore dependencies
+    - name: ${{ env.PROJECT_NAME }} - Restore dependencies
       run: dotnet restore ${{ env.PROJECT_NAME }}.csproj
 
-    - name: AccountClient - Build
+    - name: ${{ env.PROJECT_NAME }} - Build
       run: dotnet build ${{ env.PROJECT_NAME }}.csproj --no-restore --configuration ${{ env.CONFIGURATION }}
