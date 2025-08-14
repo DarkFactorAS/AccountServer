@@ -74,12 +74,14 @@ namespace AccountServer
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
+
                 services.AddTransient<IStartupDatabasePatcher, AccountDatabasePatcher>();
                 services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
                 services.AddTransient<IServerOAuth2Provider, ServerOAuth2Provider>();
                 services.AddTransient<IServerOAuth2SessionProvider, ServerOAuth2SessionProvider>();
+                services.AddTransient<IServerOAuth2Repository, ServerOAuth2Repository>();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 MailClient.SetupService(services);
             })

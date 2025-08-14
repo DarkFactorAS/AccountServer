@@ -10,7 +10,9 @@ using DFCommonLib.HttpApi;
 
 using AccountCommon.SharedModel;
 using AccountServer.Model;
+using AccountServer.Repository;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace AccountServer.Provider
 {
@@ -25,8 +27,9 @@ namespace AccountServer.Provider
     public class ServerOAuth2Provider : IServerOAuth2Provider
     {
         IDFLogger<ServerOAuth2Provider> _logger;
-        OAuth2Clients _oauth2Clients;
+        IList<OAuth2Client> _oauth2Clients;
         IServerOAuth2SessionProvider _sessionProvider;
+        IServerOAuth2Repository _serverOAuth2Repository;
 
         const int INVALID_CLIENT_ID = 1001;
         const int INVALID_CREDENTIALS = 1002;
@@ -36,16 +39,26 @@ namespace AccountServer.Provider
         public ServerOAuth2Provider(
             IServerOAuth2SessionProvider sessionProvider,
             IConfigurationHelper configurationHelper,
+            IServerOAuth2Repository serverOAuth2Repository,
             IDFLogger<ServerOAuth2Provider> logger)
         {
             _logger = logger;
-            _oauth2Clients = new OAuth2Clients();
+            _oauth2Clients = null;
             _sessionProvider = sessionProvider;
+            _serverOAuth2Repository = serverOAuth2Repository;
 
             var accountConfig = configurationHelper.Settings as AccountConfig;
             if (accountConfig != null && accountConfig.OAuth2TokenExpiresInSeconds > 0)
             {
                 tokenExpiresInSeconds = accountConfig.OAuth2TokenExpiresInSeconds;
+            }
+        }
+
+        private void GetOAuth2Clients()
+        {
+            if ( _oauth2Clients == null )
+            {
+                _oauth2Clients = _serverOAuth2Repository.GetOAuth2Clients();
             }
         }
 
@@ -57,12 +70,24 @@ namespace AccountServer.Provider
 
         public OAuth2AuthResponse Auth(OAuth2ClientData clientData)
         {
+            GetOAuth2Clients();
+
             if (clientData == null)
             {
                 return ReturnAuthError(INVALID_CLIENT_ID);
             }
 
-            var client = _oauth2Clients.GetClientById(clientData.ClientId);
+            if (_oauth2Clients == null)
+            {
+                return ReturnAuthError(INVALID_CLIENT_ID);
+            }
+
+            if (_oauth2Clients.Count == 0)
+            {
+                return ReturnAuthError(INVALID_CLIENT_ID);
+            }
+
+            var client = _oauth2Clients.FirstOrDefault(c => c.ClientId == clientData.ClientId);
             if (client == null)
             {
                 return ReturnAuthError(INVALID_CLIENT_ID);
