@@ -70,7 +70,9 @@ jobs:
 
       # Add nuget source
       - name: NuGet update
-        run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "NuGet.config"
+        run: 
+          dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountServer/NuGet.config"
+          dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "AccountClient/NuGet.config"
 
       # Restore
       - name: Restore dependencies
