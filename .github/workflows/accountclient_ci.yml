@@ -18,6 +18,8 @@ defaults:
 
 on:
   push:
+    branches-ignore: ["master"]
+    paths-ignore: [".github/workflows/**"]
   workflow_dispatch:
   pull_request:
     branches: ["master"]
