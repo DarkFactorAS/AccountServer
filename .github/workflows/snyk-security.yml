@@ -16,7 +16,17 @@
 # For more examples, including how to limit scans to only high-severity issues
 # and fail PR checks, see https://github.com/snyk/actions/
 
-name: Snyk Security
+name: Account Server - Snyk Security
+
+# Environment variables used in the workflow
+env:
+  # Dynamic environment variables
+  PROJECT_NAME: AccountServer
+
+# Fetches the code from the project repository
+defaults:
+  run:
+    working-directory: AccountServer
 
 on:
   workflow_dispatch:
@@ -36,7 +46,9 @@ jobs:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
@@ -58,41 +70,35 @@ jobs:
       # Setup C# .Net
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 7.0.x
+
+      # Add nuget source
+      - name: NuGet update
+        run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "NuGet.config"
 
       # Restore
       - name: Restore dependencies
-        run: dotnet restore ${{ vars.SOLUTION }}
+        run: dotnet restore
 
       # Build solution
       - name: Build
-        run: dotnet build ${{ vars.SOLUTION }} --no-restore
+        run: dotnet build --no-restore
 
-        # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
-        # Use || true to not fail the pipeline
+      # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
+      # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --file=${{ vars.SOLUTION }} --sarif > snyk-code.sarif # || true
+        run: snyk code test --file=${{ env.PROJECT_NAME }} --sarif > snyk-code.sarif # || true
         # --file=./src/web-game/Globomantics.sln --severity-threshold=medium
 
-        # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
+      # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
       - name: Snyk Open Source monitor
         run: snyk monitor --all-projects
 
-        # Runs Snyk Infrastructure as Code (IaC) analysis and uploads result to Snyk.
-        # Use || true to not fail the pipeline.
+      # Runs Snyk Infrastructure as Code (IaC) analysis and uploads result to Snyk.
+      # Use || true to not fail the pipeline.
       - name: Snyk IaC test and report
         run: snyk iac test --report # || true
 
-        # Build the docker image for testing
-      #- name: Build a Docker image
-      #  run: docker build -t your/image-to-test .
-
-        # Runs Snyk Container (Container and SCA) analysis and uploads result to Snyk.
-      #- name: Snyk Container monitor
-      #  run: snyk container monitor your/image-to-test --file=Dockerfile
-
-        # Push the Snyk Code results into GitHub Code Scanning tab
+      # Push the Snyk Code results into GitHub Code Scanning tab
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
