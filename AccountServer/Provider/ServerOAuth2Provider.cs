@@ -13,6 +13,8 @@ using AccountServer.Model;
 using AccountServer.Repository;
 using Newtonsoft.Json;
 using System.Linq;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace AccountServer.Provider
 {
@@ -21,7 +23,6 @@ namespace AccountServer.Provider
         string PingServer();
         OAuth2AuthResponse Auth(OAuth2ClientData clientData);
         OAuth2CodeResponse Code(OAuth2CodeData codeData);
-        string VerifyToken(OAuth2VerifyTokenData tokenData);
     }
 
     public class ServerOAuth2Provider : IServerOAuth2Provider
@@ -30,6 +31,7 @@ namespace AccountServer.Provider
         IList<OAuth2Client> _oauth2Clients;
         IServerOAuth2SessionProvider _sessionProvider;
         IServerOAuth2Repository _serverOAuth2Repository;
+        private string _tokenIssuer = "serveroauth2";
 
         const int INVALID_CLIENT_ID = 1001;
         const int INVALID_CREDENTIALS = 1002;
@@ -48,15 +50,17 @@ namespace AccountServer.Provider
             _serverOAuth2Repository = serverOAuth2Repository;
 
             var accountConfig = configurationHelper.Settings as AccountConfig;
-            if (accountConfig != null && accountConfig.OAuth2TokenExpiresInSeconds > 0)
+            if (accountConfig != null && accountConfig.OAuth2Config != null)
             {
-                tokenExpiresInSeconds = accountConfig.OAuth2TokenExpiresInSeconds;
+                var oauth2 = accountConfig.OAuth2Config;
+                tokenExpiresInSeconds = oauth2.TokenExpiresInSeconds;
+                _tokenIssuer = oauth2.ServerIssuer;
             }
         }
 
         private void GetOAuth2Clients()
-        {
-            if ( _oauth2Clients == null )
+       {
+            if (_oauth2Clients == null)
             {
                 _oauth2Clients = _serverOAuth2Repository.GetOAuth2Clients();
             }
@@ -105,6 +109,9 @@ namespace AccountServer.Provider
             _sessionProvider.SetCode(code);
             _sessionProvider.SetState(clientData.State);
 
+            // TODO: Set minimum scope
+            _sessionProvider.SetScope(client.Scope);
+
             return new OAuth2AuthResponse
             {
                 Code = code,
@@ -142,7 +149,10 @@ namespace AccountServer.Provider
                 return ReturnOAuth2CodeError(INVALID_CREDENTIALS);
             }
 
-            string accessToken = Guid.NewGuid().ToString();
+            //var sessionScope = _sessionProvider.GetScope();
+            var jwtSecret = CreateString(32); // Generate a random secret for JWT signing
+
+            string accessToken = GenerateJwtToken(jwtSecret, sessionClientId, _tokenIssuer, tokenExpiresInSeconds);
 
             var responseCode = new OAuth2CodeResponse
             {
@@ -152,45 +162,12 @@ namespace AccountServer.Provider
                 ExpiresIn = tokenExpiresInSeconds
             };
 
-            uint expiresWhen = (uint)DateTime.UtcNow.AddSeconds(tokenExpiresInSeconds).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-
-            _sessionProvider.RemoveSession();
-            _sessionProvider.SetState(sessionState);
+            _sessionProvider.SetCode(null); // Clear code after use
             _sessionProvider.SetToken(accessToken);
-            _sessionProvider.SetExpiresWhen(expiresWhen);
+            _sessionProvider.SetServerSecret(jwtSecret);
+            _sessionProvider.SetIssuer(_tokenIssuer);
 
             return responseCode;
-        }
-
-        public string VerifyToken(OAuth2VerifyTokenData tokenData)
-        {
-            if (tokenData == null || string.IsNullOrEmpty(tokenData.Token))
-            {
-                return "Invalid token data";
-            }
-
-            var token = tokenData.Token;
-
-            // Here you would typically verify the token against a database or cache.
-            // For this example, we will just log and return a success message.
-            _logger.LogInfo($"Verifying token: {token}");
-
-            var sessionToken = _sessionProvider.GetToken();
-            if (sessionToken != token)
-            {
-                _sessionProvider.RemoveSession();
-                return "Token is invalid";
-            }
-
-            uint timeNow = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-            uint expiresWhen = _sessionProvider.GetExpiresWhen();
-            if (expiresWhen < timeNow)
-            {
-                _sessionProvider.RemoveSession();
-                return "Token has expired";
-            }
-
-            return "Token is valid";
         }
 
         private OAuth2AuthResponse ReturnAuthError(int errorCode)
@@ -214,7 +191,7 @@ namespace AccountServer.Provider
 
             return returnObject;
         }
-        
+
         private string GetErrorMessage(int errorCode)
         {
             return errorCode switch
@@ -224,5 +201,46 @@ namespace AccountServer.Provider
                 _ => "Unknown error"
             };
         }
+
+        // TODO: Replace with DFCommonUtil.Crypt
+        public string GenerateJwtToken(string secret, string audience, string issuer, uint expiresIn = 1)
+        {
+            // Enforce minimum secret length for security (e.g., 32 characters for HMAC-SHA256)
+            if (string.IsNullOrEmpty(secret) || secret.Length < 32)
+            {
+                throw new ArgumentException("JWT secret is too short. It must be at least 32 characters long for adequate security.", nameof(secret));
+            }
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var timeSpan = TimeSpan.FromMinutes(expiresIn);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                //Subject = new System.Security.Claims.ClaimsIdentity(claims.Select(c => new System.Security.Claims.Claim(c.Key, c.Value))),
+                Expires = DateTime.UtcNow.Add(timeSpan),
+                SigningCredentials = credentials,
+                Audience = audience,
+                Issuer = issuer
+            };
+
+            var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
+
+        private string CreateString(int stringLength)
+        {
+            Random rd = new Random();
+            const string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
+            char[] chars = new char[stringLength];
+
+            for (int i = 0; i < stringLength; i++)
+            {
+                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+            }
+
+            return new string(chars);
+        }        
    }
 }

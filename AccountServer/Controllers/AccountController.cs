@@ -8,17 +8,18 @@ using AccountCommon.SharedModel;
 using AccountServer.Model;
 using AccountServer.Provider;
 using DFCommonLib.HttpApi;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AccountServer.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountController : DFRestServerController
     {
-        ILogger<AccountController> _logger;
         IAccountProvider _provider;
 
-        public AccountController(ILogger<AccountController> logger, IAccountProvider provider)
+        public AccountController(IAccountProvider provider)
         {
-            _logger = logger;
             _provider = provider;
         }
 
@@ -45,28 +46,28 @@ namespace AccountServer.Controllers
 
         [HttpPut]
         [Route("CreateAccount")]
-        public AccountData CreateAccount( CreateAccountData createAccountData )
+        public AccountData CreateAccount(CreateAccountData createAccountData)
         {
             return _provider.CreateAccount(createAccountData);
         }
 
         [HttpPut]
         [Route("ResetPasswordWithEmail")]
-        public ReturnData ResetPasswordWithEmail( ResetPasswordDataEmail resetPasswordDataEmail )
+        public ReturnData ResetPasswordWithEmail(ResetPasswordDataEmail resetPasswordDataEmail)
         {
             return _provider.ResetPasswordWithEmail(resetPasswordDataEmail.emailAddress);
         }
 
         [HttpPut]
         [Route("ResetPasswordWithCode")]
-        public ReturnData ResetPasswordWithCode( ResetPasswordDataCode resetPasswordDataCode )
+        public ReturnData ResetPasswordWithCode(ResetPasswordDataCode resetPasswordDataCode)
         {
             return _provider.ResetPasswordWithCode(resetPasswordDataCode.code, resetPasswordDataCode.emailAddress);
         }
 
         [HttpPut]
         [Route("ResetPasswordWithToken")]
-        public ReturnData ResetPasswordWithToken( ResetPasswordDataToken resetPasswordDataToken )
+        public ReturnData ResetPasswordWithToken(ResetPasswordDataToken resetPasswordDataToken)
         {
             return _provider.ResetPasswordWithToken(resetPasswordDataToken.token, resetPasswordDataToken.password);
         }

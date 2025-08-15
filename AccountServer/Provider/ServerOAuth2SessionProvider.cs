@@ -11,21 +11,28 @@ namespace AccountServer.Provider
         void SetCode(string code);
         void SetState(string state);
         void SetToken(string token);
-        void SetExpiresWhen(uint expiresWhen);
+        void SetScope(string scope);
+        void SetIssuer(string issuer);
+
+        void SetServerSecret(string serverSecret);
         string GetClientId();
         string GetCode();
         string GetState();
         string GetToken();
-        uint GetExpiresWhen();
+        string GetScope();
+        string GetServerSecret();
+        string GetIssuer();
     }
 
     public class ServerOAuth2SessionProvider : DFUserSession, IServerOAuth2SessionProvider
     {
         public static readonly string SessionClientIdKey = "SessionClientIdKey";
-        public static readonly string SessionStateKey = "SessionStateIdKey";       
+        public static readonly string SessionStateKey = "SessionStateIdKey";
         public static readonly string SessionCodeKey = "SessionCodeKey";
         public static readonly string SessionTokenKey = "SessionTokenKey";
-        public static readonly string SessionExpiresWhenKey = "SessionExpiresWhenKey";
+        public static readonly string SessionScopeKey = "SessionScopeKey";
+        public static readonly string SessionServerSecretKey = "SessionServerSecretKey";
+        public static readonly string SessionIssuerKey = "SessionIssuerKey";
 
         public ServerOAuth2SessionProvider(IHttpContextAccessor httpContext) : base("ServerOAuth2", httpContext)
         {
@@ -37,7 +44,9 @@ namespace AccountServer.Provider
             RemoveConfig(SessionStateKey);
             RemoveConfig(SessionCodeKey);
             RemoveConfig(SessionTokenKey);
-            RemoveConfig(SessionExpiresWhenKey);
+            RemoveConfig(SessionScopeKey);
+            RemoveConfig(SessionServerSecretKey);
+            RemoveConfig(SessionIssuerKey);
         }
 
 
@@ -81,15 +90,34 @@ namespace AccountServer.Provider
             SetConfigString(SessionTokenKey, token);
         }
 
-        public uint GetExpiresWhen()
+        public void SetScope(string scope)
         {
-            var expiresWhen = GetConfigInt(SessionExpiresWhenKey);
-            return (uint)(expiresWhen ?? 0);
+            SetConfigString(SessionScopeKey, scope);
         }
 
-        public void SetExpiresWhen(uint expiresWhen)
+        public string GetScope()
         {
-            SetConfigInt(SessionExpiresWhenKey, (int)expiresWhen);
+            return GetConfigString(SessionScopeKey);
+        }
+
+        public void SetServerSecret(string serverSecret)
+        {
+            SetConfigString(SessionServerSecretKey, serverSecret);
+        }
+
+        public string GetServerSecret()
+        {
+            return GetConfigString(SessionServerSecretKey);
+        }
+
+        public void SetIssuer(string issuer)
+        {
+            SetConfigString(SessionIssuerKey, issuer);
+        }
+
+        public string GetIssuer()
+        {
+            return GetConfigString(SessionIssuerKey);
         }
     }
 }
