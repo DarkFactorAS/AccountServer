@@ -31,7 +31,7 @@ namespace TestAccountClient
         public void Run()
         {
             // Example usage of the account client
-            var pingResult = _accountClient.PingServer();
+            var pingResult = _accountClient.Ping().Result;
             DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Ping result: {pingResult}");
 
             // Additional operations can be added here, such as login or account creation

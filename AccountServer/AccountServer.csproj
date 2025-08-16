@@ -9,7 +9,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.0" />
-    <PackageReference Include="DarkFactor.Common.Lib" Version="1.5.5" />
+    <PackageReference Include="DarkFactor.Common.Lib" Version="1.5.7" />
     <PackageReference Include="DarkFactor.MailClient.Lib" Version="1.1.0" />
   </ItemGroup>
 

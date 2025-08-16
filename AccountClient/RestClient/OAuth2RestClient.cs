@@ -36,12 +36,12 @@ namespace AccountClientModule.RestClient
 
         public async Task<OAuth2AuthResponse> LoginOAuth2Client(OAuth2ClientData oauth2ClientData)
         {
-            return await PutData<OAuth2AuthResponse>(POST_AUTH, "Auth", oauth2ClientData);
+            return await PutDataAs<OAuth2AuthResponse>(POST_AUTH, "Auth", oauth2ClientData);
         }
 
         public async Task<OAuth2CodeResponse> LoginOAuth2WithCode(OAuth2CodeData codeData)
         {
-            return await PutData<OAuth2CodeResponse>(POST_CODE, "Code", codeData);
+            return await PutDataAs<OAuth2CodeResponse>(POST_CODE, "Code", codeData);
         }
 
         public async Task<WebAPIData> VerifyToken(string token)

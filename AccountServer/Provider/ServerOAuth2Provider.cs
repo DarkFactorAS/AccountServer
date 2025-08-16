@@ -172,12 +172,12 @@ namespace AccountServer.Provider
 
         private OAuth2AuthResponse ReturnAuthError(int errorCode)
         {
-            return ReturnWebAPIError(new WebAPIData(), errorCode) as OAuth2AuthResponse;
+            return ReturnWebAPIError(new OAuth2AuthResponse(), errorCode) as OAuth2AuthResponse;
         }
 
         private OAuth2CodeResponse ReturnOAuth2CodeError(int errorCode)
         {
-            return ReturnWebAPIError(new WebAPIData(), errorCode) as OAuth2CodeResponse;
+            return ReturnWebAPIError(new OAuth2CodeResponse(), errorCode) as OAuth2CodeResponse;
         }
 
         private WebAPIData ReturnWebAPIError(WebAPIData returnObject, int errorCode)

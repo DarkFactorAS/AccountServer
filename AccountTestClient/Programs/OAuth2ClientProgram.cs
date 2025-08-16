@@ -73,31 +73,16 @@ namespace TestAccountClient
         public void Run()
         {
             // Example usage of the account client
-            var pingResult = _oAuth2Client.PingServer();
-            DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Ping result: {pingResult}");
+            var pingResult = _oAuth2Client.Ping().Result;
+            DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Ping result: {pingResult.message}");
 
             OAuth2CodeResponse codeResponse = _oAuth2Client.LoginOAuth2Client(_accountServerConfig.ClientId, _accountServerConfig.ClientSecret, "read").Result;
 
             DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Login response: {codeResponse.errorCode} : {codeResponse.message}");
-            string accessToken = string.Empty;
-            if (codeResponse is OAuth2CodeResponse)
+            if (codeResponse != null && codeResponse.AccessToken != null && codeResponse.TokenType != null)
             {
                 DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Login Code response: {codeResponse.AccessToken} : {codeResponse.TokenType}");
-                accessToken = codeResponse.AccessToken ?? string.Empty;
             }
-
-            _oAuth2Client.VerifyToken(accessToken).ContinueWith(task =>
-            {
-                if (task.IsCompletedSuccessfully)
-                {
-                    var verifyResult = task.Result;
-                    DFLogger.LogOutput(DFLogLevel.INFO, programName, $"Verify Token result: {verifyResult.errorCode} : {verifyResult.message}");
-                }
-                else
-                {
-                    DFLogger.LogOutput(DFLogLevel.ERROR, programName, $"Verify Token failed: {task.Exception?.Message}");
-                }
-            });
         }
     }
 }

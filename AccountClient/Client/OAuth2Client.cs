@@ -10,33 +10,21 @@ using AccountClientModule.Provider;
 
 namespace AccountClientModule.Client
 {
-    public interface IOAuth2Client
+    public interface IOAuth2Client : IDFClient
     {
-        void SetEndpoint(string endpoint);
-        string PingServer();
         Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope);
         Task<WebAPIData> VerifyToken(string token);
     }
 
-    public class OAuth2Client : IOAuth2Client
+    public class OAuth2Client : DFClient, IOAuth2Client
     {
         IOAuth2RestClient _restClient;
         IAccountSessionProvider _sessionProvider;
 
-        public OAuth2Client(IOAuth2RestClient restClient, IAccountSessionProvider sessionProvider)
+        public OAuth2Client(IOAuth2RestClient restClient, IAccountSessionProvider sessionProvider) : base(restClient)
         {
             _restClient = restClient;
             _sessionProvider = sessionProvider;
-        }
-
-        public void SetEndpoint( string endpoint)
-        {
-            _restClient.SetEndpoint(endpoint);
-        }
-
-        public string PingServer()
-        {
-            return _restClient.PingServer();
         }
 
         public async Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope)
