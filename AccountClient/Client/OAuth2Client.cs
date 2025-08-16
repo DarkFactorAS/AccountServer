@@ -81,11 +81,6 @@ namespace AccountClientModule.Client
             return codeResult;
         }
 
-        public async Task<WebAPIData> VerifyToken(string token)
-        {
-            return await _restClient.VerifyToken(token);
-        }
-
         public static void SetupService(IServiceCollection services)
         {
             services.AddTransient<IOAuth2RestClient, OAuth2RestClient>();

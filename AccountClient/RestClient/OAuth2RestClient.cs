@@ -16,14 +16,12 @@ namespace AccountClientModule.RestClient
     {
         public Task<OAuth2AuthResponse> LoginOAuth2Client(OAuth2ClientData oauth2ClientData);
         public Task<OAuth2CodeResponse> LoginOAuth2WithCode(OAuth2CodeData codeData);
-        public Task<WebAPIData> VerifyToken(string token);
     }
 
     public class OAuth2RestClient : DFRestClient, IOAuth2RestClient
     {
         private const int POST_AUTH = 1;
         private const int POST_CODE = 2;
-        private const int POST_VERIFY_TOKEN = 3;
 
         public OAuth2RestClient() : base()
         {
@@ -42,11 +40,6 @@ namespace AccountClientModule.RestClient
         public async Task<OAuth2CodeResponse> LoginOAuth2WithCode(OAuth2CodeData codeData)
         {
             return await PutDataAs<OAuth2CodeResponse>(POST_CODE, "Code", codeData);
-        }
-
-        public async Task<WebAPIData> VerifyToken(string token)
-        {
-            return await PutData(POST_VERIFY_TOKEN, "VerifyToken", new OAuth2VerifyTokenData(token));
         }
     }
 }
