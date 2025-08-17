@@ -13,7 +13,6 @@ namespace AccountClientModule.Client
     public interface IOAuth2Client : IDFClient
     {
         Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope);
-        Task<WebAPIData> VerifyToken(string token);
     }
 
     public class OAuth2Client : DFClient, IOAuth2Client
