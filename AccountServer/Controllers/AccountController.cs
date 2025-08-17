@@ -13,7 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AccountServer.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // TODO: Renable this when client is ready
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountController : DFRestServerController
     {
         IAccountProvider _provider;
@@ -21,6 +22,14 @@ namespace AccountServer.Controllers
         public AccountController(IAccountProvider provider)
         {
             _provider = provider;
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        [Route("LoginAuthFunction")]
+        public AccountData LoginAuthFunction(LoginData loginData)
+        {
+            return _provider.LoginAccount(loginData);
         }
 
         [HttpPut]
