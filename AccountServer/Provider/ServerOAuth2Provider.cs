@@ -237,7 +237,12 @@ namespace AccountServer.Provider
 
             for (int i = 0; i < stringLength; i++)
             {
-                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+            const string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
+            char[] chars = new char[stringLength];
+
+            for (int i = 0; i < stringLength; i++)
+            {
+                chars[i] = allowedChars[RandomNumberGenerator.GetInt32(0, allowedChars.Length)];
             }
 
             return new string(chars);
