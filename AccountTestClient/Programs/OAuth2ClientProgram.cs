@@ -28,10 +28,6 @@ namespace TestAccountClient
             if (config != null && config.AccountServer != null)
             {
                 _accountServerConfig = config.AccountServer;
-                if (_accountServerConfig == null)
-                {
-                    throw new ArgumentNullException(nameof(config.AccountServer), "Account server configuration is missing.");
-                }
 
                 _oAuth2Client.SetEndpoint(_accountServerConfig.BaseUrl);
                 // Assuming there's a method to set API key in the client
