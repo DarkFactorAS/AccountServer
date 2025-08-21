@@ -45,11 +45,11 @@ jobs:
       uses: bluwy/substitute-string-action@v3
       with:
         _input-file: ${{ env.PROJECT_NAME }}/Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
-        DATABASE.SERVER: ${{ vars.DATABASE_SERVER }}
-        DATABASE.PORT: ${{ vars.DATABASE_PORT }}
+        DATABASE.SERVER: ${{ secrets.DATABASE_SERVER }}
+        DATABASE.PORT: ${{ secrets.DATABASE_PORT }}
         DATABASE.USERNAME: ${{ secrets.DATABASE_USERNAME }}
         DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        DATABASE.NAME: ${{ vars.DATABASE_NAME }}
+        DATABASE.NAME: ${{ secrets.DATABASE_NAME }}
         _output-file: ${{ env.PROJECT_NAME }}/Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
 
     # Build the image

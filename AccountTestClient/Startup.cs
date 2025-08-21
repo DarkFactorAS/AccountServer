@@ -49,6 +49,7 @@ namespace TestAccountClient
             services.AddHttpContextAccessor();
 
             AccountClient.SetupService(services);
+            OAuth2Client.SetupService(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

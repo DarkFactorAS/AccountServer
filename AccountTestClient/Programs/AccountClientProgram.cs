@@ -19,11 +19,11 @@ namespace TestAccountClient
             var config = configurationHelper.Settings as TestAccountConfig;
             if (config != null)
             {
-                _accountClient.SetEndpoint(config.AccountServer);
+                _accountClient.SetEndpoint(config.AccountServer?.BaseUrl);
                 // Assuming there's a method to set API key in the client
                 // _accountClient.SetApiKey(config.ApiKey);
 
-                var msg = string.Format("Connecting to API : {0}", config.AccountServer);
+                var msg = string.Format("Connecting to API : {0}", config.AccountServer?.BaseUrl);
                 DFLogger.LogOutput(DFLogLevel.INFO, "AccountTestClient", msg);
             }
         }
@@ -31,7 +31,7 @@ namespace TestAccountClient
         public void Run()
         {
             // Example usage of the account client
-            var pingResult = _accountClient.PingServer();
+            var pingResult = _accountClient.Ping().Result;
             DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Ping result: {pingResult}");
 
             // Additional operations can be added here, such as login or account creation

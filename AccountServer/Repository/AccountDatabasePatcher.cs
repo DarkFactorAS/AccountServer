@@ -48,6 +48,17 @@ namespace AccountServer.Repository
 
             // Add logintype to users table
             _dbPatcher.Patch(PATCHER,7, "ALTER TABLE users ADD COLUMN `logintype` int(11) NOT NULL DEFAULT 0 AFTER flags;");
+
+            // Add oauth2_clients table
+            _dbPatcher.Patch(PATCHER, 8, "CREATE TABLE `oauth2_clients` ("
+            + " `id` int(11) NOT NULL AUTO_INCREMENT, "
+            + " `client_id` varchar(100) NOT NULL DEFAULT '', "
+            + " `client_secret` varchar(100) NOT NULL DEFAULT '', "
+            + " `scope` varchar(100) NOT NULL DEFAULT '', "
+            + " PRIMARY KEY (`id`)"
+            + ")"
+            );
+
             return _dbPatcher.Successful();
         }
     }

@@ -27,7 +27,7 @@ namespace AccountClientModule.RestClient
         private const int POST_RESETPASSWORD_WITH_TOKEN = 6;
         private const int POST_LOGIN_WITH_GAMECENTER = 7;
 
-        public AccountRestClient(IDFLogger<DFRestClient> logger ) : base(logger)
+        public AccountRestClient() : base()
         {
         }
 
@@ -47,46 +47,46 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> LoginAccount(LoginData loginData)
         {
-            var response = await PutJsonData(POST_LOGIN_WITH_USERNAME,"LoginAccount",loginData);
+            var response = await PutData(POST_LOGIN_WITH_USERNAME,"LoginAccount",loginData);
             return response;
         }
 
         public async Task<WebAPIData> LoginToken(LoginTokenData loginData)
         {
-            var response = await PutJsonData(POST_LOGIN_WITH_TOKEN,"LoginToken",loginData);
+            var response = await PutData(POST_LOGIN_WITH_TOKEN,"LoginToken",loginData);
             return response;
         }
 
         public async Task<WebAPIData> LoginGameCenter(LoginData loginData)
         {
-            var response = await PutJsonData(POST_LOGIN_WITH_GAMECENTER,"LoginGameCenter",loginData);
+            var response = await PutData(POST_LOGIN_WITH_GAMECENTER,"LoginGameCenter",loginData);
             return response;
         }
 
         public async Task<WebAPIData> CreateAccount(CreateAccountData createAccountData)
         {
-            var response = await PutJsonData(POST_CREATE, "CreateAccount", createAccountData);
+            var response = await PutData(POST_CREATE, "CreateAccount", createAccountData);
             return response;
         }
 
         public async Task<WebAPIData> ResetPasswordWithEmail(string emailAddress)
         {
             var data = "{ \"emailAddress\":\"" + emailAddress + "\" }";
-            var response = await PutJsonData(POST_RESETPASSWORD_WITH_EMAIL,"ResetPasswordWithEmail",data);
+            var response = await PutData(POST_RESETPASSWORD_WITH_EMAIL,"ResetPasswordWithEmail",data);
             return response;
         }
 
         public async Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress)
         {
             var data = "{ \"code\":\"" + code + "\", \"emailAddress\":\"" + emailAddress + "\" }";
-            var response = await PutJsonData(POST_RESETPASSWORD_WITH_CODE,"ResetPasswordWithCode",data);
+            var response = await PutData(POST_RESETPASSWORD_WITH_CODE,"ResetPasswordWithCode",data);
             return response;
         }
 
         public async Task<WebAPIData> ResetPasswordWithToken(string token, string password)
         {
             var data = "{ \"token\":\"" + token + "\", \"password\":\"" + password + "\" }";
-            var response = await PutJsonData(POST_RESETPASSWORD_WITH_TOKEN,"ResetPasswordWithToken",data);
+            var response = await PutData(POST_RESETPASSWORD_WITH_TOKEN,"ResetPasswordWithToken",data);
             return response;
         }
     }

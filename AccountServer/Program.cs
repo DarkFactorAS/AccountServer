@@ -25,7 +25,7 @@ namespace AccountServer
     class Program
     {
         public static string AppName = "AccountServer";
-        public static string AppVersion = "1.1.1";
+        public static string AppVersion = "1.2.2";
 
         static void Main(string[] args)
         {
@@ -74,10 +74,14 @@ namespace AccountServer
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
+
                 services.AddTransient<IStartupDatabasePatcher, AccountDatabasePatcher>();
                 services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
+                services.AddTransient<IServerOAuth2Provider, ServerOAuth2Provider>();
+                services.AddTransient<IServerOAuth2SessionProvider, ServerOAuth2SessionProvider>();
+                services.AddTransient<IServerOAuth2Repository, ServerOAuth2Repository>();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 MailClient.SetupService(services);
             })

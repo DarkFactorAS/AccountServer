@@ -10,10 +10,8 @@ using AccountClientModule.Provider;
 
 namespace AccountClientModule.Client
 {
-    public interface IAccountClient
+    public interface IAccountClient : IDFClient
     {
-        void SetEndpoint( string endpoint );
-        string PingServer();
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData LoginGameCenter(LoginData accountData);
@@ -23,26 +21,15 @@ namespace AccountClientModule.Client
         ReturnData ResetPasswordWithToken(string password );
     }
 
-    public class AccountClient : IAccountClient
+    public class AccountClient : DFClient, IAccountClient
     {
         IAccountRestClient _restClient;
         IAccountSessionProvider _sessionProvider;
 
-        public AccountClient(IAccountRestClient restClient, IAccountSessionProvider sessionProvider)
+        public AccountClient(IAccountRestClient restClient, IAccountSessionProvider sessionProvider) : base(restClient)
         {
             _restClient = restClient;
             _sessionProvider = sessionProvider;
-        }
-
-        public void SetEndpoint( string endpoint )
-        {
-            _restClient.SetEndpoint(endpoint);
-        }
-
-        public string PingServer()
-        {
-            var result = Task.Run(async() => await _restClient.PingServer()).Result;
-            return result.message;
         }
 
         public AccountData LoginAccount(LoginData loginData)
