@@ -28,7 +28,7 @@ namespace AccountClientModule.Client
 
         public async Task<OAuth2CodeResponse> LoginOAuth2Client(string clientId, string clientSecret, string scope)
         {
-            string state = "MEGASTATE"; // Guid.NewGuid().ToString();
+            string state = Guid.NewGuid().ToString();
             var oauth2ClientData = new OAuth2ClientData
             {
                 ClientId = clientId,
