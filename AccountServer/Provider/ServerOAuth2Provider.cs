@@ -212,7 +212,7 @@ namespace AccountServer.Provider
             }
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var timeSpan = TimeSpan.FromMinutes(expiresIn);
+            var timeSpan = TimeSpan.FromSeconds(expiresIn);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
