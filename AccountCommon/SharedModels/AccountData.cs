@@ -19,6 +19,7 @@ namespace AccountCommon.SharedModel
             PasswordInvalidCharacters,
             NicknameAlreadyExist,
             NotValidEmail,
+            NicknameAndUsernameEqual
         }
 
         public uint id { get; set; }
@@ -46,7 +47,7 @@ namespace AccountCommon.SharedModel
             var data = new AccountData();
             data.errorCode = errorCode;
 
-            switch(errorCode)
+            switch (errorCode)
             {
                 case ErrorCode.UserDoesNotExist:
                     data.errorMessage = "User does not exist";
@@ -68,7 +69,7 @@ namespace AccountCommon.SharedModel
                     break;
                 case ErrorCode.UsernameInvalidCharacters:
                     data.errorMessage = "Username has invalid characters";
-                    break;                                                                      
+                    break;
                 case ErrorCode.NicknameInvalidCharacters:
                     data.errorMessage = "Nickname has invalid characters";
                     break;
@@ -80,6 +81,9 @@ namespace AccountCommon.SharedModel
                     break;
                 case ErrorCode.NotValidEmail:
                     data.errorMessage = "Not valid email";
+                    break;
+                case ErrorCode.NicknameAndUsernameEqual:
+                    data.errorMessage = "Nickname and username cannot be equal";
                     break;
             }
 
