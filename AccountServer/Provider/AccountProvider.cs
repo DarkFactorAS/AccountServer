@@ -81,6 +81,12 @@ namespace AccountServer.Provider
                 return AccountData.Error(usernameStatus);
             }
 
+            // Nickname and username cannot be equal
+            if (createAccountData.nickname == createAccountData.username)
+            {
+                return AccountData.Error(AccountData.ErrorCode.NicknameAndUsernameEqual);
+            }
+
             // Verify password
             var plainPassword = DFCrypt.DecryptInput(createAccountData.password);
             var passwordStatus = VerifyPassword(plainPassword);
