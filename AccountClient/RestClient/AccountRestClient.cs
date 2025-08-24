@@ -10,7 +10,7 @@ namespace AccountClientModule.RestClient
     {
         Task<WebAPIData> LoginAccount(LoginData accountData);
         Task<WebAPIData> LoginToken(LoginTokenData accountTokenData);
-        Task<WebAPIData> LoginGameCenter(LoginData accountData);
+        Task<WebAPIData> LoginGameCenter(LoginGameCenterData accountData);
         Task<WebAPIData> CreateAccount(CreateAccountData createAccountData);
         Task<WebAPIData> ResetPasswordWithEmail(string emailAddress);
         Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress);
@@ -57,7 +57,7 @@ namespace AccountClientModule.RestClient
             return response;
         }
 
-        public async Task<WebAPIData> LoginGameCenter(LoginData loginData)
+        public async Task<WebAPIData> LoginGameCenter(LoginGameCenterData loginData)
         {
             var response = await PutData(POST_LOGIN_WITH_GAMECENTER,"LoginGameCenter",loginData);
             return response;

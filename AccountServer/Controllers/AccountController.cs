@@ -48,7 +48,7 @@ namespace AccountServer.Controllers
 
         [HttpPut]
         [Route("LoginGameCenter")]
-        public AccountData LoginGameCenter(LoginData loginData)
+        public AccountData LoginGameCenter(LoginGameCenterData loginData)
         {
             return _provider.LoginGameCenter(loginData);
         }
