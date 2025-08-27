@@ -1,4 +1,3 @@
-version: '3.6'
 services:
 
   accountdb:
@@ -9,10 +8,10 @@ services:
     user: root
     restart: always
     environment:
-      - "MYSQL_ROOT_PASSWORD=secret"
-      - "MYSQL_DATABASE=account"
-      - "MYSQL_USER=accuser"
-      - "MYSQL_PASSWORD=unity"
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
     volumes:
       - accountserver-mariadb:/var/lib/mysql
     ports:
@@ -54,6 +53,10 @@ networks:
     name: account_frontend
 
 volumes:
+  # Remove volume
+  # docker volume rm accountserver-mariadb
+  #
+  # Create volume 
   # docker volume create accountserver-mariadb
   accountserver-mariadb:
     external: true  
