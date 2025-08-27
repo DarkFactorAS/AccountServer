@@ -21,7 +21,7 @@ namespace AccountServer.Provider
         string PingServer();
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
-        AccountData LoginGameCenter(LoginData accountData);
+        AccountData LoginGameCenter(LoginGameCenterData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string emailAddress, string code);
@@ -147,7 +147,7 @@ namespace AccountServer.Provider
             return AccountData.Error( AccountData.ErrorCode.UserDoesNotExist);
         }
 
-        public AccountData LoginGameCenter(LoginData loginData)
+        public AccountData LoginGameCenter(LoginGameCenterData loginData)
         {
             if (loginData == null || string.IsNullOrEmpty(loginData.username))
             {
@@ -166,10 +166,10 @@ namespace AccountServer.Provider
             // If the user does not exist, we create a new account
             var createAccountData = new CreateAccountData
             {
-                nickname = loginData.username,
-                username = loginData.username + "@gamecenter.com", // Placeholder username, should be securely handled
+                nickname = loginData.nickname,
+                username = loginData.username,
                 password = DFCrypt.DecryptInput(loginData.password),
-                email = ""
+                email = loginData.username + "@gamecenter.com", // Placeholder username, should be securely handled
             };
 
             var salt = generateSalt();

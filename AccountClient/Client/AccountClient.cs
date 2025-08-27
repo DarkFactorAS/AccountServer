@@ -14,7 +14,7 @@ namespace AccountClientModule.Client
     {
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
-        AccountData LoginGameCenter(LoginData accountData);
+        AccountData LoginGameCenter(LoginGameCenterData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string code);
@@ -44,7 +44,7 @@ namespace AccountClientModule.Client
             return ConvertFromRestData( result );
         }
 
-        public AccountData LoginGameCenter(LoginData loginData)
+        public AccountData LoginGameCenter(LoginGameCenterData loginData)
         {
             var result = Task.Run(async() => await _restClient.LoginGameCenter(loginData)).Result;
             return ConvertFromRestData( result );

@@ -70,7 +70,7 @@ namespace AccountServer
                     .SetupLogger()
                     .SetupMySql()
                     .LogToConsole(DFLogLevel.INFO)
-                    //.LogToMySQL(DFLogLevel.WARNING)
+                    .LogToMySQL(DFLogLevel.WARNING)
                     .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
