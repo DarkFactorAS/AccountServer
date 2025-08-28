@@ -46,6 +46,24 @@ namespace AccountClientModule.Client
 
         public AccountData LoginGameCenter(LoginGameCenterData loginData)
         {
+            if (loginData == null)
+            {
+                return new AccountData
+                {
+                    errorCode = AccountData.ErrorCode.ErrorInData,
+                    errorMessage = "Login data cannot be null."
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(loginData.nickname) || string.IsNullOrWhiteSpace(loginData.username) || string.IsNullOrWhiteSpace(loginData.password))
+            {
+                return new AccountData
+                {
+                    errorCode = AccountData.ErrorCode.ErrorInData,
+                    errorMessage = "Nickname, username and password are required."
+                };
+            }
+
             var result = Task.Run(async() => await _restClient.LoginGameCenter(loginData)).Result;
             return ConvertFromRestData( result );
         }

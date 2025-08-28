@@ -149,7 +149,7 @@ namespace AccountServer.Provider
 
         public AccountData LoginGameCenter(LoginGameCenterData loginData)
         {
-            if (loginData == null || string.IsNullOrEmpty(loginData.username))
+            if (loginData == null || string.IsNullOrEmpty(loginData.username) || string.IsNullOrEmpty(loginData.nickname) || string.IsNullOrEmpty(loginData.password))
             {
                 return AccountData.Error(AccountData.ErrorCode.ErrorInData);
             }
@@ -169,7 +169,7 @@ namespace AccountServer.Provider
                 nickname = loginData.nickname,
                 username = loginData.username,
                 password = DFCrypt.DecryptInput(loginData.password),
-                email = loginData.username + "@gamecenter.com", // Placeholder username, should be securely handled
+                email = "" 
             };
 
             var salt = generateSalt();
