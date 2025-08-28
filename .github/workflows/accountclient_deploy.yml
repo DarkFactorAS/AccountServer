@@ -26,6 +26,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Static variables used in the workflow
+    env:
+      NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+
     # Build steps
     steps:
 
@@ -38,10 +43,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-
-    # Build Account Client
-    - name: Add GitHub nuget repository
-      run: dotnet nuget update source DarkFactorAS --username ${{ secrets.NUGET_USERNAME }}  --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text
 
     - name: ${{ env.PROJECT_NAME }}  - Restore dependencies
       run: dotnet restore ${{ env.PROJECT_NAME }}.csproj
