@@ -6,7 +6,7 @@
 name: Account Client - Deploy
 env:
   PROJECT_NAME: AccountClient
-  CONFIGURATION: Release
+  CONFIGURATION: Debug
 defaults:
   run:
     working-directory: ./AccountClient
