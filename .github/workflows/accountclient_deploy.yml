@@ -6,7 +6,7 @@
 name: Account Client - Deploy
 env:
   PROJECT_NAME: AccountClient
-  CONFIGURATION: Debug
+  CONFIGURATION: Release
 defaults:
   run:
     working-directory: ./AccountClient
@@ -32,6 +32,12 @@ jobs:
     # Check out code from the repository
     - name: Checkout repository
       uses: actions/checkout@v4    
+
+    # Setup .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
 
     # Build Account Client
     - name: Add GitHub nuget repository
