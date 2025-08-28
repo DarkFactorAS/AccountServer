@@ -149,7 +149,7 @@ namespace AccountServer.Provider
 
         public AccountData LoginGameCenter(LoginGameCenterData loginData)
         {
-            if (loginData == null || string.IsNullOrEmpty(loginData.username) || string.IsNullOrEmpty(loginData.nickname) || string.IsNullOrEmpty(loginData.password))
+            if (loginData == null || string.IsNullOrWhiteSpace(loginData.username) || string.IsNullOrWhiteSpace(loginData.nickname) || string.IsNullOrWhiteSpace(loginData.password))
             {
                 return AccountData.Error(AccountData.ErrorCode.ErrorInData);
             }
