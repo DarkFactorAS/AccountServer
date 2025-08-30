@@ -169,7 +169,7 @@ namespace AccountServer.Provider
                 nickname = loginData.nickname,
                 username = loginData.username,
                 password = DFCrypt.DecryptInput(loginData.password),
-                email = null
+                email = "",
             };
 
             var salt = generateSalt();
