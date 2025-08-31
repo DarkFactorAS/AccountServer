@@ -16,6 +16,7 @@ namespace AccountCommon.SharedModel
             InvalidUsername,
             UsernameInvalidCharacters,
             NicknameInvalidCharacters,
+            PasswordInvalidLength,
             PasswordInvalidCharacters,
             NicknameAlreadyExist,
             NotValidEmail,
@@ -25,7 +26,7 @@ namespace AccountCommon.SharedModel
         public uint id { get; set; }
         public string? nickname { get; set; }
         public string? token { get; set; }
-        public uint? flags{ get; set; }
+        public uint? flags { get; set; }
 
         public ErrorCode errorCode { get; set; }
         public string? errorMessage { get; set; }
@@ -42,52 +43,45 @@ namespace AccountCommon.SharedModel
             this.flags = flags;
         }
 
-        public static AccountData Error( ErrorCode errorCode )
+        public static AccountData Error(ErrorCode errorCode)
         {
             var data = new AccountData();
             data.errorCode = errorCode;
+            data.errorMessage = GetErrorMessage(errorCode);
+            return data;
+        }
 
+        private static string GetErrorMessage(ErrorCode errorCode)
+        {
             switch (errorCode)
             {
                 case ErrorCode.UserDoesNotExist:
-                    data.errorMessage = "User does not exist";
-                    break;
+                    return "User does not exist";
                 case ErrorCode.UserAlreadyExist:
-                    data.errorMessage = "User already exist";
-                    break;
+                    return "User already exist";
                 case ErrorCode.ErrorInData:
-                    data.errorMessage = "Error in data";
-                    break;
+                    return "Error in data";
                 case ErrorCode.TokenLoginError:
-                    data.errorMessage = "Token Loginerror";
-                    break;
+                    return "Token Loginerror";
                 case ErrorCode.WrongPassword:
-                    data.errorMessage = "Wrong username/password";
-                    break;
+                    return "Wrong username/password";
                 case ErrorCode.InvalidUsername:
-                    data.errorMessage = "Invalid Username";
-                    break;
+                    return "Invalid Username";
                 case ErrorCode.UsernameInvalidCharacters:
-                    data.errorMessage = "Username has invalid characters";
-                    break;
+                    return "Username has invalid characters";
                 case ErrorCode.NicknameInvalidCharacters:
-                    data.errorMessage = "Nickname has invalid characters";
-                    break;
+                    return "Nickname has invalid characters";
                 case ErrorCode.PasswordInvalidCharacters:
-                    data.errorMessage = "Password has invalid characters";
-                    break;
+                    return "Password contains invalid characters. Valid characters are A-Z, 0-9, and special characters +$%*()";
                 case ErrorCode.NicknameAlreadyExist:
-                    data.errorMessage = "Nickname already exist";
-                    break;
+                    return "Nickname already exist";
                 case ErrorCode.NotValidEmail:
-                    data.errorMessage = "Not valid email";
-                    break;
+                    return "Not valid email";
                 case ErrorCode.NicknameAndUsernameEqual:
-                    data.errorMessage = "Nickname and username cannot be equal";
-                    break;
+                    return "Nickname and username cannot be equal";
             }
 
-            return data;
+            return "Unknown error";
         }
     }
 }
