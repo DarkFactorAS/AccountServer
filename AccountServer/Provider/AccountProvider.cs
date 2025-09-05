@@ -323,7 +323,7 @@ namespace AccountServer.Provider
             }
 
             // Only A-Z and 0-9
-            if ( !Regex.IsMatch(username, @"^[a-zA-Z0-9]+$") )
+            if ( !Regex.IsMatch(username, @"^[a-zA-Z0-9]") )
             {
                 return AccountData.ErrorCode.UsernameInvalidCharacters;
             }
@@ -347,17 +347,19 @@ namespace AccountServer.Provider
 
             if ( password.Length < 8 )
             {
-                return AccountData.ErrorCode.PasswordInvalidCharacters;
+                return AccountData.ErrorCode.PasswordInvalidLength;
             }
 
             if ( password.Length > 20 )
             {
-                return AccountData.ErrorCode.PasswordInvalidCharacters;
+                return AccountData.ErrorCode.PasswordInvalidLength;
             }
 
-            // Special characters?
-            // Small and large numbers
-            // Characters and numbers?
+            // Only A-Z, 0-9, and %*()
+            if ( !Regex.IsMatch(password, @"^[a-zA-Z0-9%*()]+$") )
+            {
+                return AccountData.ErrorCode.PasswordInvalidCharacters;
+            }
 
             return AccountData.ErrorCode.OK;
         }
