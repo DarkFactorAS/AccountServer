@@ -79,6 +79,8 @@ namespace AccountCommon.SharedModel
                     return "Not valid email";
                 case ErrorCode.NicknameAndUsernameEqual:
                     return "Nickname and username cannot be equal";
+                case ErrorCode.PasswordInvalidLength:
+                    return "Password length is invalid. Password must be between 8 and 20 characters long";
             }
 
             return "Unknown error";
