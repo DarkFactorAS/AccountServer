@@ -355,8 +355,8 @@ namespace AccountServer.Provider
                 return AccountData.ErrorCode.PasswordInvalidLength;
             }
 
-            // Only A-Z and 0-9
-            if ( !Regex.IsMatch(password, @"^[a-zA-Z0-9]+$%*()") )
+            // Only A-Z, 0-9, and %*()
+            if ( !Regex.IsMatch(password, @"^[a-zA-Z0-9%*()]+$") )
             {
                 return AccountData.ErrorCode.PasswordInvalidCharacters;
             }
