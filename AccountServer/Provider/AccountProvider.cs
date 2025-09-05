@@ -300,7 +300,7 @@ namespace AccountServer.Provider
             }
 
             // Only A-Z and 0-9
-            if ( !Regex.IsMatch(nickname, @"^[a-zA-Z0-9]") )
+            if ( !Regex.IsMatch(nickname, @"^[a-zA-Z0-9]+$") )
             {
                 return AccountData.ErrorCode.NicknameInvalidCharacters;
             }
