@@ -40,7 +40,7 @@ namespace AccountCommon.SharedModel
 
         public static ReturnData ConvertFromReturnData(WebAPIData apiData)
         {
-            if ( apiData.errorCode == 0 && !string.IsNullOrEmpty(apiData.message) )
+            if ( apiData.errorCode == 0 )
             {
                 var returnObject = JsonConvert.DeserializeObject<ReturnData>(apiData.message);
                 if ( returnObject == null )
