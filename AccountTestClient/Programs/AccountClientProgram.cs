@@ -51,7 +51,7 @@ namespace TestAccountClient
             var resetResult = _accountClient.ResetPasswordWithCode(newCode, email);
             DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset code result: {resetResult.message}");
 
-            var token = resetResult.message; // In a real scenario, the token would be sent via email
+            var token = resetEmailResult.message; // The token should come from the email reset operation
             var resetPasswordResult = _accountClient.ResetPasswordWithToken(token, newPassword);
             DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset password result: {resetPasswordResult.message}");
         }
