@@ -39,15 +39,21 @@ namespace TestAccountClient
             // var accountData = _accountClient.LoginAccount(loginData);
             // DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Logged in account: {JsonConvert.SerializeObject(accountData)}");
 
-            var email = "test@example.com";
+            var email = "chaoz@gale-huset.net";
+            var newCode = "1234";
+            var newPassword = "newpassword";
 
-            var resetResultNoEmail = _accountClient.ResetPasswordWithCode("1234", email);
-            DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Reset code (no email) result: {resetResultNoEmail.message}");
+            var resetResultNoEmail = _accountClient.ResetPasswordWithCode(newCode, email);
+            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset code (no email) result: {resetResultNoEmail.message}");
 
             var resetEmailResult = _accountClient.ResetPasswordWithEmail(email);
-            DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Reset email result: {resetEmailResult.message}");
-            var resetResult = _accountClient.ResetPasswordWithCode("1234", email);
-            DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Reset code result: {resetResult.message}");
+            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset email result: {resetEmailResult.message}");
+            var resetResult = _accountClient.ResetPasswordWithCode(newCode, email);
+            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset code result: {resetResult.message}");
+
+            var token = resetResult.message; // In a real scenario, the token would be sent via email
+            var resetPasswordResult = _accountClient.ResetPasswordWithToken(token, newPassword);
+            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset password result: {resetPasswordResult.message}");
         }
     }
 }

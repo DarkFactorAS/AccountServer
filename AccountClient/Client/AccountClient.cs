@@ -18,7 +18,7 @@ namespace AccountClientModule.Client
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string code, string verifyEmailAddress);
-        ReturnData ResetPasswordWithToken(string password );
+        ReturnData ResetPasswordWithToken(string token, string password );
     }
 
     public class AccountClient : DFClient, IAccountClient
@@ -76,43 +76,20 @@ namespace AccountClientModule.Client
 
         public ReturnData ResetPasswordWithEmail(string emailAddress)
         {
-            _sessionProvider.RemoveSession();
-
             var result = Task.Run(async() => await _restClient.ResetPasswordWithEmail(emailAddress)).Result;
             var returnData = ReturnData.ConvertFromReturnData( result );
-
-            if (returnData.errorCode == (int) ReturnData.ReturnCode.OK)
-            {
-                _sessionProvider.SetEmail(emailAddress);
-            }
-
             return returnData;
         }
 
-        public ReturnData ResetPasswordWithCode(string code, string verifyEmailAdress)
+        public ReturnData ResetPasswordWithCode(string code, string emailAddress)
         {
-            string emailAddress = _sessionProvider.GetEmail();
-            _sessionProvider.RemoveSession();
-
-            if ( verifyEmailAdress != emailAddress )
-            {
-                return new ReturnData(ReturnData.ReturnCode.ErrorInData, "Email address does not match the verified email.");
-            }
-
             var result = Task.Run(async() => await _restClient.ResetPasswordWithCode(code, emailAddress)).Result;
             var returnData = ReturnData.ConvertFromReturnData( result );
-            if ( returnData.errorCode == (int) ReturnData.ReturnCode.OK )
-            {
-                _sessionProvider.SetToken(returnData.message);
-            }
             return returnData;
         }
 
-        public ReturnData ResetPasswordWithToken(string password)
+        public ReturnData ResetPasswordWithToken(string token, string password)
         {
-            var token = _sessionProvider.GetToken();
-            _sessionProvider.RemoveSession();
-
             var result = Task.Run(async() => await _restClient.ResetPasswordWithToken(token,password)).Result;
             return ReturnData.ConvertFromReturnData( result );
         }

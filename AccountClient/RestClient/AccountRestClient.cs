@@ -71,21 +71,30 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> ResetPasswordWithEmail(string emailAddress)
         {
-            var data = "{ \"emailAddress\":\"" + emailAddress + "\" }";
+            var data = new ResetPasswordDataEmail { emailAddress = emailAddress };
             var response = await PutData(POST_RESETPASSWORD_WITH_EMAIL,"ResetPasswordWithEmail",data);
             return response;
         }
 
         public async Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress)
-        {
-            var data = "{ \"code\":\"" + code + "\", \"emailAddress\":\"" + emailAddress + "\" }";
+        {            
+            var data = new ResetPasswordDataCode
+            {
+                code = code,
+                emailAddress = emailAddress
+            };
             var response = await PutData(POST_RESETPASSWORD_WITH_CODE,"ResetPasswordWithCode",data);
             return response;
         }
 
         public async Task<WebAPIData> ResetPasswordWithToken(string token, string password)
         {
-            var data = "{ \"token\":\"" + token + "\", \"password\":\"" + password + "\" }";
+            var data = new ResetPasswordDataToken
+            {
+                token = token,
+                password = password
+            };
+
             var response = await PutData(POST_RESETPASSWORD_WITH_TOKEN,"ResetPasswordWithToken",data);
             return response;
         }

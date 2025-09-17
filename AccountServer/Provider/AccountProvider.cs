@@ -218,7 +218,7 @@ namespace AccountServer.Provider
                     //var webAPIData = _mailClient.SendEmail(message).Result;
                     //if ( webAPIData.errorCode == WebAPIData.CODE_OK )
                     //{
-                        return ReturnData.OKMessage("Blabla");
+                    return ReturnData.OKMessage();
                     //}
                     //var msg = String.Format("{0}:{1}", webAPIData.errorCode, webAPIData.message);
                     //return new ReturnData(ReturnData.ReturnCode.FailWithMailServer, msg);
