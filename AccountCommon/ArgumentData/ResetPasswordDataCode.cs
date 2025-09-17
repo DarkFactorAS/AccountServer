@@ -5,12 +5,7 @@ namespace AccountCommon.SharedModel
 {
     public class ResetPasswordDataCode
     {
-        public string code { get; set; }
-        public string emailAddress { get; set; }
-        public ResetPasswordDataCode()
-        {
-            code = string.Empty;
-            emailAddress = string.Empty;
-        }
+        public string? code { get; set; }
+        public string? emailAddress { get; set; }
     }
 }

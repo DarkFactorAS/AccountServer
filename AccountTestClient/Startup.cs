@@ -48,7 +48,6 @@ namespace TestAccountClient
 
             services.AddHttpContextAccessor();
 
-            AccountClient.SetupService(services);
             OAuth2Client.SetupService(services);
         }
 

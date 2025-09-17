@@ -17,8 +17,8 @@ namespace AccountClientModule.Client
         AccountData LoginGameCenter(LoginGameCenterData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
-        ReturnData ResetPasswordWithCode(string code);
-        ReturnData ResetPasswordWithToken(string password );
+        ReturnData ResetPasswordWithCode(string code, string verifyEmailAddress);
+        ReturnData ResetPasswordWithToken(string token, string password );
     }
 
     public class AccountClient : DFClient, IAccountClient
@@ -76,40 +76,22 @@ namespace AccountClientModule.Client
 
         public ReturnData ResetPasswordWithEmail(string emailAddress)
         {
-            _sessionProvider.RemoveSession();
-
             var result = Task.Run(async() => await _restClient.ResetPasswordWithEmail(emailAddress)).Result;
-            var returnData = ConvertFromReturnData( result );
-
-            if (returnData.code == ReturnData.ReturnCode.OK)
-            {
-                _sessionProvider.SetEmail(emailAddress);
-            }
-
+            var returnData = ReturnData.ConvertFromReturnData( result );
             return returnData;
         }
 
-        public ReturnData ResetPasswordWithCode(string code)
+        public ReturnData ResetPasswordWithCode(string code, string emailAddress)
         {
-            string emailAddress = _sessionProvider.GetEmail();
-            _sessionProvider.RemoveSession();
-
             var result = Task.Run(async() => await _restClient.ResetPasswordWithCode(code, emailAddress)).Result;
-            var returnData = ConvertFromReturnData( result );
-            if ( returnData.code == ReturnData.ReturnCode.OK )
-            {
-                _sessionProvider.SetToken(returnData.message);
-            }
+            var returnData = ReturnData.ConvertFromReturnData( result );
             return returnData;
         }
 
-        public ReturnData ResetPasswordWithToken(string password)
+        public ReturnData ResetPasswordWithToken(string token, string password)
         {
-            var token = _sessionProvider.GetToken();
-            _sessionProvider.RemoveSession();
-
             var result = Task.Run(async() => await _restClient.ResetPasswordWithToken(token,password)).Result;
-            return ConvertFromReturnData( result );
+            return ReturnData.ConvertFromReturnData( result );
         }
 
         private AccountData ConvertFromRestData(WebAPIData apiData)
@@ -125,22 +107,6 @@ namespace AccountClientModule.Client
                 accountData.errorCode = (AccountData.ErrorCode)apiData.errorCode;
                 accountData.errorMessage = apiData.message;
                 return accountData;
-            }
-        }
-
-        private ReturnData ConvertFromReturnData(WebAPIData apiData)
-        {
-            if ( apiData.errorCode == 0 )
-            {
-                var returnData = JsonConvert.DeserializeObject<ReturnData>(apiData.message);
-                return returnData;
-            }
-            else
-            {
-                var returnData = new ReturnData();
-                returnData.code = (ReturnData.ReturnCode) apiData.errorCode;
-                returnData.message = apiData.message;
-                return returnData;
             }
         }
 

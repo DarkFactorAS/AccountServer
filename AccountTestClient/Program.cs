@@ -34,9 +34,9 @@ namespace TestAccountClient
                 var program = new AccountClientProgram(accountClient, configuration);
                 program.Run();
 
-                IOAuth2Client _restClient = DFServices.GetService<IOAuth2Client>();
-                var p2 = new OAuth2ClientProgram(_restClient, configuration);
-                p2.Run();   
+                // IOAuth2Client _restClient = DFServices.GetService<IOAuth2Client>();
+                // var p2 = new OAuth2ClientProgram(_restClient, configuration);
+                // p2.Run();   
 
                 builder.Run();
             }
@@ -50,15 +50,20 @@ namespace TestAccountClient
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddTransient<IConfigurationHelper, ConfigurationHelper<TestAccountConfig> >();
+                services.AddTransient<IConfigurationHelper, ConfigurationHelper<TestAccountConfig>>();
 
                 new DFServices(services)
                     .SetupLogger()
-//                    .SetupMySql()
+                    //                    .SetupMySql()
                     .LogToConsole(DFLogLevel.INFO)
-//                    .LogToMySQL(DFLogLevel.WARNING)
-//                    .LogToEvent(DFLogLevel.ERROR, AppName);
+                //                    .LogToMySQL(DFLogLevel.WARNING)
+                //                    .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
+
+                //services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
+                AccountClient.SetupService(services);
+
+
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {

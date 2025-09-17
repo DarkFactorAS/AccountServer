@@ -5,12 +5,7 @@ namespace AccountCommon.SharedModel
 {
     public class ResetPasswordDataToken
     {
-        public string token { get; set; }
-        public string password { get; set; }
-        public ResetPasswordDataToken()
-        {
-            token = string.Empty;
-            password = string.Empty;
-        }
+        public string? token { get; set; }
+        public string? password { get; set; }
     }
 }
