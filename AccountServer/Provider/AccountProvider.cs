@@ -261,12 +261,14 @@ namespace AccountServer.Provider
                 return ReturnData.ErrorMessage( ReturnData.ReturnCode.SessionTimedOut);
             }
 
+            var plainPassword = DFCrypt.DecryptInput(password);
+
             // Verify passwordrules
-            var passwordCode = VerifyPassword(password);
+            var passwordCode = VerifyPassword(plainPassword);
             if ( passwordCode != AccountData.ErrorCode.OK )
             {
                 return ReturnData.ErrorMessage( ReturnData.ReturnCode.UserDoesNotExist );
-            }
+            }   
 
             InternalAccountData accountData = _repository.GetAccountWithId(accountId);
             if ( accountData == null )
@@ -274,7 +276,7 @@ namespace AccountServer.Provider
                 return ReturnData.ErrorMessage( ReturnData.ReturnCode.SessionTimedOut);
             }
 
-            var hashedPassword = generateHash(password, accountData.salt);
+            var hashedPassword = generateHash(plainPassword, accountData.salt);
 
             // Set new password
             _repository.SetNewPassword(accountId, hashedPassword);
