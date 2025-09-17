@@ -39,9 +39,9 @@ namespace TestAccountClient
             // var accountData = _accountClient.LoginAccount(loginData);
             // DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Logged in account: {JsonConvert.SerializeObject(accountData)}");
 
-            var email = "chaoz@gale-huset.net";
+            var email = "test@example.com";
             var newCode = "1234";
-            var newPassword = "newpassword";
+            var newPassword = "TestPassword!123";
 
             var resetResultNoEmail = _accountClient.ResetPasswordWithCode(newCode, email);
             DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset code (no email) result: {resetResultNoEmail.message}");
