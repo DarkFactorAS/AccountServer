@@ -17,7 +17,7 @@ namespace AccountClientModule.Client
         AccountData LoginGameCenter(LoginGameCenterData accountData);
         AccountData CreateAccount(CreateAccountData createAccountData);
         ReturnData ResetPasswordWithEmail(string emailAddress);
-        ReturnData ResetPasswordWithCode(string code);
+        ReturnData ResetPasswordWithCode(string code, string verifyEmailAddress);
         ReturnData ResetPasswordWithToken(string password );
     }
 
@@ -79,9 +79,9 @@ namespace AccountClientModule.Client
             _sessionProvider.RemoveSession();
 
             var result = Task.Run(async() => await _restClient.ResetPasswordWithEmail(emailAddress)).Result;
-            var returnData = ConvertFromReturnData( result );
+            var returnData = ReturnData.ConvertFromReturnData( result );
 
-            if (returnData.code == ReturnData.ReturnCode.OK)
+            if (returnData.errorCode == (int) ReturnData.ReturnCode.OK)
             {
                 _sessionProvider.SetEmail(emailAddress);
             }
@@ -89,14 +89,19 @@ namespace AccountClientModule.Client
             return returnData;
         }
 
-        public ReturnData ResetPasswordWithCode(string code)
+        public ReturnData ResetPasswordWithCode(string code, string verifyEmailAdress)
         {
             string emailAddress = _sessionProvider.GetEmail();
             _sessionProvider.RemoveSession();
 
+            if ( verifyEmailAdress != emailAddress )
+            {
+                return new ReturnData(ReturnData.ReturnCode.ErrorInData, "Email address does not match the verified email.");
+            }
+
             var result = Task.Run(async() => await _restClient.ResetPasswordWithCode(code, emailAddress)).Result;
-            var returnData = ConvertFromReturnData( result );
-            if ( returnData.code == ReturnData.ReturnCode.OK )
+            var returnData = ReturnData.ConvertFromReturnData( result );
+            if ( returnData.errorCode == (int) ReturnData.ReturnCode.OK )
             {
                 _sessionProvider.SetToken(returnData.message);
             }
@@ -109,7 +114,7 @@ namespace AccountClientModule.Client
             _sessionProvider.RemoveSession();
 
             var result = Task.Run(async() => await _restClient.ResetPasswordWithToken(token,password)).Result;
-            return ConvertFromReturnData( result );
+            return ReturnData.ConvertFromReturnData( result );
         }
 
         private AccountData ConvertFromRestData(WebAPIData apiData)
@@ -125,22 +130,6 @@ namespace AccountClientModule.Client
                 accountData.errorCode = (AccountData.ErrorCode)apiData.errorCode;
                 accountData.errorMessage = apiData.message;
                 return accountData;
-            }
-        }
-
-        private ReturnData ConvertFromReturnData(WebAPIData apiData)
-        {
-            if ( apiData.errorCode == 0 )
-            {
-                var returnData = JsonConvert.DeserializeObject<ReturnData>(apiData.message);
-                return returnData;
-            }
-            else
-            {
-                var returnData = new ReturnData();
-                returnData.code = (ReturnData.ReturnCode) apiData.errorCode;
-                returnData.message = apiData.message;
-                return returnData;
             }
         }
 

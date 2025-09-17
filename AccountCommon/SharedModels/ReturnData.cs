@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using DFCommonLib.HttpApi;
+using Newtonsoft.Json;
 
 namespace AccountCommon.SharedModel
 {
-    public class ReturnData
+    public class ReturnData : WebAPIData
     {
         public enum ReturnCode
         {
@@ -22,41 +24,51 @@ namespace AccountCommon.SharedModel
             SessionTimedOut,
             FailWithMailServer
         }
-
-        public ReturnCode code { get; set; }
-        public string? message { get; set; }
-
-        public ReturnData()
+        
+        public ReturnData() : base()
         {
         }
 
-        public ReturnData(ReturnCode code, string message)
+        public ReturnData( ReturnCode code, string message ) : base( (int)code, message )
         {
-            this.code = code;
-            this.message = message;
         }
 
-        public static ReturnData OKMessage( string message = "OK" )
+        public static ReturnData OKMessage(string message = "OK")
         {
             return new ReturnData(ReturnCode.OK, message);
         }
 
-        public static ReturnData ErrorMessage( ReturnCode errorCode, string message )
+        public static ReturnData ConvertFromReturnData(WebAPIData apiData)
+        {
+            if ( apiData.errorCode == 0 && !string.IsNullOrEmpty(apiData.message) )
+            {
+                var returnObject = JsonConvert.DeserializeObject<ReturnData>(apiData.message);
+                if ( returnObject == null )
+                {
+                    return new ReturnData(ReturnCode.ErrorInData, apiData.message);
+                }
+                return returnObject;
+            }
+            else
+            {
+                return new ReturnData((ReturnCode)apiData.errorCode, apiData.message);
+            }
+        }
+
+        public static ReturnData ErrorMessage(ReturnCode errorCode, string message)
         {
             return new ReturnData(errorCode, message);
         }
 
         public static ReturnData ErrorMessage( ReturnCode errorCode )
         {
-            var data = new ReturnData();
-            data.code = errorCode;
-            data.message = GetMessageFromId(errorCode);
-            return data;
+            var message = GetMessageFromId(errorCode);
+            return new ReturnData(errorCode, message);
         }
 
-        public static string? GetMessageFromId( ReturnCode code )
+        public static string GetMessageFromId( ReturnCode code )
         {
-            switch(code)
+            switch (code)
             {
                 case ReturnCode.UserDoesNotExist: return "User does not exist";
                 case ReturnCode.UserAlreadyExist: return "User already exist";
@@ -73,7 +85,8 @@ namespace AccountCommon.SharedModel
                 case ReturnCode.FailWithMailServer: return "Could not send code";
 
                 default:
-                    return Enum.GetName( typeof( ReturnCode ), code );
+                    var enumName = Enum.GetName(typeof(ReturnCode), code);
+                    return $"Unknown error code {enumName} ({(int)code})";
             }
         }
     }

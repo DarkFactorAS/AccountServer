@@ -38,6 +38,16 @@ namespace TestAccountClient
             // var loginData = new LoginData { ... };
             // var accountData = _accountClient.LoginAccount(loginData);
             // DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Logged in account: {JsonConvert.SerializeObject(accountData)}");
+
+            var email = "test@example.com";
+
+            var resetResultNoEmail = _accountClient.ResetPasswordWithCode("1234", email);
+            DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Reset code (no email) result: {resetResultNoEmail.message}");
+
+            var resetEmailResult = _accountClient.ResetPasswordWithEmail(email);
+            DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Reset email result: {resetEmailResult.message}");
+            var resetResult = _accountClient.ResetPasswordWithCode("1234", email);
+            DFLogger.LogOutput(DFLogLevel.INFO, "AccountClientProgram", $"Reset code result: {resetResult.message}");
         }
     }
 }
