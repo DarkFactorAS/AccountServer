@@ -4,6 +4,8 @@ using DFCommonLib.Config;
 using DFCommonLib.Logger;
 using AccountClientModule.Client;
 using AccountTestClient;
+using AccountCommon.SharedModel;
+using DFCommonLib.Utils;
 
 namespace TestAccountClient
 {
@@ -41,7 +43,17 @@ namespace TestAccountClient
 
             var email = "test@example.com";
             var newCode = "1234";
-            var newPassword = "TestPassword!123";
+            var oldPassword = "OldPassword*123";
+            var newPassword = "TestPassword*123";
+
+            var createResult = _accountClient.CreateAccount(new CreateAccountData
+            {
+                email = email,
+                username = "testuser",
+                password = DFCrypt.EncryptInput(oldPassword),
+                nickname = "TestUser"
+            });
+            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Create account result: {createResult.errorMessage}");
 
             var resetResultNoEmail = _accountClient.ResetPasswordWithCode(newCode, email);
             DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Reset code (no email) result: {resetResultNoEmail.message}");
