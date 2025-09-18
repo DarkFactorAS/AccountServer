@@ -13,16 +13,10 @@ namespace AccountServer.Model
         public string EmailBody {get;set;}
     }
 
-    public class OAuth2Config
-    {
-        public uint TokenExpiresInSeconds { get; set; } = 86400;
-        public string ServerIssuer { get; set; } = "serveroauth2";
-    }
 
     public class AccountConfig : AppSettings
     {
-        public MailServer mailServer { get; set; }
-        public OAuth2Config OAuth2Config { get; set; } = new OAuth2Config();
-        public uint LoginTokenHistoryExpirationDays { get; set; } = 180;
+    public MailServer mailServer { get; set; }
+    public uint LoginTokenHistoryExpirationDays { get; set; } = 180;
     }
 }
