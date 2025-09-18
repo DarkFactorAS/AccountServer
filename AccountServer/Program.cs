@@ -19,6 +19,7 @@ using DFCommonLib.Utils;
 
 using DarkFactor.MailClient;
 using DFCommonLib.DataAccess;
+using DFCommonLib.HttpApi.OAuth2;
 
 namespace AccountServer
 {
@@ -80,6 +81,7 @@ namespace AccountServer
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                OAuth2Server.SetupService(services);
                 MailClient.SetupService(services);
             })
             .ConfigureWebHostDefaults(webBuilder =>

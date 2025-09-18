@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using AccountServer.Provider;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DFCommonLib.HttpApi.OAuth2;
 
 namespace AccountServer
 {
@@ -42,6 +43,9 @@ namespace AccountServer
 
             services.AddMvc();
 
+            // register the swagger generator
+            OAuth2Server.SetupSwaggerApi(Program.AppName, services);
+
             services.AddSession(options =>
             {
                 // Set a short timeout for easy testing.
@@ -54,38 +58,6 @@ namespace AccountServer
             // OAuth2 authentication removed
 
             services.AddHttpContextAccessor();
-
-            // register the swagger generator
-            services.AddSwaggerGen( c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Account API", Version = "v1" });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please enter a valid token",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "Bearer",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header
-                        },
-                        new string[] {}
-                    }
-                });
-            });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

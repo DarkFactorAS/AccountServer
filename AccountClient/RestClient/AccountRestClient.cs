@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using DFCommonLib.HttpApi;
 using DFCommonLib.Logger;
 using AccountCommon.SharedModel;
+using DFCommonLib.HttpApi.OAuth2;
 
 namespace AccountClientModule.RestClient
 {
-    public interface IAccountRestClient : IDFRestClient
+    public interface IAccountRestClient : IDFOAuth2RestClient
     {
         Task<WebAPIData> LoginAccount(LoginData accountData);
         Task<WebAPIData> LoginToken(LoginTokenData accountTokenData);
@@ -17,7 +18,7 @@ namespace AccountClientModule.RestClient
         Task<WebAPIData> ResetPasswordWithToken(string token, string password);
     }
 
-    public class AccountRestClient : DFRestClient, IAccountRestClient
+    public class AccountRestClient : DFOAuth2RestClient, IAccountRestClient
     {
         private const int POST_CREATE = 1;
         private const int POST_LOGIN_WITH_USERNAME = 2;
@@ -47,30 +48,35 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> LoginAccount(LoginData loginData)
         {
+            await AuthenticateIfNeeded();
             var response = await PutData(POST_LOGIN_WITH_USERNAME,"LoginAccount",loginData);
             return response;
         }
 
         public async Task<WebAPIData> LoginToken(LoginTokenData loginData)
         {
+            await AuthenticateIfNeeded();
             var response = await PutData(POST_LOGIN_WITH_TOKEN,"LoginToken",loginData);
             return response;
         }
 
         public async Task<WebAPIData> LoginGameCenter(LoginGameCenterData loginData)
         {
+            await AuthenticateIfNeeded();
             var response = await PutData(POST_LOGIN_WITH_GAMECENTER,"LoginGameCenter",loginData);
             return response;
         }
 
         public async Task<WebAPIData> CreateAccount(CreateAccountData createAccountData)
         {
+            await AuthenticateIfNeeded();
             var response = await PutData(POST_CREATE, "CreateAccount", createAccountData);
             return response;
         }
 
         public async Task<WebAPIData> ResetPasswordWithEmail(string emailAddress)
         {
+            await AuthenticateIfNeeded();
             var data = new ResetPasswordDataEmail { emailAddress = emailAddress };
             var response = await PutData(POST_RESETPASSWORD_WITH_EMAIL,"ResetPasswordWithEmail",data);
             return response;
@@ -78,6 +84,7 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress)
         {            
+            await AuthenticateIfNeeded();
             var data = new ResetPasswordDataCode
             {
                 code = code,
@@ -89,6 +96,7 @@ namespace AccountClientModule.RestClient
 
         public async Task<WebAPIData> ResetPasswordWithToken(string token, string password)
         {
+            await AuthenticateIfNeeded();
             var data = new ResetPasswordDataToken
             {
                 token = token,

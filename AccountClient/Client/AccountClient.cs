@@ -7,11 +7,13 @@ using Newtonsoft.Json;
 using AccountCommon.SharedModel;
 using AccountClientModule.RestClient;
 using AccountClientModule.Provider;
+using DFCommonLib.HttpApi.OAuth2;
 
 namespace AccountClientModule.Client
 {
     public interface IAccountClient : IDFClient
     {
+        void SetAuthCredentials(string clientId, string clientSecret, string scope);
         AccountData LoginAccount(LoginData accountData);
         AccountData LoginToken(LoginTokenData accountData);
         AccountData LoginGameCenter(LoginGameCenterData accountData);
@@ -32,10 +34,15 @@ namespace AccountClientModule.Client
             _sessionProvider = sessionProvider;
         }
 
+        public void SetAuthCredentials(string clientId, string clientSecret, string scope)
+        {
+            _restClient.SetAuthClient( new OAuth2ClientData(){ ClientId = clientId, ClientSecret = clientSecret, Scope = scope } );
+        }
+
         public AccountData LoginAccount(LoginData loginData)
         {
-            var result = Task.Run(async() => await _restClient.LoginAccount(loginData)).Result;
-            return ConvertFromRestData( result );
+            var result = Task.Run(async () => await _restClient.LoginAccount(loginData)).Result;
+            return ConvertFromRestData(result);
         }
     
         public AccountData LoginToken(LoginTokenData loginData)

@@ -10,12 +10,14 @@ using AccountServer.Provider;
 using DFCommonLib.HttpApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DFCommonLib.HttpApi.OAuth2;
 
 namespace AccountServer.Controllers
 {
     // TODO: Renable this when client is ready
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AccountController : DFRestServerController
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class AccountController : DFRestOAuth2ServerController
     {
         IAccountProvider _provider;
 
@@ -24,7 +26,6 @@ namespace AccountServer.Controllers
             _provider = provider;
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("LoginAuthFunction")]
         public AccountData LoginAuthFunction(LoginData loginData)
