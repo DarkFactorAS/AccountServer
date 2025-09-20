@@ -48,7 +48,7 @@ namespace TestAccountClient
 
             services.AddHttpContextAccessor();
 
-            OAuth2Client.SetupService(services);
+            // OAuth2Client.SetupService removed
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

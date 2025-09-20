@@ -19,13 +19,14 @@ using DFCommonLib.Utils;
 
 using DarkFactor.MailClient;
 using DFCommonLib.DataAccess;
+using DFCommonLib.HttpApi.OAuth2;
 
 namespace AccountServer
 {
     class Program
     {
         public static string AppName = "AccountServer";
-        public static string AppVersion = "1.2.7";
+        public static string AppVersion = "1.2.9";
 
         static void Main(string[] args)
         {
@@ -79,10 +80,8 @@ namespace AccountServer
                 services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
                 services.AddTransient<IAccountRepository, AccountRepository>();
                 services.AddTransient<IAccountProvider, AccountProvider>();
-                services.AddTransient<IServerOAuth2Provider, ServerOAuth2Provider>();
-                services.AddTransient<IServerOAuth2SessionProvider, ServerOAuth2SessionProvider>();
-                services.AddTransient<IServerOAuth2Repository, ServerOAuth2Repository>();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                OAuth2Server.SetupService(services);
                 MailClient.SetupService(services);
             })
             .ConfigureWebHostDefaults(webBuilder =>

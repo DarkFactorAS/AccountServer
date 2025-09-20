@@ -21,9 +21,17 @@ namespace TestAccountClient
             var config = configurationHelper.Settings as TestAccountConfig;
             if (config != null)
             {
+                var accountServer = config.AccountServer;
+
+                if (accountServer == null || string.IsNullOrEmpty(accountServer.BaseUrl) ||
+                    string.IsNullOrEmpty(accountServer.ClientId) || string.IsNullOrEmpty(accountServer.ClientSecret))
+                {
+                    DFLogger.LogOutput(DFLogLevel.ERROR, "AccountTestClient", "AccountServer configuration is missing or incomplete.");
+                    throw new Exception("AccountServer configuration is missing or incomplete.");
+                }
+
                 _accountClient.SetEndpoint(config.AccountServer?.BaseUrl);
-                // Assuming there's a method to set API key in the client
-                // _accountClient.SetApiKey(config.ApiKey);
+                _accountClient.SetAuthCredentials(accountServer.ClientId, accountServer.ClientSecret, accountServer.Scope);
 
                 var msg = string.Format("Connecting to API : {0}", config.AccountServer?.BaseUrl);
                 DFLogger.LogOutput(DFLogLevel.INFO, "AccountTestClient", msg);
@@ -73,7 +81,7 @@ namespace TestAccountClient
                 username = username,
                 password = newPassword
             });
-            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Login account result: {loginResult.errorMessage}");
+            DFLogger.LogOutput(DFLogLevel.WARNING, "AccountClientProgram", $"Login account result: {loginResult.token}");
         }
     }
 }
