@@ -38,12 +38,11 @@ jobs:
       environment: staging
     secrets: inherit
 
-  # production:
-  #   name: Deploy to Production
-  #   uses: ./.github/workflows/accountserver_deploy_step.yml
-  #   with:
-  #     environment: production
-  #   secrets: inherit
-  #   vars: inherit
-  #   # Run this job only after the staging job is done
-  #   needs: staging
+  production:
+    if: github.event.inputs.environment == 'production'
+    name: Deploy to Production
+    uses: ./.github/workflows/accountserver_deploy_step.yml
+    with:
+      environment: production
+    secrets: inherit
+    needs: staging
