@@ -35,7 +35,7 @@ jobs:
       TIMESTAMP: ${{ github.sha }}
       CONFIGURATION: Release
       INTERNAL_PORT: 8080
-      EXTERNAL_PORT: ${{ secrets.EXTERNAL_PORT }}
+      EXTERNAL_PORT: ${{ vars.EXTERNAL_PORT }}
 
     # To be able to deploy on the local server
     runs-on: self-hosted
