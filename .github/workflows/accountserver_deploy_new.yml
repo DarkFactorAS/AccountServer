@@ -36,6 +36,7 @@ jobs:
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
       environment: staging
+    secrets: inherit
 
   # production:
   #   name: Deploy to Production
