@@ -51,7 +51,7 @@ jobs:
       with:
         _input-file: ${{ env.PROJECT_NAME }}/Config/appsettings.Production.json
         DATABASE.SERVER: ${{ secrets.DATABASE_SERVER }}
-        DATABASE.PORT: ${{ vars.DATABASE_PORT }}
+        DATABASE.PORT: ${{ secrets.DATABASE_PORT }}
         DATABASE.USERNAME: ${{ vars.DATABASE_USERNAME }}
         DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         DATABASE.NAME: ${{ vars.DATABASE_NAME }}
