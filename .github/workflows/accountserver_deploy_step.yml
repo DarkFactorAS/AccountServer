@@ -54,7 +54,7 @@ jobs:
         DATABASE.PORT: ${{ vars.DATABASE_PORT }}
         DATABASE.USERNAME: ${{ vars.DATABASE_USERNAME }}
         DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        DATABASE.NAME: ${{ secrets.DATABASE_NAME }}
+        DATABASE.NAME: ${{ vars.DATABASE_NAME }}
         _output-file: ${{ env.PROJECT_NAME }}/Config/appsettings.Production.json
 
     # Build the image
