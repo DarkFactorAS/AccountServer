@@ -3,7 +3,7 @@
 # Change the variables in this section to match your project
 #
 
-name: Account Server - Deploy New
+name: Account Server - Deploy
 
 defaults:
   run:
