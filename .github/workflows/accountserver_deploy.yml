@@ -3,12 +3,7 @@
 # Change the variables in this section to match your project
 #
 
-name: Account Server - Deploy Docker Container
-env:
-  PROJECT_NAME: AccountServer
-  DOCKER_PATH: .
-  DOCKER_NAME: accountserver
-  EXTERNAL_PORT: 5100
+name: Account Server - Deploy
 
 defaults:
   run:
@@ -19,52 +14,37 @@ defaults:
 #
 
 on:
+  release:
+    types: [published]
+
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
-  build:
+  staging:
+    name: Deploy to Staging
+    uses: ./.github/workflows/accountserver_deploy_step.yml
+    with:
+      environment: staging
+    secrets: inherit
 
-    # Timeout for the job
-    timeout-minutes: 15
-
-    # Static variables used in the workflow
-    env:
-      TIMESTAMP: ${{ github.sha }}
-      INTERNAL_PORT: 8080
-      CONFIGURATION: Release
-      ASPNETCORE_ENVIRONMENT: Production
-
-    # To be able to deploy on the local server
-    runs-on: self-hosted
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4      
-
-    - name: Create prod file
-      uses: bluwy/substitute-string-action@v3
-      with:
-        _input-file: ${{ env.PROJECT_NAME }}/Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
-        DATABASE.SERVER: ${{ secrets.DATABASE_SERVER }}
-        DATABASE.PORT: ${{ secrets.DATABASE_PORT }}
-        DATABASE.USERNAME: ${{ secrets.DATABASE_USERNAME }}
-        DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        DATABASE.NAME: ${{ secrets.DATABASE_NAME }}
-        _output-file: ${{ env.PROJECT_NAME }}/Config/appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
-
-    # Build the image
-    - name: Build Docker image
-      run: docker build ${{ env.DOCKER_PATH }} --file Dockerfile --tag ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
-
-    - name: Stop old Docker container
-      run:
-        docker stop ${{ env.DOCKER_NAME }} || true
-
-    - name: Delete old Docker container
-      run:
-        docker rm ${{ env.DOCKER_NAME }} || true
-
-    - name: Run Docker container
-      run:
-        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.DOCKER_NAME }} ${{ env.DOCKER_NAME }}-image:${{ env.TIMESTAMP }}
-
+  production:
+    if: github.event.inputs.environment == 'production'
+    name: Deploy to Production
+    uses: ./.github/workflows/accountserver_deploy_step.yml
+    with:
+      environment: production
+    secrets: inherit
+    needs: staging

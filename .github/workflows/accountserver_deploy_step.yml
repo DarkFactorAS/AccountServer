@@ -1,0 +1,75 @@
+#
+# Build Deploy file for Docker container
+# Change the variables in this section to match your project
+#
+
+name: Account Server - Deploy Staging
+env:
+  PROJECT_NAME: AccountServer
+  DOCKER_PATH: .
+  DOCKER_NAME: accountserver
+
+defaults:
+  run:
+    working-directory: .
+
+#
+# Everything below this is template code
+#
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+
+    # Timeout for the job
+    timeout-minutes: 15
+
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+      CONFIGURATION: Release
+      INTERNAL_PORT: 8080
+      EXTERNAL_PORT: ${{ vars.EXTERNAL_PORT }}
+
+    # To be able to deploy on the local server
+    runs-on: self-hosted
+
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4      
+
+    - name: Create config file
+      uses: bluwy/substitute-string-action@v3
+      with:
+        _input-file: ${{ env.PROJECT_NAME }}/Config/appsettings.Production.json
+        DATABASE.SERVER: ${{ secrets.DATABASE_SERVER }}
+        DATABASE.PORT: ${{ secrets.DATABASE_PORT }}
+        DATABASE.USERNAME: ${{ vars.DATABASE_USERNAME }}
+        DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE.NAME: ${{ vars.DATABASE_NAME }}
+        _output-file: ${{ env.PROJECT_NAME }}/Config/appsettings.Production.json
+
+    # Build the image
+    - name: Build Docker image
+      run: docker build ${{ env.DOCKER_PATH }} --file Dockerfile --tag ${{ env.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+
+    - name: Stop old Docker container
+      run:
+        docker stop ${{ env.DOCKER_NAME }}-${{ inputs.environment }} || true
+
+    - name: Delete old Docker container
+      run:
+        docker rm ${{ env.DOCKER_NAME }}-${{ inputs.environment }} || true
+
+    - name: Run Docker container
+      run:
+        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.DOCKER_NAME }}-${{ inputs.environment }} ${{ env.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}
+
