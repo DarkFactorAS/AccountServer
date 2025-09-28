@@ -17,9 +17,9 @@ on:
   release:
     types: [published]
 
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [closed]
+    branches: ["master"]
 
   workflow_dispatch:
     inputs:
@@ -34,6 +34,7 @@ on:
 
 jobs:
   staging:
+    if: github.event.pull_request.merged == true
     name: Deploy to Staging
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
@@ -41,7 +42,7 @@ jobs:
     secrets: inherit
 
   production:
-    if: github.event.inputs.environment == 'production'
+    if: github.event.pull_request.merged == true && github.event.inputs.environment == 'production'
     name: Deploy to Production
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:

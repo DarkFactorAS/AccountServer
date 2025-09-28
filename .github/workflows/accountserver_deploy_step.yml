@@ -3,7 +3,7 @@
 # Change the variables in this section to match your project
 #
 
-name: Account Server - Deploy Staging
+name: Internal - Account Server - Deploy Step
 env:
   PROJECT_NAME: AccountServer
   DOCKER_PATH: .
