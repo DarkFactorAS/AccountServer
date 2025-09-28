@@ -34,7 +34,7 @@ on:
 
 jobs:
   staging:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging'
     name: Deploy to Staging
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
@@ -43,7 +43,7 @@ jobs:
     secrets: inherit
 
   production:
-    if: github.event.pull_request.merged == true && github.event.inputs.environment == 'production'
+    if: github.event.pull_request.merged == true && ( github.event.inputs.environment == 'production'  || github.event_name == 'release' )
     name: Deploy to Production
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
