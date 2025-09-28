@@ -18,8 +18,10 @@ on:
     types: [published]
 
   push:
-    branches:
-      - main
+    branches-ignore: ["master"]
+
+  pull_request:
+    branches: ["master"]
 
   workflow_dispatch:
     inputs:
