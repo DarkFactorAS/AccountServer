@@ -17,8 +17,9 @@ on:
   release:
     types: [published]
 
-  push:
-    branches-ignore: ["master"]
+  pull_request:
+    types: [closed]
+    branches: ["master"]
 
   workflow_dispatch:
     inputs:
