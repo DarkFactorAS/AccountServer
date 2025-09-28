@@ -82,17 +82,17 @@ jobs:
 
     # Build the image
     - name: Build Docker image
-      run: docker build ${{ inputs.docker_path }} --file Dockerfile --tag ${{ env.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build ${{ inputs.docker_path }} --file Dockerfile --tag ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
 
     - name: Stop old Docker container
       run:
-        docker stop ${{ env.DOCKER_NAME }}-${{ inputs.environment }} || true
+        docker stop ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-${{ inputs.environment }} || true
 
     - name: Delete old Docker container
       run:
-        docker rm ${{ env.DOCKER_NAME }}-${{ inputs.environment }} || true
+        docker rm ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-${{ inputs.environment }} || true
 
     - name: Run Docker container
       run:
-        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ env.DOCKER_NAME }}-${{ inputs.environment }} ${{ env.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}
+        docker run -d -p ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} --name ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-${{ inputs.environment }} ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}
 
