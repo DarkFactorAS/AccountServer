@@ -81,5 +81,10 @@ namespace AccountServer.Controllers
         {
             return _provider.ResetPasswordWithToken(resetPasswordDataToken.token, resetPasswordDataToken.password);
         }
+
+        public override string Version()
+        {
+            return Program.AppVersion;
+        }
     }
 }
