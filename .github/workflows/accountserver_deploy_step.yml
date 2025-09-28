@@ -3,11 +3,23 @@
 # Change the variables in this section to match your project
 #
 
+#
+# Required GitHub secrets and variables to be set up
+# Organization Secrets:
+#   - NUGET_USERNAME
+#   - NUGET_TOKEN
+#   - DATABASE_SERVER
+# Environment Secrets:
+#   - DATABASE_PORT
+#   - DATABASE_PASSWORD
+# Repository Variables:
+#   - PROJECT_NAME
+#   - DATABASE_USERNAME
+# Environment Variables:
+#   - DATABASE_NAME
+#   - EXTERNAL_PORT
+
 name: Internal - Account Server - Deploy Step
-env:
-  PROJECT_NAME: AccountServer
-  DOCKER_PATH: .
-  DOCKER_NAME: accountserver
 
 defaults:
   run:
@@ -21,6 +33,9 @@ on:
   workflow_call:
     inputs:
       environment:
+        required: true
+        type: string
+      docker_path:
         required: true
         type: string
 
@@ -43,23 +58,31 @@ jobs:
     environment: ${{ inputs.environment }}
 
     steps:
+
+    - name: Convert Docker name to lowercase
+      id: convert_to_lowercase
+      run: |
+        UPPERCASE_VAR="${{ vars.PROJECT_NAME }}"
+        DOCKER_NAME="${UPPERCASE_VAR,,}" # The ,, converts to lowercase
+        echo "DOCKER_NAME=$DOCKER_NAME" >> $GITHUB_OUTPUT
+
     - name: Checkout repository
       uses: actions/checkout@v4      
 
     - name: Create config file
       uses: bluwy/substitute-string-action@v3
       with:
-        _input-file: ${{ env.PROJECT_NAME }}/Config/appsettings.Production.json
+        _input-file: ${{ vars.PROJECT_NAME }}/Config/appsettings.Production.json
         DATABASE.SERVER: ${{ secrets.DATABASE_SERVER }}
         DATABASE.PORT: ${{ secrets.DATABASE_PORT }}
         DATABASE.USERNAME: ${{ vars.DATABASE_USERNAME }}
         DATABASE.PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         DATABASE.NAME: ${{ vars.DATABASE_NAME }}
-        _output-file: ${{ env.PROJECT_NAME }}/Config/appsettings.Production.json
+        _output-file: ${{ vars.PROJECT_NAME }}/Config/appsettings.Production.json
 
     # Build the image
     - name: Build Docker image
-      run: docker build ${{ env.DOCKER_PATH }} --file Dockerfile --tag ${{ env.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
+      run: docker build ${{ inputs.docker_path }} --file Dockerfile --tag ${{ env.DOCKER_NAME }}-${{ inputs.environment }}-image:${{ env.TIMESTAMP }}  --build-arg username=${{ secrets.NUGET_USERNAME }} --build-arg token=${{ secrets.NUGET_TOKEN }}
 
     - name: Stop old Docker container
       run:

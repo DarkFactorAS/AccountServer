@@ -8,7 +8,7 @@ name: Account Server - Deploy
 defaults:
   run:
     working-directory: .
-
+    
 #
 # Everything below this is template code
 #
@@ -39,6 +39,7 @@ jobs:
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
       environment: staging
+      docker_path: .
     secrets: inherit
 
   production:
@@ -47,5 +48,6 @@ jobs:
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
       environment: production
+      docker_path: .
     secrets: inherit
     needs: staging
