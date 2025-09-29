@@ -34,7 +34,7 @@ on:
 
 jobs:
   staging:
-    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging'
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
     uses: ./.github/workflows/accountserver_deploy_step.yml
     with:
