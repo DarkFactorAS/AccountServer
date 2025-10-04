@@ -34,8 +34,6 @@ namespace TestAccountClient
                 var program = new AccountClientProgram(accountClient, configuration);
                 program.Run();
 
-                // OAuth2ClientProgram and IOAuth2Client removed
-
                 builder.Run();
             }
             catch (Exception ex)
@@ -58,7 +56,7 @@ namespace TestAccountClient
                 //                    .LogToEvent(DFLogLevel.ERROR, AppName);
                 ;
 
-                //services.AddTransient<IAccountSessionProvider, AccountSessionProvider>();
+                services.AddTransient<IAccountClientProgram, AccountClientProgram>();
                 AccountClient.SetupService(services);
             })
             .ConfigureWebHostDefaults(webBuilder =>
