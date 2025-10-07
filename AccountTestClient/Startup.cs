@@ -35,7 +35,7 @@ namespace TestAccountClient
             services.AddMvc();
 
             // register the swagger generator
-            // services.AddSwaggerGen();
+            services.AddSwaggerGen();
 
             services.AddSession(options =>
             {
@@ -64,6 +64,13 @@ namespace TestAccountClient
             app.UseRouting();
             //app.UseAuthorization();
             app.UseSession();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });            
 
             app.UseEndpoints(endpoints =>
             {

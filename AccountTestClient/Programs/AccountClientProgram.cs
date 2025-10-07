@@ -9,7 +9,12 @@ using DFCommonLib.Utils;
 
 namespace TestAccountClient
 {
-    public class AccountClientProgram
+    public interface IAccountClientProgram
+    {
+        void Run();
+    }
+
+    public class AccountClientProgram : IAccountClientProgram
     {
         IAccountClient _accountClient;
 
