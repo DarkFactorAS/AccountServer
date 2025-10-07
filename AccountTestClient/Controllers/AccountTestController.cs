@@ -9,7 +9,7 @@ namespace TestAccountClient
 
     public class AccountTestController : ControllerBase
     {
-        IAccountClientProgram _client;
+        private readonly IAccountClientProgram _client;
 
         public AccountTestController(IAccountClientProgram client)
         {
