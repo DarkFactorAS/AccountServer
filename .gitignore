@@ -48,6 +48,7 @@ UnityBeer_Data/
 Assets/AssetStoreTools*
 Beer_Data/
 Build/
+appsettings.*.json*
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
