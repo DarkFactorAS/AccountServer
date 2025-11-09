@@ -41,6 +41,7 @@ jobs:
       environment: staging
       project_path: ./AccountServer
       project_name: AccountServer
+      dockerfile: ../Dockerfile
     secrets: inherit
 
   production:
@@ -51,5 +52,6 @@ jobs:
       environment: production
       project_path: ./AccountServer
       project_name: AccountServer
+      dockerfile: ../Dockerfile
     secrets: inherit
     needs: staging
