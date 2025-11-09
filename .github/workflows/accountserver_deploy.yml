@@ -19,7 +19,7 @@ on:
 
   pull_request:
     types: [closed]
-    branches: ["master"]
+    branches: ["master", "main"]
 
   workflow_dispatch:
     inputs:
@@ -36,18 +36,20 @@ jobs:
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
-    uses: ./.github/workflows/accountserver_deploy_step.yml
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-deploy-server.yml@server_build
     with:
       environment: staging
-      docker_path: .
+      project_path: ./AccountServer
+      project_name: AccountServer
     secrets: inherit
 
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
-    uses: ./.github/workflows/accountserver_deploy_step.yml
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-deploy-server.yml@server_build
     with:
       environment: production
-      docker_path: .
+      project_path: ./AccountServer
+      project_name: AccountServer
     secrets: inherit
     needs: staging
