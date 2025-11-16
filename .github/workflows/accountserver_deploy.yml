@@ -8,10 +8,6 @@ name: Account Server - Deploy
 defaults:
   run:
     working-directory: .
-    
-#
-# Everything below this is template code
-#
 
 on:
   release:
