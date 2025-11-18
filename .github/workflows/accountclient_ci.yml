@@ -18,7 +18,7 @@ defaults:
 
 on:
   push:
-    branches-ignore: ["master"]
+    branches-ignore: ["master", "main"]
     paths:
       - 'AccountClient/**'
       - 'AccountCommon/**'
