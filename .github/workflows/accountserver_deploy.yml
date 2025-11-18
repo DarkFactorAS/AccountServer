@@ -32,7 +32,7 @@ jobs:
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-deploy-server.yml@server_build
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.1
     with:
       environment: staging
       project_path: ./AccountServer
@@ -43,7 +43,7 @@ jobs:
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-deploy-server.yml@server_build
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.1
     with:
       environment: production
       project_path: ./AccountServer
