@@ -2,18 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Get the NuGet arguments and set as environment to use in NuGet
-ARG username
-ARG token
-ENV NUGET_USERNAME=$username
-ENV NUGET_TOKEN=$token
-
 # Copy files
 COPY ./AccountCommon ./AccountCommon
 COPY ./AccountServer ./AccountServer
 
-# Restore and build web
-RUN dotnet restore AccountServer/AccountServer.csproj
+# Restore and build web with NuGet secrets
+RUN --mount=type=secret,id=nuget_username \
+    --mount=type=secret,id=nuget_token \
+    export NUGET_USERNAME=$(cat /run/secrets/nuget_username) && \
+    export NUGET_TOKEN=$(cat /run/secrets/nuget_token) && \
+    dotnet restore AccountServer/AccountServer.csproj
+
+# Publish the application
 RUN dotnet publish AccountServer/AccountServer.csproj -c Release -o out 
 
 # Build runtime image

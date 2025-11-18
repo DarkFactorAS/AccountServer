@@ -35,9 +35,9 @@ services:
       network: host
       context: ./
       dockerfile: ./Dockerfile
-      args:
-        username: ${NUGET_USERNAME}
-        token: ${NUGET_TOKEN}
+      secrets:
+        - nuget_username
+        - nuget_token
     restart: always
     ports:
       - "5100:8080"
@@ -60,3 +60,9 @@ volumes:
   # docker volume create accountserver-mariadb
   accountserver-mariadb:
     external: true  
+
+secrets:
+  nuget_username:
+    environment: NUGET_USERNAME
+  nuget_token:
+    environment: NUGET_TOKEN
