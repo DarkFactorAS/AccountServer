@@ -11,7 +11,7 @@ RUN --mount=type=secret,id=nuget_username \
     --mount=type=secret,id=nuget_token \
     export NUGET_USERNAME=$(cat /run/secrets/nuget_username) && \
     export NUGET_TOKEN=$(cat /run/secrets/nuget_token) && \
-    dotnet restore AccountServer.csproj
+    dotnet restore AccountServer/AccountServer.csproj
 
 # Publish the application
 RUN dotnet publish AccountServer/AccountServer.csproj -c Release -o out 
