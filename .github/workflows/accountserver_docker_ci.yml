@@ -18,4 +18,5 @@ jobs:
     with:
       project_path: "./AccountServer"
       project_name: "AccountServer"
+      dockerfile: "../Dockerfile"
     secrets: inherit
