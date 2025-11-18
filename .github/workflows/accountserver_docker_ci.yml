@@ -7,8 +7,14 @@ name: Account Server - CI Docker Container
 
 on:
   push:
+    paths:
+      - 'AccountServer/**'
+      - 'AccountCommon/**'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.github/workflows/accountserver_docker_ci.yml'
   pull_request:
-    branches: ["master"]    
+    branches: ["master", "main"]
   workflow_dispatch:
 
 jobs:

@@ -19,10 +19,13 @@ defaults:
 on:
   push:
     branches-ignore: ["master"]
-    paths-ignore: [".github/workflows/**"]
-  workflow_dispatch:
+    paths:
+      - 'AccountClient/**'
+      - 'AccountCommon/**'
+      - '.github/workflows/accountclient_ci.yml'
   pull_request:
     branches: ["master"]
+  workflow_dispatch:
 
 jobs:
   build:
