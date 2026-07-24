@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AccountServer/bin/Debug/net8.0/AccountServer.dll",
+            "program": "${workspaceFolder}/AccountServer/bin/Debug/net9.0/AccountServer.dll",
             "args": [],
             "cwd": "${workspaceFolder}/AccountServer",
             "stopAtEntry": false,
@@ -35,7 +35,7 @@
             "request": "launch",
             "preLaunchTask": "build_testclient",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AccountTestClient/bin/Debug/net8.0/AccountTestClient.dll",
+            "program": "${workspaceFolder}/AccountTestClient/bin/Debug/net9.0/AccountTestClient.dll",
             "args": [],
             "cwd": "${workspaceFolder}/AccountTestClient",
             "stopAtEntry": false,
