@@ -73,6 +73,21 @@ npm run dev
 | POST   | `/api/auth/logout` | none   | Sign out                       |
 | GET    | `/api/auth/me`     | cookie | Current user                   |
 | POST   | `/api/accounts`    | cookie | Create user `{username, password, nickname, email?}` |
+| GET    | `/api/accounts?query=` | cookie | Search users (username/nickname/email, newest 50) |
+| GET    | `/api/accounts/{id}`   | cookie | One user |
+| PUT    | `/api/accounts/{id}`   | cookie | Edit `{nickname, email}` |
+| PUT    | `/api/accounts/{id}/password` | cookie | Set a new password `{password}`; signs out saved logins |
+
+### Editing users and passwords
+
+The Users panel searches accounts and lets an admin change nickname and email, or set a new
+password. Username and login type cannot be changed. Setting a password gives the account a fresh
+salt and deletes its saved login tokens, so devices that stayed logged in must sign in again.
+
+These use the AccountServer's `Admin*` endpoints, which only accept OAuth2 clients listed in the
+AccountServer's `AdminClients` setting (default `["AccountWeb"]`). If AccountWeb uses another
+client id, add it there, or editing fails with "The account server does not allow AccountWeb to
+manage users".
 
 ## Docker
 

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { apiFetch, errorMessage } from "./auth.jsx";
-import { NICKNAME_PATTERN, PASSWORD_MAX, PASSWORD_MIN, PASSWORD_PATTERN } from "./constants.js";
+import { INPUT_CLASS, NICKNAME_PATTERN, PASSWORD_HINT, PASSWORD_MAX, passwordProblem } from "./constants.js";
 
-const INPUT_CLASS = "w-full rounded border border-slate-300 dark:border-slate-600 dark:bg-slate-900 p-2 text-sm";
 const EMPTY = { username: "", nickname: "", email: "", password: "", confirm: "" };
 
 // Returns the first client-side problem with the form, or null.
@@ -13,14 +12,10 @@ export function validate(form) {
   if (!/^[a-zA-Z0-9]/.test(username)) return "Username must start with a letter or digit.";
   if (!NICKNAME_PATTERN.test(nickname)) return "Nickname can only contain A-Z and 0-9.";
   if (nickname === username) return "Nickname and username cannot be equal.";
-  if (form.password.length < PASSWORD_MIN || form.password.length > PASSWORD_MAX)
-    return `Password must be between ${PASSWORD_MIN} and ${PASSWORD_MAX} characters long.`;
-  if (!PASSWORD_PATTERN.test(form.password)) return "Password can only contain A-Z, 0-9 and %*().";
-  if (form.password !== form.confirm) return "Passwords do not match.";
-  return null;
+  return passwordProblem(form.password, form.confirm);
 }
 
-function Field({ id, label, hint, ...props }) {
+export function Field({ id, label, hint, ...props }) {
   return (
     <div>
       <label htmlFor={id} className="mb-1 block text-sm font-semibold">{label}</label>
@@ -95,7 +90,7 @@ export default function CreateUserPanel({
             hint="Shown to other players. A-Z and 0-9, not the same as the username."
             value={form.nickname} onChange={set("nickname")} />
           <Field id="new-password" label="Password" type="password" required maxLength={PASSWORD_MAX}
-            autoComplete="new-password" hint={`${PASSWORD_MIN}-${PASSWORD_MAX} characters: A-Z, 0-9 and %*()`}
+            autoComplete="new-password" hint={PASSWORD_HINT}
             value={form.password} onChange={set("password")} />
           <Field id="new-confirm" label="Confirm password" type="password" required maxLength={PASSWORD_MAX}
             autoComplete="new-password" value={form.confirm} onChange={set("confirm")} />

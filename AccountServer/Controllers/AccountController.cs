@@ -82,6 +82,59 @@ namespace AccountServer.Controllers
             return _provider.ResetPasswordWithToken(resetPasswordDataToken.token, resetPasswordDataToken.password);
         }
 
+        // ---- Admin functions (AccountWeb) ----------------------------------------------------
+        // Only OAuth2 clients listed in AdminClients (default: AccountWeb) may call these. The
+        // client is identified by the audience ("aud") of its access token.
+
+        private bool IsAdminClient()
+        {
+            return _provider.IsAdminClient(User.FindAll("aud").Select(claim => claim.Value));
+        }
+
+        [HttpPut]
+        [Route("AdminSearchUsers")]
+        public AdminUserListData AdminSearchUsers(AdminSearchUsersData data)
+        {
+            if (!IsAdminClient())
+            {
+                return AdminUserListData.Error(AccountData.ErrorCode.NotAuthorized);
+            }
+            return _provider.AdminSearchUsers(data?.query);
+        }
+
+        [HttpPut]
+        [Route("AdminGetUser")]
+        public AdminUserData AdminGetUser(AdminGetUserData data)
+        {
+            if (!IsAdminClient())
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.NotAuthorized);
+            }
+            return _provider.AdminGetUser(data?.id ?? 0);
+        }
+
+        [HttpPut]
+        [Route("AdminUpdateUser")]
+        public AdminUserData AdminUpdateUser(AdminUpdateUserData data)
+        {
+            if (!IsAdminClient())
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.NotAuthorized);
+            }
+            return _provider.AdminUpdateUser(data);
+        }
+
+        [HttpPut]
+        [Route("AdminSetPassword")]
+        public AdminUserData AdminSetPassword(AdminSetPasswordData data)
+        {
+            if (!IsAdminClient())
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.NotAuthorized);
+            }
+            return _provider.AdminSetPassword(data);
+        }
+
         public override string Version()
         {
             return Program.AppVersion;

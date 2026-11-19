@@ -16,6 +16,10 @@ namespace AccountClientModule.RestClient
         Task<WebAPIData> ResetPasswordWithEmail(string emailAddress);
         Task<WebAPIData> ResetPasswordWithCode(string code, string emailAddress);
         Task<WebAPIData> ResetPasswordWithToken(string token, string password);
+        Task<WebAPIData> AdminSearchUsers(AdminSearchUsersData data);
+        Task<WebAPIData> AdminGetUser(AdminGetUserData data);
+        Task<WebAPIData> AdminUpdateUser(AdminUpdateUserData data);
+        Task<WebAPIData> AdminSetPassword(AdminSetPasswordData data);
     }
 
     public class AccountRestClient : DFOAuth2RestClient, IAccountRestClient
@@ -27,6 +31,10 @@ namespace AccountClientModule.RestClient
         private const int POST_RESETPASSWORD_WITH_CODE = 5;
         private const int POST_RESETPASSWORD_WITH_TOKEN = 6;
         private const int POST_LOGIN_WITH_GAMECENTER = 7;
+        private const int PUT_ADMIN_SEARCH_USERS = 8;
+        private const int PUT_ADMIN_GET_USER = 9;
+        private const int PUT_ADMIN_UPDATE_USER = 10;
+        private const int PUT_ADMIN_SET_PASSWORD = 11;
 
         public AccountRestClient() : base()
         {
@@ -105,6 +113,30 @@ namespace AccountClientModule.RestClient
 
             var response = await PutData(POST_RESETPASSWORD_WITH_TOKEN,"ResetPasswordWithToken",data);
             return response;
+        }
+
+        public async Task<WebAPIData> AdminSearchUsers(AdminSearchUsersData data)
+        {
+            await AuthenticateIfNeeded();
+            return await PutData(PUT_ADMIN_SEARCH_USERS, "AdminSearchUsers", data);
+        }
+
+        public async Task<WebAPIData> AdminGetUser(AdminGetUserData data)
+        {
+            await AuthenticateIfNeeded();
+            return await PutData(PUT_ADMIN_GET_USER, "AdminGetUser", data);
+        }
+
+        public async Task<WebAPIData> AdminUpdateUser(AdminUpdateUserData data)
+        {
+            await AuthenticateIfNeeded();
+            return await PutData(PUT_ADMIN_UPDATE_USER, "AdminUpdateUser", data);
+        }
+
+        public async Task<WebAPIData> AdminSetPassword(AdminSetPasswordData data)
+        {
+            await AuthenticateIfNeeded();
+            return await PutData(PUT_ADMIN_SET_PASSWORD, "AdminSetPassword", data);
         }
     }
 }
