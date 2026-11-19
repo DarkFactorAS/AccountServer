@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "./auth.jsx";
 import ThemeToggle from "./ThemeToggle.jsx";
+import PasswordInput from "./PasswordInput.jsx";
 import { APP_TITLE } from "./constants.js";
 
 const INPUT_CLASS = "w-full rounded border border-slate-300 dark:border-slate-600 dark:bg-slate-900 p-2 text-sm";
@@ -59,14 +60,12 @@ export default function LoginPage({ theme, onThemeChange }) {
           </div>
           <div>
             <label htmlFor="login-password" className="mb-1 block text-sm font-semibold">Password</label>
-            <input
+            <PasswordInput
               id="login-password"
-              type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={INPUT_CLASS}
             />
           </div>
           {error && (

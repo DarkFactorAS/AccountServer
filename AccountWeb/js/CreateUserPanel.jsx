@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { apiFetch, errorMessage } from "./auth.jsx";
+import PasswordInput from "./PasswordInput.jsx";
 import { INPUT_CLASS, NICKNAME_PATTERN, PASSWORD_HINT, PASSWORD_MAX, passwordProblem } from "./constants.js";
 
 const EMPTY = { username: "", nickname: "", email: "", password: "", confirm: "" };
@@ -15,11 +16,16 @@ export function validate(form) {
   return passwordProblem(form.password, form.confirm);
 }
 
-export function Field({ id, label, hint, ...props }) {
+export function Field({ id, label, hint, type, ...props }) {
+  const describedBy = hint ? `${id}-hint` : undefined;
   return (
     <div>
       <label htmlFor={id} className="mb-1 block text-sm font-semibold">{label}</label>
-      <input id={id} className={INPUT_CLASS} aria-describedby={hint ? `${id}-hint` : undefined} {...props} />
+      {type === "password" ? (
+        <PasswordInput id={id} aria-describedby={describedBy} {...props} />
+      ) : (
+        <input id={id} type={type} className={INPUT_CLASS} aria-describedby={describedBy} {...props} />
+      )}
       {hint && <p id={`${id}-hint`} className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
     </div>
   );
