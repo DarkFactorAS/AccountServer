@@ -29,6 +29,27 @@ Only accounts listed in `AdminUsers` can sign in and create users:
 - An empty list means nobody can sign in (login answers 503 "No admin users are configured").
 - A valid account that is not on the list gets 403 "This account is not allowed to use AccountWeb".
 
+### First-run setup (creating the first admin)
+
+While `AdminUsers` is empty, AccountWeb shows a **Create the first account** page instead of the
+login page:
+
+1. Open AccountWeb **from the machine it runs on** (`http://localhost:...`) and create the account.
+2. Add the username to `AdminUsers` in `Config/appsettings.<Environment>.json` (the page shows the exact file).
+3. Restart AccountWeb and sign in.
+
+Safeguards: setup is only offered to loopback requests, only while `AdminUsers` is empty, and
+only for **one** account per process start (later requests get 403 until restart).
+
+In Docker, browser requests arrive from the Docker gateway, not loopback. Set
+`"AllowRemoteSetup": true` for the first run, then set it back to `false` together with adding
+the admin name. Never leave it on for a server reachable from outside.
+
+| Method | Path                       | Auth | Purpose |
+|--------|----------------------------|------|---------|
+| GET    | `/api/setup/status`        | none | `{ setupMode, configFile? }` |
+| POST   | `/api/setup/first-account` | none (setup only) | Create the first account |
+
 ## Run locally
 
 ```sh

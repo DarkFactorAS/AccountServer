@@ -16,7 +16,15 @@ public static class AccountEndpoints
     }
 
     internal static async Task<IResult> CreateAsync(
-        CreateUserRequest? request, IAccountService accounts, HttpContext http, CancellationToken cancellationToken)
+        CreateUserRequest? request, IAccountService accounts, HttpContext http, CancellationToken cancellationToken) =>
+        (await CreateCoreAsync(request, accounts, $"'{http.User.Identity?.Name}'", cancellationToken)).Result;
+
+    /// <summary>
+    /// Validates the request and creates the account. <paramref name="createdBy"/> is only used for the
+    /// log line. Returns the HTTP result and whether an account was created.
+    /// </summary>
+    internal static async Task<(IResult Result, bool Created)> CreateCoreAsync(
+        CreateUserRequest? request, IAccountService accounts, string createdBy, CancellationToken cancellationToken)
     {
         var username = request?.Username?.Trim();
         var nickname = request?.Nickname?.Trim();
@@ -24,26 +32,28 @@ public static class AccountEndpoints
         var password = request?.Password;
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(nickname) || string.IsNullOrEmpty(password))
         {
-            return Results.BadRequest(new { error = "Username, nickname and password are required." });
+            return (Results.BadRequest(new { error = "Username, nickname and password are required." }), false);
         }
 
         if (username.Length > MaxFieldLength || nickname.Length > MaxFieldLength ||
             password.Length > MaxFieldLength || (email?.Length ?? 0) > MaxFieldLength)
         {
-            return Results.BadRequest(new { error = $"Fields can be at most {MaxFieldLength} characters." });
+            return (Results.BadRequest(new { error = $"Fields can be at most {MaxFieldLength} characters." }), false);
         }
 
         var result = await accounts.CreateAccountAsync(username, password, nickname, email, cancellationToken);
         if (result.Status != AccountResultStatus.Ok)
         {
-            return ErrorResult(result);
+            return (ErrorResult(result), false);
         }
 
         DFLogger.LogOutput(
             DFLogLevel.INFO,
             "CreateAccount",
-            $"Account {result.AccountId} '{username}' created by '{http.User.Identity?.Name}'.");
-        return Results.Created($"/api/accounts/{result.AccountId}", new { id = result.AccountId, username, nickname = result.Nickname });
+            $"Account {result.AccountId} '{username}' created by {createdBy}.");
+        return (Results.Created(
+            $"/api/accounts/{result.AccountId}",
+            new { id = result.AccountId, username, nickname = result.Nickname }), true);
     }
 
     internal static IResult ErrorResult(AccountResult result) => result.Status switch

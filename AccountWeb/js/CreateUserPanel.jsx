@@ -30,7 +30,13 @@ function Field({ id, label, hint, ...props }) {
   );
 }
 
-export default function CreateUserPanel({ onCreated }) {
+export default function CreateUserPanel({
+  onCreated,
+  endpoint = "/api/accounts",
+  title = "Create user",
+  description = "Adds a new account to the account database.",
+  submitLabel = "Create user",
+}) {
   const [form, setForm] = useState(EMPTY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -49,7 +55,7 @@ export default function CreateUserPanel({ onCreated }) {
     setBusy(true);
     setError(null);
     try {
-      const response = await apiFetch("/api/accounts", {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -78,8 +84,8 @@ export default function CreateUserPanel({ onCreated }) {
   return (
     <section className="rounded-lg bg-white dark:bg-slate-800 p-4 shadow">
       <div className="mb-3">
-        <h2 className="text-lg font-semibold">Create user</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Adds a new account to the account database.</p>
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -113,7 +119,7 @@ export default function CreateUserPanel({ onCreated }) {
             disabled={busy}
             className="rounded bg-slate-900 dark:bg-sky-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {busy ? "Creating..." : "Create user"}
+            {busy ? "Creating..." : submitLabel}
           </button>
         </div>
       </form>

@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAccountWebAuthentication();
 builder.Services.AddSingleton<IConfigurationHelper, ConfigurationHelper<AccountWebSettings>>();
 builder.Services.AddAccountServerClient();
+builder.Services.AddSingleton<SetupState>();
 new DFServices(builder.Services)
     .SetupLogger()
     .LogToConsole(DFLogLevel.INFO);
@@ -33,6 +34,7 @@ DFLogger.LogOutput(
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy" })).AllowAnonymous();
 AuthEndpoints.Map(app);
 AccountEndpoints.Map(app);
+SetupEndpoints.Map(app);
 
 // SPA fallback (public: the app shows its login page); unknown /api routes stay 404.
 app.MapFallback(context =>

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./auth.jsx";
 import LoginPage from "./LoginPage.jsx";
+import SetupPage from "./SetupPage.jsx";
 import CreateUserPanel from "./CreateUserPanel.jsx";
 import ThemeToggle from "./ThemeToggle.jsx";
 import useTheme from "./useTheme.js";
@@ -63,10 +64,31 @@ function Dashboard({ theme, setTheme }) {
   );
 }
 
+// Asks the server whether first-run setup is open; only checked while signed out.
+// Returns null while loading, then { setupMode, configFile? }.
+function useSetupStatus(enabled) {
+  const [setup, setSetup] = useState(null);
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let cancelled = false;
+    fetch("/api/setup/status", { credentials: "same-origin" })
+      .then((response) => (response.ok ? response.json() : { setupMode: false }))
+      .catch(() => ({ setupMode: false }))
+      .then((body) => {
+        if (!cancelled) setSetup(body);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
+  return setup;
+}
+
 function AuthGate() {
   const { status } = useAuth();
   const { theme, setTheme } = useTheme();
-  if (status === "loading") {
+  const setup = useSetupStatus(status === "anonymous");
+  if (status === "loading" || (status === "anonymous" && setup === null)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400">
         <p role="status">Loading...</p>
@@ -74,6 +96,9 @@ function AuthGate() {
     );
   }
   if (status !== "authenticated") {
+    if (setup?.setupMode) {
+      return <SetupPage theme={theme} onThemeChange={setTheme} configFile={setup.configFile} />;
+    }
     return <LoginPage theme={theme} onThemeChange={setTheme} />;
   }
   return <Dashboard theme={theme} setTheme={setTheme} />;
