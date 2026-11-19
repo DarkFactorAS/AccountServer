@@ -37,8 +37,16 @@ public static class WebAuthentication
                     return Task.CompletedTask;
                 };
             });
+        // Signed in AND on the admin list. Used both as the default policy (RequireAuthorization())
+        // and the fallback policy (endpoints without any attribute).
+        var adminPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .AddRequirements(new AdminRequirement())
+            .Build();
+        services.AddSingleton<IAuthorizationHandler, AdminAuthorizationHandler>();
         services.AddAuthorizationBuilder()
-            .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+            .SetDefaultPolicy(adminPolicy)
+            .SetFallbackPolicy(adminPolicy);
         return services;
     }
 

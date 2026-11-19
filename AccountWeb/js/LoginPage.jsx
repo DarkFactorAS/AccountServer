@@ -41,7 +41,7 @@ export default function LoginPage({ theme, onThemeChange }) {
         >
           <div>
             <h2 id="login-heading" className="text-lg font-semibold">Sign in</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Use your DarkFactor account.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Use a DarkFactor account that is listed as an AccountWeb admin.</p>
           </div>
           <div>
             <label htmlFor="login-username" className="mb-1 block text-sm font-semibold">Username</label>

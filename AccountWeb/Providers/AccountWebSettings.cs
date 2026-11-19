@@ -15,4 +15,10 @@ public sealed class AccountServerSettings
 public sealed class AccountWebSettings : AppSettings
 {
     public AccountServerSettings? AccountServer { get; set; }
+
+    /// <summary>
+    /// Usernames (login names, case-insensitive) allowed to use AccountWeb. Everyone else is refused,
+    /// even with a valid DarkFactor account. Empty means nobody can sign in.
+    /// </summary>
+    public List<string> AdminUsers { get; set; } = [];
 }

@@ -1,13 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-// Fired when any API call returns 401 (session expired or logged out elsewhere).
+// Fired when any API call returns 401 or 403 (session expired, logged out elsewhere, or the
+// user was removed from the admin list).
 export const UNAUTHORIZED_EVENT = "accountweb:unauthorized";
 
 // fetch() for the AccountWeb API. The session is an HttpOnly cookie the browser sends
-// automatically; a 401 outside /api/auth/* sends the user back to the login page.
+// automatically; a 401/403 outside /api/auth/* sends the user back to the login page.
 export async function apiFetch(url, options = {}) {
   const response = await fetch(url, { credentials: "same-origin", ...options });
-  if (response.status === 401 && !String(url).startsWith("/api/auth/")) {
+  if ((response.status === 401 || response.status === 403) && !String(url).startsWith("/api/auth/")) {
     window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
   }
   return response;

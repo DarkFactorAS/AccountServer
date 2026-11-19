@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using AccountWeb.Providers;
+using DFCommonLib.Config;
+using DFCommonLib.Logger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
@@ -22,7 +24,11 @@ public static class AuthEndpoints
     }
 
     internal static async Task<IResult> LoginAsync(
-        LoginRequest? request, IAccountService accounts, HttpContext http, CancellationToken cancellationToken)
+        LoginRequest? request,
+        IAccountService accounts,
+        IConfigurationHelper configuration,
+        HttpContext http,
+        CancellationToken cancellationToken)
     {
         var username = request?.Username?.Trim();
         var password = request?.Password;
@@ -32,16 +38,34 @@ public static class AuthEndpoints
             return Results.BadRequest(new { error = "Username and password are required." });
         }
 
+        if (AdminAccess.AdminUsers(configuration).Count == 0)
+        {
+            DFLogger.LogOutput(DFLogLevel.ERROR, "Login", "AdminUsers is empty; nobody can sign in.");
+            return Results.Json(
+                new { error = "No admin users are configured on the server." },
+                statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+
+        // Check the password first, so the answer does not reveal which usernames are admins.
         var result = await accounts.LoginAsync(username, password, cancellationToken);
         if (result.Status != AccountResultStatus.Ok)
         {
             return AccountEndpoints.ErrorResult(result);
         }
 
+        if (!AdminAccess.IsAdmin(configuration, username))
+        {
+            DFLogger.LogOutput(DFLogLevel.WARNING, "Login", $"Refused non-admin account {result.AccountId}.");
+            return Results.Json(
+                new { error = "This account is not allowed to use AccountWeb." },
+                statusCode: StatusCodes.Status403Forbidden);
+        }
+
         var identity = new ClaimsIdentity(
             [
                 new Claim(ClaimTypes.Name, result.Nickname ?? username),
                 new Claim(ClaimTypes.NameIdentifier, result.AccountId.ToString()),
+                new Claim(AdminAccess.UsernameClaim, username),
             ],
             CookieAuthenticationDefaults.AuthenticationScheme);
         await http.SignInAsync(

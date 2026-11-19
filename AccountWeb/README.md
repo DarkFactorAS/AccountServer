@@ -1,6 +1,6 @@
 # AccountWeb
 
-Small web front end for the AccountServer. Sign in with an existing DarkFactor account,
+Small web front end for the AccountServer. Sign in with an admin DarkFactor account,
 then create new users (username, nickname, password and optional email).
 
 Users are created through the AccountServer's `CreateAccount` API with the AccountClient, so
@@ -14,6 +14,20 @@ Tailwind and Vite, cookie session, light/dark theme.
 
 Copy `Config/appsettings.Template.json` to `Config/appsettings.<Environment>.json` and fill in the
 AccountServer endpoint and the OAuth2 client credentials AccountWeb uses to call it.
+
+### Admin users
+
+Only accounts listed in `AdminUsers` can sign in and create users:
+
+```json
+"AdminUsers": [ "alice", "bob" ]
+```
+
+- Names are login usernames (not nicknames), compared case-insensitively.
+- The list is checked at sign-in and on every request, so removing a name locks that user
+  out on their next request. Config changes need a restart.
+- An empty list means nobody can sign in (login answers 503 "No admin users are configured").
+- A valid account that is not on the list gets 403 "This account is not allowed to use AccountWeb".
 
 ## Run locally
 
