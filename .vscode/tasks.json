@@ -50,5 +50,27 @@
             ],
             "problemMatcher": "$msCompile"
         },
+        {
+            "label": "build_accountweb",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/AccountWeb/AccountWeb.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            // Installs the frontend packages (fast no-op when node_modules is up to date).
+            "label": "npm_install_accountweb",
+            "type": "shell",
+            "command": "npm install",
+            "options": {
+                "cwd": "${workspaceFolder}/AccountWeb"
+            },
+            "problemMatcher": []
+        },
     ]
 }
