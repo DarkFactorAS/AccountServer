@@ -30,6 +30,7 @@ DFLogger.LogOutput(
     DFLogLevel.INFO,
     "Startup",
     $"Environment '{builder.Environment.EnvironmentName}', account server '{settings?.AccountServer?.Endpoint}'.");
+StartupReport.Log(settings, builder.Environment.EnvironmentName);
 
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy" })).AllowAnonymous();
 AuthEndpoints.Map(app);
