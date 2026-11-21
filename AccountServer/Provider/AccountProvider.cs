@@ -26,6 +26,13 @@ namespace AccountServer.Provider
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string emailAddress, string code);
         ReturnData ResetPasswordWithToken(string token, string password );
+
+        // Admin functions (AccountWeb). The caller must check the OAuth2 client first.
+        bool IsAdminClient(IEnumerable<string> audiences);
+        AdminUserListData AdminSearchUsers(string query);
+        AdminUserData AdminGetUser(uint accountId);
+        AdminUserData AdminUpdateUser(AdminUpdateUserData data);
+        AdminUserData AdminSetPassword(AdminSetPasswordData data);
     }
 
     public class AccountProvider : IAccountProvider
@@ -282,6 +289,96 @@ namespace AccountServer.Provider
             _repository.SetNewPassword(accountId, hashedPassword);
 
             return ReturnData.OKMessage();
+        }
+
+        private const int AdminSearchLimit = 50;
+
+        public bool IsAdminClient(IEnumerable<string> audiences)
+        {
+            IEnumerable<string> allowed = _accountConfig?.AdminClients ?? (IEnumerable<string>)AccountConfig.DefaultAdminClients;
+            foreach (var audience in audiences)
+            {
+                foreach (var client in allowed)
+                {
+                    if (string.Equals(audience, client, StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public AdminUserListData AdminSearchUsers(string query)
+        {
+            return new AdminUserListData { users = _repository.SearchAccounts(query ?? "", AdminSearchLimit) };
+        }
+
+        public AdminUserData AdminGetUser(uint accountId)
+        {
+            return _repository.GetAdminAccount(accountId) ?? AdminUserData.Error(AccountData.ErrorCode.UserDoesNotExist);
+        }
+
+        public AdminUserData AdminUpdateUser(AdminUpdateUserData data)
+        {
+            if (data == null)
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.ErrorInData);
+            }
+
+            var account = _repository.GetAdminAccount(data.id);
+            if (account == null)
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.UserDoesNotExist);
+            }
+
+            var nickname = data.nickname?.Trim() ?? "";
+            if (nickname != account.nickname)
+            {
+                // Same rules as CreateAccount (also rejects a nickname another account already has).
+                var nicknameStatus = VerifyNickname(nickname);
+                if (nicknameStatus != AccountData.ErrorCode.OK)
+                {
+                    return AdminUserData.Error(nicknameStatus);
+                }
+                if (nickname == account.username)
+                {
+                    return AdminUserData.Error(AccountData.ErrorCode.NicknameAndUsernameEqual);
+                }
+            }
+
+            _repository.UpdateAccount(account.id, nickname, VerifyEmail(data.email?.Trim()));
+            _logger.LogInfo($"Admin updated account {account.id}");
+            return _repository.GetAdminAccount(account.id);
+        }
+
+        public AdminUserData AdminSetPassword(AdminSetPasswordData data)
+        {
+            if (data == null || string.IsNullOrEmpty(data.password))
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.ErrorInData);
+            }
+
+            var account = _repository.GetAdminAccount(data.id);
+            if (account == null)
+            {
+                return AdminUserData.Error(AccountData.ErrorCode.UserDoesNotExist);
+            }
+
+            var plainPassword = DFCrypt.DecryptInput(data.password);
+            var passwordStatus = VerifyPassword(plainPassword);
+            if (passwordStatus != AccountData.ErrorCode.OK)
+            {
+                return AdminUserData.Error(passwordStatus);
+            }
+
+            // Fresh salt with the new password, and drop saved login tokens so devices that stayed
+            // logged in with the old password have to sign in again.
+            var salt = generateSalt();
+            _repository.SetPasswordAndSalt(account.id, generateHash(plainPassword, salt), salt);
+            _repository.DeleteTokens(account.id);
+            _logger.LogInfo($"Admin set a new password for account {account.id}");
+            return account;
         }
 
         private string GenerateCode()

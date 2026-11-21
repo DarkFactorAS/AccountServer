@@ -19,6 +19,13 @@ namespace AccountServer.Repository
         void PurgeOldTokens(uint userId, uint days);
         string SaveToken( uint userId, string token );
         void SetNewPassword( uint userId, string password );
+
+        // Admin functions (AccountWeb)
+        List<AdminUserData> SearchAccounts(string query, int limit);
+        AdminUserData GetAdminAccount(uint accountId);
+        void UpdateAccount(uint accountId, string nickname, string email);
+        void SetPasswordAndSalt(uint accountId, string password, byte[] salt);
+        void DeleteTokens(uint accountId);
     }
 
     public class AccountRepository : IAccountRepository
@@ -165,6 +172,102 @@ namespace AccountServer.Repository
             }
         }
         
+        private const string AdminColumns = "id, username, nickname, email, flags, logintype, created, lastlogin, numlogins";
+
+        public List<AdminUserData> SearchAccounts(string query, int limit)
+        {
+            var users = new List<AdminUserData>();
+            var hasQuery = !string.IsNullOrWhiteSpace(query);
+            // limit is an int chosen by the server, so it is safe to inline.
+            var sql = hasQuery
+                ? $"SELECT {AdminColumns} FROM users WHERE username LIKE @query OR nickname LIKE @query OR email LIKE @query ORDER BY id DESC LIMIT {limit}"
+                : $"SELECT {AdminColumns} FROM users ORDER BY id DESC LIMIT {limit}";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                if (hasQuery)
+                {
+                    // Escape LIKE wildcards so the query is a plain substring match.
+                    var escaped = query.Trim().Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
+                    cmd.AddParameter("@query", "%" + escaped + "%");
+                }
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        users.Add(ReadAdminAccount(reader));
+                    }
+                }
+            }
+            return users;
+        }
+
+        public AdminUserData GetAdminAccount(uint accountId)
+        {
+            var sql = $"SELECT {AdminColumns} FROM users WHERE id = @accountId";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@accountId", accountId);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return ReadAdminAccount(reader);
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static AdminUserData ReadAdminAccount(System.Data.IDataRecord reader)
+        {
+            return new AdminUserData
+            {
+                id = Convert.ToUInt32(reader["id"]),
+                username = reader["username"].ToString(),
+                nickname = reader["nickname"].ToString(),
+                email = reader["email"].ToString(),
+                flags = Convert.ToUInt32(reader["flags"]),
+                logintype = Convert.ToInt32(reader["logintype"]),
+                created = Convert.ToDateTime(reader["created"]),
+                lastlogin = Convert.ToDateTime(reader["lastlogin"]),
+                numlogins = Convert.ToInt32(reader["numlogins"]),
+            };
+        }
+
+        public void UpdateAccount(uint accountId, string nickname, string email)
+        {
+            var sql = @"update users set nickname = @nickname, email = @email, updated = now() where id = @accountId";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@nickname", nickname);
+                cmd.AddParameter("@email", email);
+                cmd.AddParameter("@accountId", accountId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void SetPasswordAndSalt(uint accountId, string password, byte[] salt)
+        {
+            var sql = @"update users set password = @password, salt = @salt, updated = now() where id = @accountId";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@password", password);
+                cmd.AddClobParameter("@salt", salt);
+                cmd.AddParameter("@accountId", accountId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void DeleteTokens(uint accountId)
+        {
+            var sql = @"delete from tokens where userid = @accountId";
+            using (var cmd = _connection.CreateCommand(sql))
+            {
+                cmd.AddParameter("@accountId", accountId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         public void UpdateLastLogin(uint accountId)
         {
             var sql = @"update users set lastlogin = now(), numlogins = numlogins + 1 where id = @accountId";

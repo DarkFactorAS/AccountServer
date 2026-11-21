@@ -43,8 +43,26 @@ services:
       - "5100:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
-    depends_on: 
+    depends_on:
       - accountdb
+
+  accountweb:
+    networks:
+      - net_account_frontend
+    build:
+      network: host
+      context: ./
+      dockerfile: ./AccountWeb/Dockerfile
+      secrets:
+        - nuget_username
+        - nuget_token
+    restart: always
+    ports:
+      - "5101:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
+    depends_on:
+      - accountserver
 
 networks:
   net_account_backend:

@@ -20,7 +20,9 @@ namespace AccountCommon.SharedModel
             PasswordInvalidCharacters,
             NicknameAlreadyExist,
             NotValidEmail,
-            NicknameAndUsernameEqual
+            NicknameAndUsernameEqual,
+            // The calling OAuth2 client is not allowed to use admin functions (AccountServer AdminClients).
+            NotAuthorized
         }
 
         public uint id { get; set; }
@@ -81,6 +83,8 @@ namespace AccountCommon.SharedModel
                     return "Nickname and username cannot be equal";
                 case ErrorCode.PasswordInvalidLength:
                     return "Password length is invalid. Password must be between 8 and 20 characters long";
+                case ErrorCode.NotAuthorized:
+                    return "This client is not allowed to manage accounts";
             }
 
             return "Unknown error";
