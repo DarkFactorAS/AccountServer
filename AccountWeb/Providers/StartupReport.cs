@@ -23,7 +23,13 @@ public static class StartupReport
             .ToList() ?? [];
         var allowRemote = settings?.AllowRemoteSetup ?? false;
 
-        var hasEndpoint = !string.IsNullOrEmpty(endpoint);
+        // Set by the official .NET container images. Inside a container, loopback is the container
+        // itself: browser requests arrive from the Docker gateway, and 127.0.0.1 is not the host.
+        var inContainer = string.Equals(
+            Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"), "true", StringComparison.OrdinalIgnoreCase);
+        var endpointIsLoopback = Uri.TryCreate(endpoint, UriKind.Absolute, out var endpointUri) && endpointUri.IsLoopback;
+
+        var hasEndpoint = !string.IsNullOrEmpty(endpoint) && !(inContainer && endpointIsLoopback);
         var hasClientId = !string.IsNullOrEmpty(clientId);
         var hasSecret = !string.IsNullOrWhiteSpace(server?.ClientSecret);
         var serverOk = hasEndpoint && hasClientId && hasSecret;
@@ -31,19 +37,29 @@ public static class StartupReport
         Line(true, $"Config file: Config/appsettings.{environmentName}.json");
 
         Line(null, "Account server (needed for both setup and login):");
-        Check(hasEndpoint, "AccountServer.Endpoint", hasEndpoint ? endpoint! : "not set");
+        Check(hasEndpoint, "AccountServer.Endpoint", string.IsNullOrEmpty(endpoint)
+            ? "not set"
+            : hasEndpoint
+                ? endpoint
+                : $"{endpoint} points at this container, not the AccountServer; use its service name (e.g. http://accountserver:8080)");
         Check(hasClientId, "AccountServer.ClientId", hasClientId ? clientId! : "not set");
         Check(hasSecret, "AccountServer.ClientSecret", hasSecret ? "set" : "not set");
         Note($"The AccountServer must list client id '{(hasClientId ? clientId : "?")}' in AdminClients (default: AccountWeb); not checked until first call.");
 
         var setupOpen = admins.Count == 0;
-        Line(setupOpen && serverOk, $"First-run setup (create first admin): {(setupOpen && serverOk ? "AVAILABLE" : "NOT AVAILABLE")}");
+        // In a container no browser request comes from loopback, so setup needs AllowRemoteSetup.
+        var setupReachable = allowRemote || !inContainer;
+        var setupOk = setupOpen && serverOk && setupReachable;
+        var setupState = !setupOk ? "NOT AVAILABLE" : allowRemote ? "AVAILABLE from any address" : "AVAILABLE from this machine only";
+        Line(setupOk, $"First-run setup (create first admin): {setupState}");
         Check(setupOpen, "AdminUsers is empty", setupOpen ? "yes" : $"no ({admins.Count} configured), setup is closed");
         if (setupOpen)
         {
-            Check(true, "AllowRemoteSetup", allowRemote
+            Check(setupReachable, "AllowRemoteSetup", allowRemote
                 ? "true, setup is offered to ANY address; set it back to false after the first admin exists"
-                : "false, setup is only offered to requests from this machine (loopback)");
+                : inContainer
+                    ? "false, but running in a container where browser requests never come from loopback; set it to true for the first run"
+                    : "false, setup is only offered to requests from this machine (loopback)");
         }
 
         if (!serverOk && setupOpen)
