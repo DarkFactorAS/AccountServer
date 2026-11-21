@@ -25,7 +25,9 @@ public sealed record AccountResult(
     uint AccountId = 0,
     string? Error = null,
     AdminUserData? User = null,
-    IReadOnlyList<AdminUserData>? Users = null);
+    IReadOnlyList<AdminUserData>? Users = null,
+    /// <summary>Why the call failed, for the server log only. Never sent to the browser.</summary>
+    string? LogReason = null);
 
 public interface IAccountService
 {
@@ -61,11 +63,13 @@ public sealed class AccountService(IAccountClient accountClient, IConfigurationH
             {
                 AccountData.ErrorCode.OK => new AccountResult(
                     AccountResultStatus.Ok, string.IsNullOrWhiteSpace(data.nickname) ? username : data.nickname, data.id),
-                // Same answer for unknown user and wrong password.
-                AccountData.ErrorCode.UserDoesNotExist or AccountData.ErrorCode.WrongPassword =>
-                    new AccountResult(AccountResultStatus.InvalidCredentials, Error: "Invalid username or password."),
+                // Same answer to the browser for unknown user and wrong password; only the log tells them apart.
+                AccountData.ErrorCode.UserDoesNotExist => new AccountResult(
+                    AccountResultStatus.InvalidCredentials, Error: "Invalid username or password.", LogReason: "user does not exist"),
+                AccountData.ErrorCode.WrongPassword => new AccountResult(
+                    AccountResultStatus.InvalidCredentials, Error: "Invalid username or password.", LogReason: "wrong password"),
                 // Anything else (including transport errors the client maps to an error code) is a server problem.
-                _ => new AccountResult(AccountResultStatus.Unavailable),
+                _ => new AccountResult(AccountResultStatus.Unavailable, LogReason: $"account server returned {data.errorCode}"),
             },
             cancellationToken);
 
