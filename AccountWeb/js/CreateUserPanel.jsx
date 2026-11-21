@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { apiFetch, errorMessage } from "./auth.jsx";
 import PasswordInput from "./PasswordInput.jsx";
-import { INPUT_CLASS, NICKNAME_PATTERN, PASSWORD_HINT, PASSWORD_MAX, passwordProblem } from "./constants.js";
+import { INPUT_CLASS, NICKNAME_PATTERN, PASSWORD_HINT, passwordProblem } from "./constants.js";
 
 const EMPTY = { username: "", nickname: "", email: "", password: "", confirm: "" };
 
@@ -95,10 +95,10 @@ export default function CreateUserPanel({
           <Field id="new-nickname" label="Nickname" required maxLength={100} autoComplete="off"
             hint="Shown to other players. A-Z and 0-9, not the same as the username."
             value={form.nickname} onChange={set("nickname")} />
-          <Field id="new-password" label="Password" type="password" required maxLength={PASSWORD_MAX}
+          <Field id="new-password" label="Password" type="password" required
             autoComplete="new-password" hint={PASSWORD_HINT}
             value={form.password} onChange={set("password")} />
-          <Field id="new-confirm" label="Confirm password" type="password" required maxLength={PASSWORD_MAX}
+          <Field id="new-confirm" label="Confirm password" type="password" required
             autoComplete="new-password" value={form.confirm} onChange={set("confirm")} />
           <div className="sm:col-span-2">
             <Field id="new-email" label="Email (optional)" type="email" maxLength={100} autoComplete="off"

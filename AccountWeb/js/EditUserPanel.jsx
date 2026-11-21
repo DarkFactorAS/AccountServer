@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { apiFetch, errorMessage } from "./auth.jsx";
 import { Field } from "./CreateUserPanel.jsx";
-import { NICKNAME_PATTERN, PASSWORD_HINT, PASSWORD_MAX, passwordProblem } from "./constants.js";
+import { NICKNAME_PATTERN, PASSWORD_HINT, passwordProblem } from "./constants.js";
 
 function formatDate(value) {
   const date = new Date(value);
@@ -99,10 +99,10 @@ export default function EditUserPanel({ user, onSaved, onClose }) {
 
       <form onSubmit={savePassword} noValidate className="space-y-3">
         <h3 className="text-sm font-semibold">Set new password</h3>
-        <Field id={`${id}-password`} label="New password" type="password" maxLength={PASSWORD_MAX}
+        <Field id={`${id}-password`} label="New password" type="password"
           autoComplete="new-password" hint={PASSWORD_HINT}
           value={password.password} onChange={(e) => setPassword((p) => ({ ...p, password: e.target.value }))} />
-        <Field id={`${id}-confirm`} label="Confirm new password" type="password" maxLength={PASSWORD_MAX}
+        <Field id={`${id}-confirm`} label="Confirm new password" type="password"
           autoComplete="new-password"
           value={password.confirm} onChange={(e) => setPassword((p) => ({ ...p, confirm: e.target.value }))} />
         <Message {...passwordState} />
