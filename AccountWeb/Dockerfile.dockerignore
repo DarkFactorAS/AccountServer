@@ -1,0 +1,10 @@
+# Used by BuildKit for AccountWeb/Dockerfile (build context is the repository root).
+# Keep host build output and packages out of the image; they are rebuilt inside the container.
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/.vs
+**/.vscode
+.git
+.github

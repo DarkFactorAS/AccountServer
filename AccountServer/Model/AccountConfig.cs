@@ -18,5 +18,13 @@ namespace AccountServer.Model
     {
     public MailServer mailServer { get; set; }
     public uint LoginTokenHistoryExpirationDays { get; set; } = 180;
+
+    /// <summary>
+    /// OAuth2 client ids (the token's audience) allowed to call the Admin* endpoints: list, edit and
+    /// set passwords for any account. Null or missing means only "AccountWeb".
+    /// </summary>
+    public List<string> AdminClients { get; set; }
+
+    public static readonly string[] DefaultAdminClients = { "AccountWeb" };
     }
 }

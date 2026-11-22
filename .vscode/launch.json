@@ -55,10 +55,64 @@
             //"console": "externalTerminal",
         },
         {
+            // AccountWeb backend: API on http://localhost:5102 (the port the Vite dev server proxies /api to).
+            // Reads AccountWeb/Config/appsettings.Development.json (AccountServer endpoint + client credentials).
+            "name": "AccountWeb: API (.NET)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_accountweb",
+            "program": "${workspaceFolder}/AccountWeb/bin/Debug/net9.0/AccountWeb.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/AccountWeb",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:5102",
+                // Run the net9.0 build on a newer runtime when .NET 9 is not installed.
+                "DOTNET_ROLL_FORWARD": "Major"
+            },
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            // AccountWeb frontend: Vite dev server with hot reload on http://localhost:5174. Once it is up,
+            // VS Code opens Chrome with the JS debugger attached, so breakpoints in js/*.jsx work.
+            "name": "AccountWeb: Frontend (Vite + Chrome)",
+            "type": "node-terminal",
+            "request": "launch",
+            "preLaunchTask": "npm_install_accountweb",
+            "command": "npm run dev",
+            "cwd": "${workspaceFolder}/AccountWeb",
+            // Must match uriFormat below and ASPNETCORE_URLS of the API configuration.
+            "env": {
+                "ACCOUNTWEB_DEV_PORT": "5174",
+                "ACCOUNTWEB_API_URL": "http://localhost:5102"
+            },
+            "serverReadyAction": {
+                "pattern": "Local:",
+                "uriFormat": "http://localhost:5174",
+                "action": "debugWithChrome",
+                "webRoot": "${workspaceFolder}/AccountWeb"
+            }
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        }
+    ],
+    "compounds": [
+        {
+            // AccountWeb API + Vite + browser, stopped together. Needs an AccountServer running.
+            "name": "AccountWeb: Full stack",
+            "configurations": ["AccountWeb: API (.NET)", "AccountWeb: Frontend (Vite + Chrome)"],
+            "stopAll": true
+        },
+        {
+            // AccountServer + AccountWeb API + Vite + browser, all debuggable at once.
+            "name": "AccountServer + AccountWeb",
+            "configurations": ["Server", "AccountWeb: API (.NET)", "AccountWeb: Frontend (Vite + Chrome)"],
+            "stopAll": true
         }
     ]
 }

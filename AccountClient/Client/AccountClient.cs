@@ -21,6 +21,13 @@ namespace AccountClientModule.Client
         ReturnData ResetPasswordWithEmail(string emailAddress);
         ReturnData ResetPasswordWithCode(string code, string verifyEmailAddress);
         ReturnData ResetPasswordWithToken(string token, string password );
+
+        // Admin functions. Only work for OAuth2 clients listed in the AccountServer's AdminClients.
+        AdminUserListData AdminSearchUsers(string query);
+        AdminUserData AdminGetUser(uint accountId);
+        AdminUserData AdminUpdateUser(AdminUpdateUserData data);
+        /// <summary>Password must be encrypted with DFCrypt.EncryptInput.</summary>
+        AdminUserData AdminSetPassword(uint accountId, string encryptedPassword);
     }
 
     public class AccountClient : DFClient, IAccountClient
@@ -99,6 +106,43 @@ namespace AccountClientModule.Client
         {
             var result = Task.Run(async() => await _restClient.ResetPasswordWithToken(token,password)).Result;
             return ReturnData.ConvertFromReturnData( result );
+        }
+
+        public AdminUserListData AdminSearchUsers(string query)
+        {
+            var data = new AdminSearchUsersData { query = query ?? string.Empty };
+            var result = Task.Run(async () => await _restClient.AdminSearchUsers(data)).Result;
+            return ConvertAdmin(result, (code, message) => new AdminUserListData { errorCode = code, errorMessage = message });
+        }
+
+        public AdminUserData AdminGetUser(uint accountId)
+        {
+            var data = new AdminGetUserData { id = accountId };
+            var result = Task.Run(async () => await _restClient.AdminGetUser(data)).Result;
+            return ConvertAdmin(result, (code, message) => new AdminUserData { errorCode = code, errorMessage = message });
+        }
+
+        public AdminUserData AdminUpdateUser(AdminUpdateUserData data)
+        {
+            var result = Task.Run(async () => await _restClient.AdminUpdateUser(data)).Result;
+            return ConvertAdmin(result, (code, message) => new AdminUserData { errorCode = code, errorMessage = message });
+        }
+
+        public AdminUserData AdminSetPassword(uint accountId, string encryptedPassword)
+        {
+            var data = new AdminSetPasswordData { id = accountId, password = encryptedPassword };
+            var result = Task.Run(async () => await _restClient.AdminSetPassword(data)).Result;
+            return ConvertAdmin(result, (code, message) => new AdminUserData { errorCode = code, errorMessage = message });
+        }
+
+        private static T ConvertAdmin<T>(WebAPIData apiData, System.Func<AccountData.ErrorCode, string, T> error) where T : class
+        {
+            if (apiData.errorCode == 0)
+            {
+                return JsonConvert.DeserializeObject<T>(apiData.message)
+                    ?? error(AccountData.ErrorCode.ErrorInData, "Empty response from the account server");
+            }
+            return error((AccountData.ErrorCode)apiData.errorCode, apiData.message);
         }
 
         private AccountData ConvertFromRestData(WebAPIData apiData)
