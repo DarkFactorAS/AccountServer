@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AccountServer/bin/Debug/net9.0/AccountServer.dll",
+            "program": "${workspaceFolder}/AccountServer/bin/Debug/net10.0/AccountServer.dll",
             "args": [],
             "cwd": "${workspaceFolder}/AccountServer",
             "stopAtEntry": false,
@@ -35,7 +35,7 @@
             "request": "launch",
             "preLaunchTask": "build_testclient",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AccountTestClient/bin/Debug/net9.0/AccountTestClient.dll",
+            "program": "${workspaceFolder}/AccountTestClient/bin/Debug/net10.0/AccountTestClient.dll",
             "args": [],
             "cwd": "${workspaceFolder}/AccountTestClient",
             "stopAtEntry": false,
@@ -61,14 +61,12 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_accountweb",
-            "program": "${workspaceFolder}/AccountWeb/bin/Debug/net9.0/AccountWeb.dll",
+            "program": "${workspaceFolder}/AccountWeb/bin/Debug/net10.0/AccountWeb.dll",
             "args": [],
             "cwd": "${workspaceFolder}/AccountWeb",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "ASPNETCORE_URLS": "http://localhost:5102",
-                // Run the net9.0 build on a newer runtime when .NET 9 is not installed.
-                "DOTNET_ROLL_FORWARD": "Major"
+                "ASPNETCORE_URLS": "http://localhost:5102"
             },
             "console": "integratedTerminal",
             "stopAtEntry": false

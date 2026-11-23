@@ -47,6 +47,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4    
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
     - name: ${{ env.PROJECT_NAME }} - Restore dependencies
       run: dotnet restore ${{ env.PROJECT_NAME }}.csproj
 
