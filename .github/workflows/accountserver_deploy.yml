@@ -28,26 +28,46 @@ on:
           - staging
           - production
 
+permissions:
+  contents: read
+  packages: read
+  actions: write
+
 jobs:
+  build-docker-image:
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production' || github.event_name == 'release'
+    name: Build Docker Image
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-docker-build-image.yml@v1.8
+    with:
+      project_name: "AccountServer"
+      dockerfile: "Dockerfile"
+      versionfile: "AccountServer/Program.cs"
+    secrets: inherit
+
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.8
+    needs: [build-docker-image]
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-docker-deploy.yml@v1.8
     with:
       environment: staging
-      project_path: ./AccountServer
-      project_name: AccountServer
-      dockerfile: ../Dockerfile
+      external_port: 5100
+      project_name: "AccountServer"
+      app_name: "AccountServer.Staging"
+      image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
+      config_path: "~/accountserver-config/"
     secrets: inherit
 
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.8
+    needs: [build-docker-image, staging]
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-docker-deploy.yml@v1.8
     with:
       environment: production
-      project_path: ./AccountServer
-      project_name: AccountServer
-      dockerfile: ../Dockerfile
+      external_port: 6100
+      project_name: "AccountServer"
+      app_name: "AccountServer.Production"
+      image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
+      config_path: "~/accountserver-config/"
     secrets: inherit
-    needs: staging
